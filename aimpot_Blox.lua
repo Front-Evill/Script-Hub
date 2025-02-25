@@ -83,14 +83,14 @@ ToggleButton.Font = Enum.Font.GothamBold
 
 -- تأثير الألوان المتحركة
 local function updateColors()
-    while wait() do
+    while true do
         for i = 0, 1, 0.005 do
             ToggleButton.TextColor3 = Color3.fromHSV(i, 1, 1)
             wait(0.05)
         end
     end
 end
-coroutine.wrap(updateColors)() -- استدعاء الدالة بشكل صحيح
+coroutine.wrap(updateColors)()
 
 -- تعريف الإعدادات
 _ENV = _ENV or getgenv() or {}
