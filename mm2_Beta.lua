@@ -48,8 +48,7 @@ discordTab:AddSection({
 discordTab:AddDiscordInvite({
     Name = "Join Our Community", -- نص الدعوة
     Logo = "rbxassetid://10709769508",
-    Invite = "https://guns.lol/front_evill", -- رابط الدعوة الخاص بك
-    Desc = "Click an butto" -- وصف صغير
+    Invite = "https://guns.lol/front_evill" -- رابط الدعوة الخاص بك
 })
 --نهايه
 
