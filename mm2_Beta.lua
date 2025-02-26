@@ -9,9 +9,175 @@ local Heartbeat = RunService.Heartbeat
 
 -- تعاريف و فنش
 
---تعرف سكربت طيران 
+-- تعرف سكربت طيران 
 local flyScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script/refs/heads/main/Source.lua"))()
 
+-- تعرف الصندوق 
+
+-- متغيرات لتخزين حالة الميزة
+local roleBoxesEnabled = true
+local playerRoleBoxes = {}
+
+-- ألوان مختلفة للأدوار
+local roleColors = {
+    Murderer = Color3.fromRGB(255, 0, 0),      -- أحمر للقاتل
+    Sheriff = Color3.fromRGB(0, 0, 255),       -- أزرق للشرطي
+    Innocent = Color3.fromRGB(0, 255, 0)       -- أخضر للمسالم
+}
+
+-- دالة لإنشاء مربع حول اللاعب بناءً على دوره
+local function CreateRoleBox(player, role)
+    if player == game.Players.LocalPlayer then
+        return -- تجاهل اللاعب الأساسي
+    end
+    
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+    
+    -- إزالة المربع السابق إذا وجد
+    if playerRoleBoxes[player.Name] then
+        playerRoleBoxes[player.Name]:Destroy()
+        playerRoleBoxes[player.Name] = nil
+    end
+    
+    if not roleBoxesEnabled or not role then
+        return
+    end
+    
+    -- إنشاء المربع
+    local box = Instance.new("Part")
+    box.Name = "RoleBox_" .. player.Name
+    box.Anchored = true
+    box.CanCollide = false
+    box.Transparency = 0.7
+    box.Material = Enum.Material.Neon
+    box.Color = roleColors[role] or Color3.fromRGB(255, 255, 255) -- لون الدور أو أبيض إذا لم يتم التعرف عليه
+    box.Size = Vector3.new(6, 8, 6) -- حجم المربع
+    box.CFrame = character.HumanoidRootPart.CFrame
+    box.Parent = workspace
+    
+    -- تخزين المربع للإشارة إليه لاحقاً
+    playerRoleBoxes[player.Name] = box
+    
+    -- تحديث موقع المربع باستمرار
+    spawn(function()
+        while wait(0.1) do
+            if roleBoxesEnabled and box and box.Parent and character and character.Parent and character:FindFirstChild("HumanoidRootPart") then
+                box.CFrame = character.HumanoidRootPart.CFrame
+            else
+                if box and box.Parent then
+                    box:Destroy()
+                end
+                playerRoleBoxes[player.Name] = nil
+                break
+            end
+        end
+    end)
+end
+
+-- دالة للكشف عن دور اللاعب في MM2
+local function DetectPlayerRole(player)
+    local backpack = player.Backpack
+    local character = player.Character
+    
+    if not character then
+        return nil
+    end
+    
+    -- البحث عن أداة القاتل أو الشرطي في حقيبة اللاعب أو الشخصية
+    local function hasItem(item)
+        return (backpack and backpack:FindFirstChild(item)) or (character and character:FindFirstChild(item))
+    end
+    
+    -- الكشف عن الأدوار بناءً على الأدوات الموجودة
+    if hasItem("Knife") or hasItem("Blade") or hasItem("Darkblade") then
+        return "Murderer"
+    elseif hasItem("Gun") or hasItem("Revolver") or hasItem("Pistol") then
+        return "Sheriff"
+    else
+        return "Innocent"
+    end
+end
+
+-- دالة لمسح جميع المربعات
+local function ClearAllRoleBoxes()
+    for playerName, box in pairs(playerRoleBoxes) do
+        if box and box.Parent then
+            box:Destroy()
+        end
+        playerRoleBoxes[playerName] = nil
+    end
+end
+
+-- دالة للتحقق من حالة الجولة في MM2
+local function CheckGameState()
+    local gameState = ""
+    
+    -- محاولة العثور على الأشياء التي تشير إلى حالة اللعبة
+    local lobbyCountdown = workspace:FindFirstChild("LobbyCountdown")
+    local roundOver = workspace:FindFirstChild("RoundOver")
+    
+    if lobbyCountdown and lobbyCountdown:IsA("IntValue") and lobbyCountdown.Value > 0 then
+        gameState = "Lobby"
+    elseif roundOver and roundOver:IsA("BoolValue") and roundOver.Value then
+        gameState = "RoundOver"
+        ClearAllRoleBoxes() -- مسح المربعات عند انتهاء الجولة
+    else
+        gameState = "InGame"
+        
+        -- تحديث المربعات للاعبين عندما تكون الجولة جارية
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                local role = DetectPlayerRole(player)
+                if role then
+                    CreateRoleBox(player, role)
+                end
+            end
+        end
+    end
+    
+    return gameState
+end
+
+-- دالة للتعامل مع اللاعبين الجدد الذين ينضمون للعبة
+local function HandleNewPlayer(player)
+    if player ~= game.Players.LocalPlayer then
+        player.CharacterAdded:Connect(function(character)
+            wait(2) -- انتظار لتأكد من تحميل الشخصية والأدوات بالكامل
+            if roleBoxesEnabled and CheckGameState() == "InGame" then
+                local role = DetectPlayerRole(player)
+                if role then
+                    CreateRoleBox(player, role)
+                end
+            end
+        end)
+    end
+end
+
+-- دالة للتعامل مع اللاعبين الذين يغادرون اللعبة
+local function HandlePlayerRemoving(player)
+    if playerRoleBoxes[player.Name] then
+        playerRoleBoxes[player.Name]:Destroy()
+        playerRoleBoxes[player.Name] = nil
+    end
+end
+
+-- توصيل الدوال بأحداث Players
+game:GetService("Players").PlayerAdded:Connect(HandleNewPlayer)
+game:GetService("Players").PlayerRemoving:Connect(HandlePlayerRemoving)
+
+-- دورة للتحقق من حالة اللعبة باستمرار
+spawn(function()
+    while wait(1) do
+        if roleBoxesEnabled then
+            CheckGameState()
+        end
+    end
+end)
+
+-- نهايه
 -- استدعاء مكتبه ريدز الخرا 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/RedzLibV5/refs/heads/main/Source.lua"))()
 
@@ -231,6 +397,7 @@ playerTab:AddButton({
         end
     end
 })
+
 -- قسم تنقل
 
 -- قسم اعدادات 
@@ -239,7 +406,7 @@ playerTab:AddButton({
 -- قسم الإعدادات
 local settingsTab = window:MakeTab({
     Title = "seting",
-    Icon = "rbxassetid://10709752906"
+    Icon = "rbxassetid://10709810948"
 })
 
 -- إضافة سكشن السيرفرات
@@ -290,7 +457,7 @@ end
 
 -- قسم الـ Tween
 settingsTab:AddSection({
-    Name = "Tween"
+    Name = "seting script"
 })
 
 -- إضافة وحدة الكاش للتخزين المؤقت
@@ -423,13 +590,37 @@ settingsTab:AddToggle({
 })
 
 
+-- زر توجل لتفعيل/إيقاف كشف الأدوار
+settingsTab:AddToggle({
+    Name = "ESP Player",
+    Default = true,  -- مفعل افتراضياً
+    Flag = "roleBoxes",
+    Callback = function(Value)
+        roleBoxesEnabled = Value
+        if not Value then
+            ClearAllRoleBoxes()
+        elseif CheckGameState() == "InGame" then
+            -- تحديث المربعات إذا كانت الجولة جارية
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= game.Players.LocalPlayer then
+                    local role = DetectPlayerRole(player)
+                    if role then
+                        CreateRoleBox(player, role)
+                    end
+                end
+            end
+        end
+    end
+})
+
+-- حفظ الإعدادات تلقائيًا كل دقيقة
 spawn(function()
     while wait(60) do
         SaveSettings()
     end
 end)
 
-
+-- إغلاق السكربت وحفظ الإعدادات
 game:GetService("CoreGui").ChildRemoved:Connect(function(child)
     if child.Name == "Script Mm2" then
         SaveSettings()
