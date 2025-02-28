@@ -252,11 +252,11 @@ playerTab:AddToggle({
     Callback = function(Value)
         if Value then
             -- تفعيل القفز العالي
-            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 100 -- يمكنك تغيير القيمة
+            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 100 -- قيمة أعلى
             print("High Jump enabled!")
         else
             -- إعادة القفز إلى القيمة الافتراضية
-            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 50 -- القيمة الافتراضية
+            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 7.2 -- القيمة الافتراضية
             print("High Jump disabled!")
         end
     end
@@ -610,6 +610,41 @@ settingsTab:AddToggle({
                 end
             end
         end
+    end
+})
+
+
+-- قسم Game Pro
+settingsTab:AddSection({
+    Name = "Game Pro"
+})
+
+-- زر زيادة الفريمات
+settingsTab:AddButton({
+    Name = "Increase FPS",
+    Callback = function()
+        setfpscap(60) -- زيادة عدد الفريمات إلى 60
+        print("FPS increased to 60!")
+    end
+})
+
+-- زر رفع جودة الرسوميات
+settingsTab:AddButton({
+    Name = "Improve Graphics",
+    Callback = function()
+        settings().Rendering.QualityLevel = "Level21" -- رفع الجودة إلى المستوى الأعلى
+        print("Graphics quality improved!")
+    end
+})
+
+-- زر إزالة الضباب
+settingsTab:AddButton({
+    Name = "Remove Fog",
+    Callback = function()
+        game.Lighting.FogEnd = 100000 -- زيادة نهاية الضباب لتكون بعيدة جدًا
+        game.Lighting.FogStart = 0 -- بدء الضباب من نقطة قريبة
+        game.Lighting.ClockTime = 12 -- ضبط الوقت ليكون نهارًا دائمًا
+        print("Fog removed!")
     end
 })
 
