@@ -15,8 +15,9 @@ local flyScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/PRO
 -- تعرف الصندوق 
 
 -- متغيرات لتخزين حالة الميزة
-local roleBoxesEnabled = true
+local roleBoxesEnabled = false  -- Changed to false by default to fix auto-enabling
 local playerRoleBoxes = {}
+local tweenEnabled = true  -- Added for tween movement system
 
 -- ألوان مختلفة للأدوار
 local roleColors = {
@@ -77,7 +78,7 @@ local function CreateRoleBox(player, role)
     end)
 end
 
--- دالة للكشف عن دور اللاعب في MM2
+-- دالة للكشف عن دور اللاعب في MM2 - محسّنة
 local function DetectPlayerRole(player)
     local backpack = player.Backpack
     local character = player.Character
@@ -86,15 +87,24 @@ local function DetectPlayerRole(player)
         return nil
     end
     
+    -- قوائم أكثر شمولية للأسلحة
+    local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser"}
+    local sheriffItems = {"Gun", "Revolver", "Pistol", "Luger", "Blaster"}
+    
     -- البحث عن أداة القاتل أو الشرطي في حقيبة اللاعب أو الشخصية
-    local function hasItem(item)
-        return (backpack and backpack:FindFirstChild(item)) or (character and character:FindFirstChild(item))
+    local function hasItem(itemList)
+        for _, itemName in pairs(itemList) do
+            if (backpack and backpack:FindFirstChild(itemName)) or (character and character:FindFirstChild(itemName)) then
+                return true
+            end
+        end
+        return false
     end
     
     -- الكشف عن الأدوار بناءً على الأدوات الموجودة
-    if hasItem("Knife") or hasItem("Blade") or hasItem("Darkblade") then
+    if hasItem(murdererItems) then
         return "Murderer"
-    elseif hasItem("Gun") or hasItem("Revolver") or hasItem("Pistol") then
+    elseif hasItem(sheriffItems) then
         return "Sheriff"
     else
         return "Innocent"
@@ -128,11 +138,13 @@ local function CheckGameState()
         gameState = "InGame"
         
         -- تحديث المربعات للاعبين عندما تكون الجولة جارية
-        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-            if player ~= game.Players.LocalPlayer then
-                local role = DetectPlayerRole(player)
-                if role then
-                    CreateRoleBox(player, role)
+        if roleBoxesEnabled then
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= game.Players.LocalPlayer then
+                    local role = DetectPlayerRole(player)
+                    if role then
+                        CreateRoleBox(player, role)
+                    end
                 end
             end
         end
@@ -164,6 +176,15 @@ local function HandlePlayerRemoving(player)
     end
 end
 
+-- تنفيذ آمن للدوال مع معالجة الأخطاء
+local function safeExecute(func, ...)
+    local success, result = pcall(func, ...)
+    if not success then
+        print("Error occurred: " .. tostring(result))
+    end
+    return success, result
+end
+
 -- توصيل الدوال بأحداث Players
 game:GetService("Players").PlayerAdded:Connect(HandleNewPlayer)
 game:GetService("Players").PlayerRemoving:Connect(HandlePlayerRemoving)
@@ -178,9 +199,10 @@ spawn(function()
 end)
 
 -- نهايه
--- استدعاء مكتبه ريدز الخرا 
+-- استدعاء مكتبه ريدز
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/RedzLibV5/refs/heads/main/Source.lua"))()
 
+-- تعريف النافذة الرئيسية
 local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
@@ -189,7 +211,6 @@ local window = redzlib:MakeWindow({
 })
 
 --قسم ديسكورد
-
 local discordTab = window:MakeTab({
     Title = "acount fruit",
     Icon = "rbxassetid://10709752906"
@@ -198,7 +219,6 @@ local discordTab = window:MakeTab({
 discordTab:AddSection({
     Name = "Discord"
 })
-
 
 discordTab:AddDiscordInvite({
     Name = "Join Our Community", -- نص الدعوة
@@ -210,7 +230,6 @@ discordTab:AddDiscordInvite({
 discordTab:AddSection({
     Name = "guns.lol"
 })
-
 
 discordTab:AddDiscordInvite({
     Name = "Join Our Community", -- نص الدعوة
@@ -225,12 +244,19 @@ local mainTab = window:MakeTab({
     Icon = "rbxassetid://10709752906"
 })
 
-mainTab:AddButton({
-    Name = "Activate Flight",
-    Desc = "Click to enable flight",
-    Callback = function()
-        flyScript() -- تنفيذ سكربت الطيران
-        print("Flight script activated!")
+-- تغيير زر الطيران إلى توجل لمنع التفعيل التلقائي
+mainTab:AddToggle({
+    Name = "Flight",
+    Default = false,
+    Flag = "flightToggle",
+    Callback = function(Value)
+        if Value then
+            flyScript() -- تنفيذ سكربت الطيران عند التفعيل
+            print("Flight script activated!")
+        else
+            print("Flight disabled!")
+            -- محاولة تعطيل الطيران إذا أمكن - يعتمد على تنفيذ سكربت الطيران
+        end
     end
 })
 
@@ -239,7 +265,6 @@ local playerTab = window:MakeTab({
     Title = "Player", -- اسم التبويب
     Icon = "rbxassetid://10709752906" 
 })
-
 
 playerTab:AddSection({
     Name = "jump & speed"
@@ -295,7 +320,6 @@ playerTab:AddToggle({
     end
 })
 
-
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if infiniteJumpEnabled then
         local player = game.Players.LocalPlayer
@@ -304,7 +328,6 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
         end
     end
 end)
-
 
 playerTab:AddSection({
     Name = "moodess"
@@ -341,10 +364,21 @@ playerTab:AddSection({
     Name = "copy ..."
 })
 
+-- تحسين قائمة اللاعبين
 local playerList = {}
+local skinCopyingCooldown = false
+
+local function updatePlayerList()
+    playerList = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        table.insert(playerList, player.Name)
+    end
+    return playerList
+end
+
 local dropdown = playerTab:AddDropdown({
     Name = "Select Player",
-    Options = playerList,
+    Options = updatePlayerList(),
     Default = "None",
     Flag = "playerDropdown",
     Callback = function(Value)
@@ -352,56 +386,60 @@ local dropdown = playerTab:AddDropdown({
     end
 })
 
-local function updatePlayerList()
-    playerList = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer then
-            table.insert(playerList, player.Name)
-        end
-    end
-    dropdown:UpdateOptions(playerList) -- تحديث القائمة
-end
-
--- تحديث القائمة كل 5 ثواني
+-- تحديث قائمة اللاعبين كل 3 ثوانٍ
 spawn(function()
-    while true do
-        updatePlayerList()
-        wait(5)
+    while wait(3) do
+        pcall(function()
+            dropdown:Refresh(updatePlayerList())
+        end)
     end
 end)
 
+-- تحسين زر نسخ السكن
 playerTab:AddButton({
     Name = "Copy Player Skin",
     Desc = "Copy the selected player's skin",
     Callback = function()
-        local selectedPlayerName = redzlib:GetFlag("playerDropdown")
+        if skinCopyingCooldown then
+            print("Please wait before copying another skin!")
+            return
+        end
+        
+        local selectedPlayerName = dropdown.Value
         local selectedPlayer = game.Players:FindFirstChild(selectedPlayerName)
         
         if selectedPlayer and selectedPlayer.Character then
-            -- حذف السكن الحالي للاعب
-            for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("Decal") then
-                    part:Destroy()
-                end
-            end
-                for _, part in pairs(selectedPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("Decal") then
+            skinCopyingCooldown = true
+            
+            -- دالة نسخ آمنة
+            local function safeClone(part, parent)
+                pcall(function()
                     local clone = part:Clone()
-                    clone.Parent = game.Players.LocalPlayer.Character
-                end
+                    clone.Parent = parent
+                end)
             end
-
-            print("Copied skin of: " .. selectedPlayerName)
+            
+            -- محاولة نسخ السكن بشكل آمن
+            pcall(function()
+                for _, part in pairs(selectedPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") or part:IsA("Decal") then
+                        safeClone(part, game.Players.LocalPlayer.Character)
+                    end
+                end
+            end)
+            
+            print("Attempted to copy skin of: " .. selectedPlayerName)
+            
+            -- إعادة ضبط وقت الانتظار بعد 5 ثوانٍ
+            spawn(function()
+                wait(5)
+                skinCopyingCooldown = false
+            end)
         else
             print("Player not found or has no character!")
         end
     end
 })
-
--- قسم تنقل
-
--- قسم اعدادات 
-
 
 -- قسم الإعدادات
 local settingsTab = window:MakeTab({
@@ -447,15 +485,7 @@ settingsTab:AddButton({
     end
 })
 
-local function SaveSettings()
-    local settings = {
-        flight = redzlib:GetFlag("flightToggle")
-    }
-    
-    print("Settings saved:", settings)
-end
-
--- قسم الـ Tween
+-- قسم إعدادات السكربت
 settingsTab:AddSection({
     Name = "seting script"
 })
@@ -464,6 +494,11 @@ settingsTab:AddSection({
 local Cached = {
     Humanoids = {}
 }
+
+-- إضافة كائن Tween فارغ إذا لم يكن موجودًا
+local Tween = {}
+local BaseParts 
+local CanCollideObjects
 
 -- دالة للحصول على Humanoid من الشخصية
 local function GetCharacterHumanoid(Character)
@@ -480,7 +515,7 @@ local function IsAlive(Character)
             if not Humanoids[Character] then
                 Humanoids[Character] = Humanoid
             end
-            return Humanoid[Humanoid.ClassName == "Humanoid" and "Health" or "Value"] > 0
+            return Humanoid.Health > 0
         end
     end
     return false
@@ -488,8 +523,13 @@ end
 
 -- دالة لتفعيل نظام الحركة
 local function EnableMovementSystem(Character)
-    if not IsAlive(Character) then
-        print("الشخصية غير موجودة أو ميتة")
+    if not Character or not IsAlive(Character) then
+        print("Character is not found or not alive")
+        return false
+    end
+    
+    if not Character:FindFirstChild("HumanoidRootPart") then
+        print("HumanoidRootPart not found")
         return false
     end
     
@@ -516,13 +556,14 @@ local function EnableMovementSystem(Character)
     
     -- تحديث دالة NoClipOnStepped
     function Tween:NoClipOnStepped(Character)
-        if not IsAlive(Character) then
+        if not Character or not IsAlive(Character) then
             return nil
         end
+        
         if _ENV.OnFarm then
             for i = 1, #BaseParts do
                 local BasePart = BaseParts[i]
-                if CanCollideObjects[BasePart] and BasePart.CanCollide then
+                if BasePart and CanCollideObjects[BasePart] and BasePart.CanCollide then
                     BasePart.CanCollide = false
                 end
             end
@@ -530,11 +571,13 @@ local function EnableMovementSystem(Character)
     end
     
     -- ربط الـ NoClip بدورة التشغيل
-    RunService:BindToRenderStep("NoClip", 2000, function()
-        Tween:NoClipOnStepped(Character)
-    end)
+    if not Tween.StepConnection then
+        Tween.StepConnection = RunService:BindToRenderStep("NoClip", 2000, function()
+            Tween:NoClipOnStepped(Character)
+        end)
+    end
     
-    print("تم تفعيل نظام الحركة")
+    print("Movement system enabled successfully")
     return true
 end
 
@@ -542,77 +585,88 @@ end
 local function DisableMovementSystem()
     if Tween.BodyVelocity then
         Tween.BodyVelocity:Destroy()
+        Tween.BodyVelocity = nil
     end
     
     -- إلغاء ربط NoClip
-    RunService:UnbindFromRenderStep("NoClip")
+    if Tween.StepConnection then
+        RunService:UnbindFromRenderStep("NoClip")
+        Tween.StepConnection = nil
+    end
     
     -- إعادة ضبط CanCollide
     if BaseParts and CanCollideObjects then
         for i = 1, #BaseParts do
             local BasePart = BaseParts[i]
-            if CanCollideObjects[BasePart] ~= nil then
-                BasePart.CanCollide = CanCollideObjects[BasePart]
+            if BasePart and CanCollideObjects[BasePart] ~= nil then
+                pcall(function() 
+                    BasePart.CanCollide = CanCollideObjects[BasePart]
+                end)
             end
         end
     end
     
-    print("تم إلغاء تفعيل نظام الحركة")
+    print("Movement system disabled")
     return true
 end
 
--- تفعيل نظام الحركة تلقائياً عند بدء السكريبت
-_ENV.OnFarm = true
-local Character = game.Players.LocalPlayer.Character
-if Character then
-    EnableMovementSystem(Character)
-else
-    game.Players.LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
-        EnableMovementSystem(NewCharacter)
-    end)
-end
+-- تعريف متغير _ENV.OnFarm
+_ENV.OnFarm = false
 
 -- زر توجل لتفعيل/إيقاف نظام الحركة
 settingsTab:AddToggle({
-    Name = "system Tween",
-    Default = true,  -- مفعل افتراضياً
-    Flag = "tweenMovement",
+    Name = "Tween Movement System",
+    Default = false,  -- غير مفعل افتراضياً
+    Flag = "tweenMovementToggle",
     Callback = function(Value)
+        tweenEnabled = Value
         _ENV.OnFarm = Value
         
         if Value then
             local Character = game.Players.LocalPlayer.Character
-            EnableMovementSystem(Character)
+            if Character then
+                EnableMovementSystem(Character)
+            end
         else
             DisableMovementSystem()
         end
     end
 })
 
+-- التوصيل بحدث CharacterAdded
+game.Players.LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+    if tweenEnabled then
+        wait(0.5) -- انتظار لتحميل الشخصية بالكامل
+        EnableMovementSystem(NewCharacter)
+    end
+end)
 
--- زر توجل لتفعيل/إيقاف كشف الأدوار
+-- زر توجل لتفعيل/إيقاف كشف الأدوار (ESP)
 settingsTab:AddToggle({
-    Name = "ESP Player",
-    Default = true,  -- مفعل افتراضياً
-    Flag = "roleBoxes",
+    Name = "ESP Player Boxes",
+    Default = false,  -- غير مفعل افتراضياً
+    Flag = "roleBoxesToggle",
     Callback = function(Value)
         roleBoxesEnabled = Value
         if not Value then
             ClearAllRoleBoxes()
-        elseif CheckGameState() == "InGame" then
+            print("ESP Player Boxes disabled!")
+        else
+            print("ESP Player Boxes enabled!")
             -- تحديث المربعات إذا كانت الجولة جارية
-            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-                if player ~= game.Players.LocalPlayer then
-                    local role = DetectPlayerRole(player)
-                    if role then
-                        CreateRoleBox(player, role)
+            if CheckGameState() == "InGame" then
+                for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                    if player ~= game.Players.LocalPlayer then
+                        local role = DetectPlayerRole(player)
+                        if role then
+                            CreateRoleBox(player, role)
+                        end
                     end
                 end
             end
         end
     end
 })
-
 
 -- قسم Game Pro
 settingsTab:AddSection({
@@ -623,8 +677,10 @@ settingsTab:AddSection({
 settingsTab:AddButton({
     Name = "Increase FPS",
     Callback = function()
-        setfpscap(60) -- زيادة عدد الفريمات إلى 60
-        print("FPS increased to 60!")
+        pcall(function()
+            setfpscap(60) -- زيادة عدد الفريمات إلى 60
+            print("FPS increased to 60!")
+        end)
     end
 })
 
@@ -632,8 +688,10 @@ settingsTab:AddButton({
 settingsTab:AddButton({
     Name = "Improve Graphics",
     Callback = function()
-        settings().Rendering.QualityLevel = "Level21" -- رفع الجودة إلى المستوى الأعلى
-        print("Graphics quality improved!")
+        pcall(function()
+            settings().Rendering.QualityLevel = "Level21" -- رفع الجودة إلى المستوى الأعلى
+            print("Graphics quality improved!")
+        end)
     end
 })
 
@@ -641,24 +699,45 @@ settingsTab:AddButton({
 settingsTab:AddButton({
     Name = "Remove Fog",
     Callback = function()
-        game.Lighting.FogEnd = 100000 -- زيادة نهاية الضباب لتكون بعيدة جدًا
-        game.Lighting.FogStart = 0 -- بدء الضباب من نقطة قريبة
-        game.Lighting.ClockTime = 12 -- ضبط الوقت ليكون نهارًا دائمًا
-        print("Fog removed!")
+        pcall(function()
+            game.Lighting.FogEnd = 100000 -- زيادة نهاية الضباب لتكون بعيدة جدًا
+            game.Lighting.FogStart = 0 -- بدء الضباب من نقطة قريبة
+            game.Lighting.ClockTime = 12 -- ضبط الوقت ليكون نهارًا دائمًا
+            print("Fog removed!")
+        end)
     end
 })
+
+-- دالة حفظ الإعدادات
+local function SaveSettings()
+    local settings = {
+        flight = redzlib:GetFlag("flightToggle"),
+        highJump = redzlib:GetFlag("highJumpToggle"),
+        speedBoost = redzlib:GetFlag("speedBoostToggle"),
+        infiniteJump = redzlib:GetFlag("infiniteJumpToggle"),
+        invisibility = redzlib:GetFlag("invisibilityToggle"),
+        tweenMovement = redzlib:GetFlag("tweenMovementToggle"),
+        roleBoxes = redzlib:GetFlag("roleBoxesToggle")
+    }
+    
+    print("Settings saved successfully!")
+end
 
 -- حفظ الإعدادات تلقائيًا كل دقيقة
 spawn(function()
     while wait(60) do
-        SaveSettings()
+        pcall(SaveSettings)
     end
 end)
 
 -- إغلاق السكربت وحفظ الإعدادات
 game:GetService("CoreGui").ChildRemoved:Connect(function(child)
     if child.Name == "Script Mm2" then
-        SaveSettings()
+        pcall(SaveSettings)
         print("Script closed")
     end
 end)
+
+-- إظهار رسالة الترحيب
+print("MM2 Script by Front_9 loaded successfully!")
+print("Made with ❤️ by Front_9")
