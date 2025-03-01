@@ -604,27 +604,85 @@ settingsTab:AddButton({
 })
 
 
-ettingsTab:AddButton({
-    Name = "Increase FPS",
-    Callback = function()
-        pcall(function()
-            setfpscap(60) -- زيادة عدد الفريمات إلى 60
-            print("FPS increased to 60!")
-        end)
-    end
-})
+settingsTab:AddButton({
+  Name = "Increase FPS",
+  Callback = function()
+      -- قائمة بالقيم المحتملة لـ FPS
+      local fpsOptions = {30, 60, 120, nil} -- nil تعني إزالة الحد
+      local currentOption = 1
 
+      -- محاولة تعيين FPS باستخدام الخيارات المتاحة
+      while currentOption <= #fpsOptions do
+          local targetFPS = fpsOptions[currentOption]
+          local success, errorMessage = pcall(function()
+              if targetFPS then
+                  setfpscap(targetFPS)
+                  print("FPS cap set to", targetFPS)
+              else
+                  setfpscap(nil) -- إزالة الحد
+                  print("FPS cap removed.")
+              end
+          end)
+
+          if success then
+              print("FPS increased successfully!")
+              return -- الخروج من الدالة عند النجاح
+          else
+              warn("Failed to set FPS cap to", targetFPS, ":", errorMessage)
+              currentOption = currentOption + 1 -- الانتقال إلى الخيار التالي
+          end
+      end
+
+      -- إذا فشلت جميع المحاولات
+      warn("All attempts to increase FPS failed.")
+  end
+})
 -- زر رفع جودة الرسوميات
 settingsTab:AddButton({
-    Name = "Improve Graphics",
-    Callback = function()
-        pcall(function()
-            settings().Rendering.QualityLevel = "Level21" -- رفع الجودة إلى المستوى الأعلى
-            print("Graphics quality improved!")
-        end)
-    end
-})
+  Name = "Improve Graphics",
+  Callback = function()
+      -- محاولة الطريقة الأولى: تغيير الجودة مباشرة إلى المستوى الأعلى
+      local success, errorMessage = pcall(function()
+          settings().Rendering.QualityLevel = "Level21"
+          print("Attempt 1: Graphics quality set to Level21.")
+      end)
 
+      if not success then
+          warn("Attempt 1 failed:", errorMessage)
+          -- الطريقة الثانية: زيادة الجودة تدريجيًا
+          local currentLevel = tonumber(settings().Rendering.QualityLevel:match("%d+")) or 1
+          while currentLevel < 21 do
+              currentLevel = currentLevel + 1
+              local newLevel = string.format("Level%02d", currentLevel)
+              local successStep, errorMessageStep = pcall(function()
+                  settings().Rendering.QualityLevel = newLevel
+                  print("Attempt 2: Graphics quality increased to", newLevel)
+              end)
+
+              if not successStep then
+                  warn("Attempt 2 failed at level", newLevel, ":", errorMessageStep)
+                  break
+              end
+          end
+
+          if currentLevel < 21 then
+              -- الطريقة الثالثة: إعادة الضبط إلى القيم الافتراضية
+              local successReset, errorMessageReset = pcall(function()
+                  settings().Rendering.QualityLevel = "Level01" -- إعادة الجودة إلى المستوى الأدنى
+                  print("Attempt 3: Reset graphics quality to default.")
+              end)
+
+              if not successReset then
+                  warn("Attempt 3 failed:", errorMessageReset)
+              else
+                  print("Graphics quality reset to default successfully.")
+              end
+          end
+      else
+          print("Graphics quality improved successfully!")
+      end
+  end
+})
 -- زر إزالة الضباب
 settingsTab:AddButton({
     Name = "Remove Fog",
