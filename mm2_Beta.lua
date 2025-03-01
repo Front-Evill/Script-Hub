@@ -9,9 +9,6 @@ local Heartbeat = RunService.Heartbeat
 
 -- تعاريف و فنش
 
--- تعرف سكربت طيران 
-local flyScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script/refs/heads/main/Source.lua"))()
-
 -- تعرف الصندوق 
 
 -- متغيرات لتخزين حالة الميزة
@@ -244,19 +241,14 @@ local mainTab = window:MakeTab({
     Icon = "rbxassetid://10709752906"
 })
 
--- تغيير زر الطيران إلى توجل لمنع التفعيل التلقائي
-mainTab:AddToggle({
-    Name = "Flight",
-    Default = false,
-    Flag = "flightToggle",
-    Callback = function(Value)
-        if Value then
-            flyScript() -- تنفيذ سكربت الطيران عند التفعيل
-            print("Flight script activated!")
-        else
-            print("Flight disabled!")
-            -- محاولة تعطيل الطيران إذا أمكن - يعتمد على تنفيذ سكربت الطيران
-        end
+
+tab:AddButton({
+    Name = "Activate Flight Script", -- اسم الزر
+    Desc = "Click to activate the flight script", -- وصف الزر
+    Callback = function()
+        -- هنا يتم تنفيذ سكربت الطيران
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script/refs/heads/main/Source.lua"))()
+        print("Flight script activated!") -- رسالة تأكيد في الكونسول
     end
 })
 
