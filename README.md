@@ -1,19 +1,19 @@
 # Script-All
 
-## Script imbot For Blox Fruit 🍓 😋 
+## Script imbot For Blox Fruit (BETA) 🍓 😋 
 
-```lua
-loadstring(game:HttpGet(""))()
+```luau
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/aimpot_Blox.lua"))()
 ```
 
-## fly script 
+## fly script (true)
 
-```lua
+```luau
 loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script/refs/heads/main/Source.lua"))()
 ```
 
-## mm2 script 
+## mm2 script (BETA) 
 
-```lua
+```luau
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/mm2_Beta.lua"))()
 ```
