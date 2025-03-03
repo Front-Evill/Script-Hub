@@ -527,7 +527,7 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
 end)
 
 -- إضافة توغل لتفعيل زيادة قوة القفز
-tab:AddToggle({
+playerTab:AddToggle({
     Name = "تفعيل قوة القفز العالية",
     Default = false,
     Flag = "jumpPowerEnabled",
@@ -558,7 +558,7 @@ tab:AddToggle({
 })
 
 -- إضافة سلايدر للتحكم في قيمة قوة القفز
-tab:AddSlider({
+palyerTab:AddSlider({
     Name = "تعديل قوة القفز",
     Min = 50,
     Max = 250,
