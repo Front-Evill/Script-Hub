@@ -501,40 +501,6 @@ playerTab:AddSection({
     Name = "jump & speed"
 })
 
-playerTab:AddToggle({
-    Name = "High Jump", -- اسم التبديل
-    Default = false, -- القيمة الافتراضية (غير مفعل)
-    Flag = "highJumpToggle", -- معرف التبديل
-    Callback = function(Value)
-        if Value then
-            -- تفعيل القفز العالي
-            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 100 -- قيمة أعلى
-            print("High Jump enabled!")
-        else
-            -- إعادة القفز إلى القيمة الافتراضية
-            game.Players.LocalPlayer.Character.Humanoid.JumpHeight = 7.2 -- القيمة الافتراضية
-            print("High Jump disabled!")
-        end
-    end
-})
-
-playerTab:AddToggle({
-    Name = "Speed Boost", -- اسم التبديل
-    Default = false, -- القيمة الافتراضية (غير مفعل)
-    Flag = "speedBoostToggle", -- معرف التبديل
-    Callback = function(Value)
-        if Value then
-            -- تفعيل السرعة العالية
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100 -- يمكنك تغيير القيمة
-            print("Speed Boost enabled!")
-        else
-            -- إعادة السرعة إلى القيمة الافتراضية
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16 -- القيمة الافتراضية
-            print("Speed Boost disabled!")
-        end
-    end
-})
-
 local infiniteJumpEnabled = false
 
 playerTab:AddToggle({
