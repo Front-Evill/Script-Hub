@@ -560,6 +560,165 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 
+-- إضافة توغل لتفعيل زيادة قوة القفز
+tab:AddToggle({
+    Name = "تفعيل قوة القفز العالية",
+    Default = false,
+    Flag = "jumpPowerEnabled",
+    Callback = function(Value)
+        local Players = game:GetService("Players")
+        local Player = Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid")
+        
+        if Value then
+            -- تفعيل قوة القفز العالية
+            Humanoid.JumpPower = 100 -- قيمة مضاعفة لقوة القفز
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "قوة القفز",
+                Text = "تم تفعيل قوة القفز العالية",
+                Duration = 3
+            })
+        else
+            -- إعادة قوة القفز للقيمة الطبيعية
+            Humanoid.JumpPower = 50 -- القيمة الافتراضية في الروبلوكس
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "قوة القفز",
+                Text = "تم إيقاف قوة القفز العالية",
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- إضافة سلايدر للتحكم في قيمة قوة القفز
+tab:AddSlider({
+    Name = "تعديل قوة القفز",
+    Min = 50,
+    Max = 250,
+    Default = 100,
+    Increase = 5,
+    Flag = "jumpPowerValue",
+    Callback = function(Value)
+        local Players = game:GetService("Players")
+        local Player = Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid")
+        
+        -- التحقق من أن زيادة القفز مفعلة
+        if redzlib:GetFlag("jumpPowerEnabled") then
+            Humanoid.JumpPower = Value
+        end
+    end
+})
+
+-- إضافة توغل لتفعيل زيادة السرعة
+tab:AddToggle({
+    Name = "تفعيل السرعة العالية",
+    Default = false,
+    Flag = "speedEnabled",
+    Callback = function(Value)
+        local Players = game:GetService("Players")
+        local Player = Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid")
+        
+        if Value then
+            -- تفعيل السرعة العالية
+            Humanoid.WalkSpeed = 32 -- قيمة مضاعفة للسرعة
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "السرعة",
+                Text = "تم تفعيل السرعة العالية",
+                Duration = 3
+            })
+        else
+            -- إعادة السرعة للقيمة الطبيعية
+            Humanoid.WalkSpeed = 16 -- القيمة الافتراضية في الروبلوكس
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "السرعة",
+                Text = "تم إيقاف السرعة العالية",
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- إضافة سلايدر للتحكم في قيمة السرعة
+tab:AddSlider({
+    Name = "تعديل السرعة",
+    Min = 16,
+    Max = 150,
+    Default = 32,
+    Increase = 2,
+    Flag = "speedValue",
+    Callback = function(Value)
+        local Players = game:GetService("Players")
+        local Player = Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid")
+        
+        -- التحقق من أن زيادة السرعة مفعلة
+        if redzlib:GetFlag("speedEnabled") then
+            Humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+-- إضافة زر سرعة فائقة (سرعة مؤقتة عالية جداً)
+tab:AddButton({
+    Name = "سرعة فائقة (مؤقتة)",
+    Desc = "يعطي سرعة فائقة لمدة 5 ثوانٍ",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local Player = Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid")
+        
+        -- حفظ السرعة الحالية
+        local originalSpeed = Humanoid.WalkSpeed
+        
+        -- تطبيق السرعة الفائقة
+        Humanoid.WalkSpeed = 200
+        
+        -- إشعار
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "سرعة فائقة",
+            Text = "تم تفعيل السرعة الفائقة لمدة 5 ثوانٍ",
+            Duration = 3
+        })
+        
+        -- انتظار 5 ثوانٍ ثم العودة للسرعة السابقة
+        spawn(function()
+            wait(5)
+            if Character and Character:FindFirstChild("Humanoid") then
+                Humanoid.WalkSpeed = originalSpeed
+                
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "سرعة فائقة",
+                    Text = "انتهت مدة السرعة الفائقة",
+                    Duration = 3
+                })
+            end
+        end)
+    end
+})
+
+-- التعامل مع إعادة إنشاء الشخصية
+Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+    local Humanoid = Character:WaitForChild("Humanoid")
+    
+    -- إعادة تطبيق قوة القفز إذا كانت مفعلة
+    if redzlib:GetFlag("jumpPowerEnabled") then
+        Humanoid.JumpPower = redzlib:GetFlag("jumpPowerValue")
+    end
+    
+    -- إعادة تطبيق السرعة إذا كانت مفعلة
+    if redzlib:GetFlag("speedEnabled") then
+        Humanoid.WalkSpeed = redzlib:GetFlag("speedValue")
+    end
+end)
+
+
 local settingsTab = window:MakeTab({
     Title = "seting",
     Icon = "rbxassetid://10709810948"
