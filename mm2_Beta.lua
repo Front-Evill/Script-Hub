@@ -603,6 +603,9 @@ settingsTab:AddButton({
     end
 })
 
+settingsTab:AddSection({
+    Name = " ...Game good... "
+})
 
 settingsTab:AddButton({
   Name = "Increase FPS",
@@ -683,6 +686,11 @@ settingsTab:AddButton({
       end
   end
 })
+
+settingsTab:AddSection({
+    Name = " ...Fog... "
+})
+
 -- زر إزالة الضباب
 settingsTab:AddButton({
     Name = "Remove Fog",
