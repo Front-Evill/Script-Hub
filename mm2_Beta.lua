@@ -579,7 +579,7 @@ palyerTab:AddSlider({
 })
 
 -- إضافة توغل لتفعيل زيادة السرعة
-tab:AddToggle({
+playerTab:AddToggle({
     Name = "تفعيل السرعة العالية",
     Default = false,
     Flag = "speedEnabled",
@@ -610,7 +610,7 @@ tab:AddToggle({
 })
 
 -- إضافة سلايدر للتحكم في قيمة السرعة
-tab:AddSlider({
+palyerTab:AddSlider({
     Name = "تعديل السرعة",
     Min = 16,
     Max = 150,
@@ -631,7 +631,7 @@ tab:AddSlider({
 })
 
 -- إضافة زر سرعة فائقة (سرعة مؤقتة عالية جداً)
-tab:AddButton({
+playerTab:AddButton({
     Name = "سرعة فائقة (مؤقتة)",
     Desc = "يعطي سرعة فائقة لمدة 5 ثوانٍ",
     Callback = function()
