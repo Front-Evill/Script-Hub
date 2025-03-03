@@ -107,7 +107,7 @@ local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    icon = "rbxassetid://10709752906"
+    Icon = "rbxassetid://10709752906"
 })
 
 --قسم ديسكورد
@@ -560,18 +560,18 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 
-local settingsTab = window:MakeTab({
+local Tab = window:MakeTab({
     Title = "seting",
     Icon = "rbxassetid://10709810948"
 })
 
 -- إضافة سكشن السيرفرات
-settingsTab:AddSection({
+Tab:AddSection({
     Name = "servers"
 })
 
 -- زر الانتقال إلى سيرفر جديد
-settingsTab:AddButton({
+Tab:AddButton({
     Name = "new server",
     Callback = function()
         local TeleportService = game:GetService("TeleportService")
@@ -595,7 +595,7 @@ settingsTab:AddButton({
 })
 
 -- زر إعادة الاتصال بنفس السيرفر
-settingsTab:AddButton({
+Tab:AddButton({
     Name = "rejoin",
     Callback = function()
         local TeleportService = game:GetService("TeleportService")
@@ -603,11 +603,11 @@ settingsTab:AddButton({
     end
 })
 
-settingsTab:AddSection({
+Tab:AddSection({
     Name = " ...Game good... "
 })
 
-settingsTab:AddButton({
+Tab:AddButton({
   Name = "Increase FPS",
   Callback = function()
       -- قائمة بالقيم المحتملة لـ FPS
@@ -641,7 +641,7 @@ settingsTab:AddButton({
   end
 })
 -- زر رفع جودة الرسوميات
-settingsTab:AddButton({
+Tab:AddButton({
   Name = "Improve Graphics",
   Callback = function()
       -- محاولة الطريقة الأولى: تغيير الجودة مباشرة إلى المستوى الأعلى
@@ -687,12 +687,12 @@ settingsTab:AddButton({
   end
 })
 
-settingsTab:AddSection({
+Tab:AddSection({
     Name = " ...Fog... "
 })
 
 -- زر إزالة الضباب
-settingsTab:AddButton({
+Tab:AddButton({
     Name = "Remove Fog",
     Callback = function()
         pcall(function()
