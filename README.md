@@ -1,4 +1,4 @@
-# Script-All
+pop# Script-All
 
 ## Script imbot For Blox Fruit (BETA) 🍓 😋 
 
@@ -21,5 +21,5 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ## Blox fruit tps blox strap
 
 ```luau
-loadstring(game:HttpGet(""))()
+loadstring(game:HttpGet("https://github.com/Front-Evill/Script-Hub/blob/main/Bloxfruit_strap.lua"))()
 ```
