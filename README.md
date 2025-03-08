@@ -1,4 +1,4 @@
-pop# Script-All
+# Script-All
 
 ## Script imbot For Blox Fruit (BETA) 🍓 😋 
 
