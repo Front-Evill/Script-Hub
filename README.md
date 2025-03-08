@@ -17,3 +17,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script
 ```luau
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/mm2_Beta.lua"))()
 ```
+
+## Blox fruit tps blox strap
+
+```luau
+loadstring(game:HttpGet(""))()
+```
