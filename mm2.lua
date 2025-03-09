@@ -1181,3 +1181,211 @@ local function CreateRoleBox(player, role)
         end
     end)
 end
+
+local settingsTab = window:MakeTab({
+    Title = "seting",
+    Icon = "rbxassetid://10709810948"
+})
+
+-- إضافة سكشن السيرفرات
+settingsTab:AddSection({
+    Name = "servers"
+})
+
+-- زر الانتقال إلى سيرفر جديد
+settingsTab:AddButton({
+    Name = "new server",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        
+        local servers = {}
+        local req = HttpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        
+        for _, server in pairs(req.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(servers, server.id)
+            end
+        end
+        
+        if #servers > 0 then
+            TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)])
+        else
+            TeleportService:Teleport(placeId)
+        end
+    end
+})
+
+-- زر إعادة الاتصال بنفس السيرفر
+settingsTab:AddButton({
+    Name = "rejoin",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
+    end
+})
+
+settingsTab:AddButton({
+  Name = "Increase FPS",
+  Callback = function()
+      -- قائمة بالقيم المحتملة لـ FPS
+      local fpsOptions = {30, 60, 120, nil} -- nil تعني إزالة الحد
+      local currentOption = 1
+
+      -- محاولة تعيين FPS باستخدام الخيارات المتاحة
+      while currentOption <= #fpsOptions do
+          local targetFPS = fpsOptions[currentOption]
+          local success, errorMessage = pcall(function()
+              if targetFPS then
+                  setfpscap(targetFPS)
+                  print("FPS cap set to", targetFPS)
+              else
+                  setfpscap(nil) -- إزالة الحد
+                  print("FPS cap removed.")
+              end
+          end)
+
+          if success then
+              print("FPS increased successfully!")
+              return -- الخروج من الدالة عند النجاح
+          else
+              warn("Failed to set FPS cap to", targetFPS, ":", errorMessage)
+              currentOption = currentOption + 1 -- الانتقال إلى الخيار التالي
+          end
+      end
+
+      -- إذا فشلت جميع المحاولات
+      warn("All attempts to increase FPS failed.")
+  end
+})
+
+-- زر إزالة الضباب
+settingsTab:AddButton({
+    Name = "Remove Fog",
+    Callback = function()
+        pcall(function()
+            game.Lighting.FogEnd = 100000 -- زيادة نهاية الضباب لتكون بعيدة جدًا
+            game.Lighting.FogStart = 0 -- بدء الضباب من نقطة قريبة
+            game.Lighting.ClockTime = 12 -- ضبط الوقت ليكون نهارًا دائمًا
+            print("Fog removed!")
+        end)
+    end
+})
+
+-- إضافة زر لتحسين الأداء العام
+settingsTab:AddButton({
+    Name = "Optimize Performance",
+    Callback = function()
+        -- تعطيل الظلال
+        pcall(function()
+            game.Lighting.GlobalShadows = false
+            print("Global shadows disabled")
+        end)
+        
+        -- تقليل جودة التفاصيل
+        pcall(function()
+            settings().Rendering.QualityLevel = 1
+            print("Rendering quality reduced")
+        end)
+        
+        -- إزالة الآثار البصرية
+        pcall(function()
+            for _, v in pairs(game.Lighting:GetChildren()) do
+                if v:IsA("BloomEffect") or v:IsA("BlurEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") then
+                    v.Enabled = false
+                end
+            end
+            print("Visual effects disabled")
+        end)
+        
+        -- تقليل المسافة المرئية
+        pcall(function()
+            game.Workspace.StreamingEnabled = true
+            settings().Rendering.StreamingEnabled = true
+            print("Streaming enabled")
+        end)
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "تحسين الأداء",
+            Text = "تم تحسين أداء اللعبة",
+            Duration = 3
+        })
+    end
+})
+
+-- إضافة قسم للإضاءة
+settingsTab:AddSection({
+    Name = "lighting"
+})
+
+-- إضافة زر لزيادة الإضاءة
+settingsTab:AddButton({
+    Name = "Increase Brightness",
+    Callback = function()
+        pcall(function()
+            game.Lighting.Brightness = 3 -- زيادة السطوع
+            game.Lighting.ClockTime = 14 -- وقت النهار
+            game.Lighting.Ambient = Color3.fromRGB(200, 200, 200) -- إضاءة محيطة أعلى
+            print("Brightness increased!")
+        end)
+    end
+})
+
+-- إضافة زر لتفعيل الوضع الليلي
+settingsTab:AddButton({
+    Name = "Night Mode",
+    Callback = function()
+        pcall(function()
+            game.Lighting.ClockTime = 0 -- وقت الليل
+            game.Lighting.Brightness = 0.5 -- خفض السطوع
+            game.Lighting.Ambient = Color3.fromRGB(50, 50, 80) -- إضاءة زرقاء
+            game.Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 80) -- إضاءة خارجية زرقاء
+            print("Night mode activated!")
+        end)
+    end
+})
+
+-- إضافة قسم للمميزات الأخرى
+settingsTab:AddSection({
+    Name = "other features"
+})
+
+-- إضافة زر لتنظيف الذاكرة
+settingsTab:AddButton({
+    Name = "Clean Memory",
+    Callback = function()
+        pcall(function()
+            for i = 1, 10 do
+                game:GetService("Debris"):AddItem(Instance.new("Frame"), 0)
+            end
+            collectgarbage("collect")
+            print("Memory cleaned!")
+        end)
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Clean Memory",
+            Text = "Memory has been cleaned",
+            Duration = 3
+        })
+    end
+})
+
+ -- حفظ الإعدادات تلقائيًا كل دقيقة
+spawn(function()
+    while wait(60) do
+        pcall(SaveSettings)
+    end
+end)
+
+-- إغلاق السكربت وحفظ الإعدادات
+game:GetService("CoreGui").ChildRemoved:Connect(function(child)
+    if child.Name == "Script Mm2" then
+        pcall(SaveSettings)
+        print("Script closed")
+    end
+end)
+
+game:GetService("StarterGui"):SetCore("SendNotification", { 
+    Title = "hello baby";
+    Text = "script by front_9";
+})
