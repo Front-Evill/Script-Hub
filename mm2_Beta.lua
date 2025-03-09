@@ -26,11 +26,14 @@ local function CheckGameState()
     return "InGame" -- افتراضيًا سنفترض أن اللعبة جارية
 end
 
--- دالة لمسح جميع مربعات الأدوار
+
 local function ClearAllRoleBoxes()
-    for playerName, box in pairs(playerRoleBoxes) do
-        if box and box.Parent then
-            box:Destroy()
+    for playerName, boxInfo in pairs(playerRoleBoxes) do
+        if boxInfo.box and boxInfo.box.Parent then
+            boxInfo.box:Destroy()
+        end
+        if boxInfo.label and boxInfo.label.Parent then
+            boxInfo.label:Destroy()
         end
     end
     playerRoleBoxes = {}
@@ -94,31 +97,78 @@ local function CreateRoleBox(player, role)
         return
     end
     
+    -- الحصول على حجم الشخصية
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    
+    if not humanoid or not rootPart then
+        return
+    end
+    
     -- إنشاء المربع
-    local box = Instance.new("Part")
+    local box = Instance.new("BoxHandleAdornment")
     box.Name = "RoleBox_" .. player.Name
-    box.Anchored = true
-    box.CanCollide = false
-    box.Transparency = 0.7
-    box.Material = Enum.Material.Neon
-    box.Color = roleColors[role] or Color3.fromRGB(255, 255, 255) -- لون الدور أو أبيض إذا لم يتم التعرف عليه
-    box.Size = Vector3.new(6, 8, 6) -- حجم المربع
-    box.CFrame = character.HumanoidRootPart.CFrame
-    box.Parent = workspace
+    box.Adornee = rootPart
+    box.AlwaysOnTop = true  -- يظهر دائمًا فوق العناصر الأخرى
+    box.ZIndex = 10  -- أولوية عالية للظهور
+    box.Transparency = 0.5
+    box.Color3 = roleColors[role] or Color3.fromRGB(255, 255, 255)
     
-    -- تخزين المربع للإشارة إليه لاحقاً
-    playerRoleBoxes[player.Name] = box
+    -- حساب حجم المربع ليتناسب مع حجم الشخصية
+    local characterSize = character:GetExtentsSize()
+    box.Size = characterSize * 1.05  -- زيادة طفيفة لتغطية الشخصية بالكامل
     
-    -- تحديث موقع المربع باستمرار
+    box.Parent = rootPart
+    
+    -- إضافة اسم اللاعب ودوره
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "PlayerLabel_" .. player.Name
+    billboard.Adornee = rootPart
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Parent = rootPart
+    
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = roleColors[role] or Color3.fromRGB(255, 255, 255)
+    nameLabel.Text = player.Name .. " [" .. role .. "]"
+    nameLabel.TextSize = 14
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.TextStrokeTransparency = 0.5
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    nameLabel.Parent = billboard
+    
+    -- تخزين المربع واللوحة للإشارة إليهما لاحقًا
+    playerRoleBoxes[player.Name] = {
+        box = box,
+        label = billboard
+    }
+    
+    -- ضمان ظهور المربع عبر الجدران باستخدام الخصائص المناسبة
+    -- إضافة تأثير نظام الإحاطة بتحديث مستمر
     spawn(function()
         while wait(0.1) do
-            if roleBoxesEnabled and box and box.Parent and character and character.Parent and character:FindFirstChild("HumanoidRootPart") then
-                box.CFrame = character.HumanoidRootPart.CFrame
+            if roleBoxesEnabled and box and box.Parent and character and character.Parent then
+                -- التحقق من المسافة والتعديل على الشفافية (مثال)
+                local distance = (rootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                local transparency = math.clamp(distance / 100, 0.3, 0.8)
+                box.Transparency = transparency
+                
+                -- تعديل حجم المربع في حالة تغير حجم الشخصية
+                local newSize = character:GetExtentsSize()
+                box.Size = newSize * 1.05
             else
-                if box and box.Parent then
-                    box:Destroy()
+                if playerRoleBoxes[player.Name] then
+                    if playerRoleBoxes[player.Name].box and playerRoleBoxes[player.Name].box.Parent then
+                        playerRoleBoxes[player.Name].box:Destroy()
+                    end
+                    if playerRoleBoxes[player.Name].label and playerRoleBoxes[player.Name].label.Parent then
+                        playerRoleBoxes[player.Name].label:Destroy()
+                    end
+                    playerRoleBoxes[player.Name] = nil
                 end
-                playerRoleBoxes[player.Name] = nil
                 break
             end
         end
