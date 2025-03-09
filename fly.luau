@@ -12,6 +12,9 @@ local TextLabel = Instance.new("TextLabel")
 local plus = Instance.new("TextButton")
 local speed = Instance.new("TextLabel")
 local mine = Instance.new("TextButton")
+local delete = Instance.new("TextButton")
+local speedToggle = Instance.new("TextButton")
+local jumpToggle = Instance.new("TextButton")
 
 --Properties:
 
@@ -100,6 +103,122 @@ mine.TextColor3 = Color3.fromRGB(0, 0, 0)
 mine.TextScaled = true
 mine.TextSize = 14.000
 mine.TextWrapped = true
+
+
+-- إعدادات زر الحذف
+delete.Name = "delete"
+delete.Parent = Frame
+delete.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+delete.Position = UDim2.new(0.702823281, 0, 0, 0)
+delete.Size = UDim2.new(0, 56, 0, 28)
+delete.Font = Enum.Font.SourceSans
+delete.Text = "حذف"
+delete.TextColor3 = Color3.fromRGB(0, 0, 0)
+delete.TextSize = 14.000
+
+-- إعدادات زر تفعيل السرعة
+speedToggle.Name = "speedToggle"
+speedToggle.Parent = Frame
+speedToggle.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+speedToggle.Position = UDim2.new(0, 0, 0.982456148, 0)
+speedToggle.Size = UDim2.new(0, 94, 0, 28)
+speedToggle.Font = Enum.Font.SourceSans
+speedToggle.Text = "سرعة: false"
+speedToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
+speedToggle.TextSize = 14.000
+
+-- إعدادات زر تفعيل القفز
+jumpToggle.Name = "jumpToggle"
+jumpToggle.Parent = Frame
+jumpToggle.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+jumpToggle.Position = UDim2.new(0.505263138, 0, 0.982456148, 0)
+jumpToggle.Size = UDim2.new(0, 94, 0, 28)
+jumpToggle.Font = Enum.Font.SourceSans
+jumpToggle.Text = "قفز: false"
+jumpToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
+jumpToggle.TextSize = 14.000
+
+-- تعديل حجم الإطار الرئيسي ليناسب الأزرار الجديدة
+Frame.Size = UDim2.new(0, 190, 0, 85)
+
+-- متغيرات للتحكم بحالة الأزرار
+local speedEnabled = false
+local jumpEnabled = false
+
+-- وظيفة زر الحذف
+delete.MouseButton1Down:connect(function()
+    main:Destroy()
+end)
+
+-- وظيفة زر تفعيل السرعة
+speedToggle.MouseButton1Down:connect(function()
+    speedEnabled = not speedEnabled
+    
+    if speedEnabled then
+        speedToggle.Text = "سرعة: true"
+        -- كود تفعيل السرعة
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.WalkSpeed = 50  -- يمكنك تعديل قيمة السرعة حسب الحاجة
+        end
+    else
+        speedToggle.Text = "سرعة: false"
+        -- كود إلغاء تفعيل السرعة
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.WalkSpeed = 16  -- إعادة السرعة الافتراضية
+        end
+    end
+end)
+
+-- وظيفة زر تفعيل القفز
+jumpToggle.MouseButton1Down:connect(function()
+    jumpEnabled = not jumpEnabled
+    
+    if jumpEnabled then
+        jumpToggle.Text = "قفز: true"
+        -- كود تفعيل القفز العالي
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.JumpPower = 100  -- يمكنك تعديل قيمة قوة القفز حسب الحاجة
+        end
+    else
+        jumpToggle.Text = "قفز: false"
+        -- كود إلغاء تفعيل القفز العالي
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.JumpPower = 50  -- إعادة قوة القفز الافتراضية
+        end
+    end
+end)
+
+-- إعادة تعيين عند إعادة تحميل الشخصية
+game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function(char)
+    wait(0.7)
+    
+    -- إعادة تطبيق الإعدادات إذا كانت مفعلة
+    local humanoid = char:WaitForChild("Humanoid")
+    
+    if speedEnabled then
+        humanoid.WalkSpeed = 50
+    else
+        humanoid.WalkSpeed = 16
+    end
+    
+    if jumpEnabled then
+        humanoid.JumpPower = 100
+    else
+        humanoid.JumpPower = 50
+    end
+end)
 
 speeds = 1
 
