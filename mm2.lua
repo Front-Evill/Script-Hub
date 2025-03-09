@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local RenderStepped = RunService.RenderStepped
@@ -449,7 +450,7 @@ local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    icon = "rbxassetid://116275519429821"  -- استبدل الرقم هنا
+    Icon = "rbxassetid://111125720813548"  -- استبدل الرقم هنا
 })
 
 --قسم ديسكورد
@@ -559,44 +560,99 @@ teleportTab:AddSection({
     Name = "teleport"
 })
 
--- قائمة منسدلة لاختيار لاعب للتنقل إليه
-local teleportDropdown = teleportTab:AddDropdown({
-    Name = "Select Player",
-    Options = GetPlayerList(),
-    Default = "None",
-    Flag = "teleportPlayerDropdown",
-    Callback = function(Value)
-        print("Selected Player for Teleport: " .. Value)
+local function TeleportToPlayer(playerName)
+    local targetPlayer = Players:FindFirstChild(playerName)
+    if not targetPlayer then
+        warn("اللاعب غير موجود: " .. playerName)
+        return false
     end
-})
 
--- تحديث قائمة اللاعبين كل 3 ثوانٍ
-spawn(function()
-    while wait(3) do
-        pcall(function()
-            teleportDropdown:Refresh(GetPlayerList())
-        end)
+    local targetCharacter = targetPlayer.Character
+    local localCharacter = LocalPlayer.Character
+
+    if not targetCharacter or not localCharacter then
+        warn("اللاعب أو الهدف غير موجود!")
+        return false
     end
-end)
 
--- زر التليبورت للاعب المحدد
+    local targetRoot = targetCharacter:FindFirstChild("HumanoidRootPart")
+    local localRoot = localCharacter:FindFirstChild("HumanoidRootPart")
+
+    if not targetRoot or not localRoot then
+        warn("جزء HumanoidRootPart غير موجود!")
+        return false
+    end
+
+    -- الانتقال السلس باستخدام Tween
+    local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)  -- مدة الانتقال: 2 ثانية
+    local tween = TweenService:Create(localRoot, tweenInfo, {CFrame = targetRoot.CFrame})
+    tween:Play()
+
+    tween.Completed:Wait()  -- انتظر حتى ينتهي الانتقال
+    return true
+end
+
+-- دالة لالتقاط المسدس المُسقط
+local function PickupDroppedGun()
+    local droppedGun = workspace:FindFirstChild("DroppedGun")  -- افترض أن المسدس المُسقط له اسم "DroppedGun"
+    if not droppedGun then
+        warn("لم يتم العثور على المسدس المُسقط!")
+        return false
+    end
+
+    local localCharacter = LocalPlayer.Character
+    if not localCharacter then
+        warn("الشخصية المحلية غير موجودة!")
+        return false
+    end
+
+    local humanoidRootPart = localCharacter:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then
+        warn("error")
+        return false
+    end
+
+    -- الانتقال إلى موقع المسدس
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)  -- مدة الانتقال: 1 ثانية
+    local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = droppedGun.CFrame})
+    tween:Play()
+
+    tween.Completed:Wait()  -- انتظر حتى ينتهي الانتقال
+
+    -- افترض أنك تريد إضافة المسدس إلى مخزون اللاعب
+    droppedGun:Destroy()  -- قم بإزالة المسدس من العالم
+    print("true")
+    return true
+end
+
+-- زر للانتقال إلى لاعب معين
 teleportTab:AddButton({
     Name = "Teleport to Selected Player",
     Callback = function()
         local selectedPlayerName = teleportDropdown.Value
         if selectedPlayerName and selectedPlayerName ~= "None" then
             if TeleportToPlayer(selectedPlayerName) then
-                print("Teleported to: " .. selectedPlayerName)
+                print("erorr: " .. selectedPlayerName)
             else
-                print("Failed to teleport to: " .. selectedPlayerName)
+                print("erorr: " .. selectedPlayerName)
             end
         else
-            print("No player selected for teleport")
+            print("erorr")
         end
     end
 })
 
--- زر للتنقل إلى المسدس المُسقط وأخذه
+-- زر لالتقاط المسدس المُسقط
+teleportTab:AddButton({
+    Name = "Pickup Dropped Gun",
+    Callback = function()
+        if PickupDroppedGun() then
+            print("تم التقاط المسدس بنجاح والعودة إلى الموقع الأصلي.")
+        else
+            print("فشل في التقاط المسدس.")
+        end
+    end
+})-- زر للتنقل إلى المسدس المُسقط وأخذه
 teleportTab:AddButton({
     Name = "Pickup Dropped Gun",
     Callback = function()
