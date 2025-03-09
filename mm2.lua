@@ -455,7 +455,7 @@ local window = redzlib:MakeWindow({
 --قسم ديسكورد
 local discordTab = window:MakeTab({
     Title = "acount fruit",
-    Icon = "rbxassetid://10747373176"
+    Icon = "rbxassetid://17079723166"
 })
 
 discordTab:AddSection({
@@ -465,8 +465,7 @@ discordTab:AddSection({
 discordTab:AddDiscordInvite({
     Name = "Join Our Community", -- نص الدعوة
     Logo = "rbxassetid://10709752906",
-    Invite = "https://discord.gg/vr7", -- رابط الدعوة الخاص بك
-    Desc = "Click to join our Discord server!" -- وصف صغير
+    Invite = "https://discord.gg/vr7" -- رابط الدعوة الخاص بك
 })
 
 discordTab:AddSection({
@@ -475,7 +474,7 @@ discordTab:AddSection({
 
 discordTab:AddDiscordInvite({
     Name = "Join Our Community", -- نص الدعوة
-    Logo = "rbxassetid://10709769508",
+    Logo = "rbxassetid://12089799843",
     Invite = "https://guns.lol/front_evill" -- رابط الدعوة الخاص بك
 })
 --نهايه
