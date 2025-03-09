@@ -542,7 +542,7 @@ local playerTab = window:MakeTab({
 })
 
 playerTab:AddSection({
-    Name = "jump & speed"
+    Name = "jump"
 })
 
 local infiniteJumpEnabled = false
@@ -620,6 +620,10 @@ playerTab:AddSlider({
             Humanoid.JumpPower = Value
         end
     end
+})
+
+playerTab:AddSection({
+    Name = "speed"
 })
 
 -- إضافة توغل لتفعيل زيادة السرعة
@@ -727,6 +731,43 @@ Players.LocalPlayer.CharacterAdded:Connect(function(Character)
         Humanoid.WalkSpeed = redzlib:GetFlag("speedValue")
     end
 end)
+
+playerTab:AddSection({
+    Name = "anemochin"
+})
+
+
+playerTab:AddButton({
+   Name = "Astronaut Animation",
+   Callback = function()
+       if not isAlive() then return end
+       local Animate = player.Character.Animate
+       Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=891621366"
+       Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=891633237"
+       Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=891667138"
+       Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=891636393"
+       Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=891627522"
+       Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=891609353"
+       Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=891617961"
+   end
+})
+
+playerTab:AddButton({
+   Name = "Superhero Animation",
+   Callback = function()
+       if not isAlive() then return end
+       local Animate = player.Character.Animate
+       Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616111295"
+       Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616113536"
+       Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616122287"
+       Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616117076"
+       Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616115533"
+       Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616104706"
+       Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616108001"
+   end
+})
+
+
 
 local settingsTab = window:MakeTab({
     Title = "seting",
