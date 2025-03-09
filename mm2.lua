@@ -449,13 +449,13 @@ local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    icon = "rbxassetid://10709752906"
+    icon = "rbxassetid://116275519429821"  -- استبدل الرقم هنا
 })
 
 --قسم ديسكورد
 local discordTab = window:MakeTab({
     Title = "acount fruit",
-    Icon = "rbxassetid://10709752906"
+    Icon = "rbxassetid://10747373176"
 })
 
 discordTab:AddSection({
@@ -483,7 +483,7 @@ discordTab:AddDiscordInvite({
 -- قسم رئيسي
 local mainTab = window:MakeTab({
     Title = "Main",
-    Icon = "rbxassetid://10709752906"
+    Icon = "rbxassetid://10723407389"
 })
 
 mainTab:AddSection({
@@ -553,7 +553,7 @@ mainTab:AddToggle({
 
 local teleportTab = window:MakeTab({
     Title = "Teleport",
-    Icon = "rbxassetid://10709752906"
+    Icon = "rbxassetid://10709811445"
 })
 
 teleportTab:AddSection({
@@ -611,7 +611,7 @@ teleportTab:AddButton({
 
 local playerTab = window:MakeTab({
     Title = "Player", -- اسم التبويب
-    Icon = "rbxassetid://10709752906" 
+    Icon = "rbxassetid://10747373426" 
 })
 
 playerTab:AddSection({
