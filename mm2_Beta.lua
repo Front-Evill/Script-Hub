@@ -7,6 +7,11 @@ local Player = Players.LocalPlayer
 local RenderStepped = RunService.RenderStepped
 local Heartbeat = RunService.Heartbeat
 
+-- Initialize required variables
+local playerRoleBoxes = {}
+local roleBoxesEnabled = false
+local targetedPlayers = {}
+
 --فنشكن
 
 local roleColors = {
@@ -14,6 +19,28 @@ local roleColors = {
     Sheriff = Color3.fromRGB(0, 0, 255),       -- أزرق للشرطي
     Innocent = Color3.fromRGB(0, 255, 0)       -- أخضر للمسالم
 }
+
+-- دالة التحقق من حالة اللعبة
+local function CheckGameState()
+    -- بسيطة للتحقق من حالة اللعبة
+    return "InGame" -- افتراضيًا سنفترض أن اللعبة جارية
+end
+
+-- دالة لمسح جميع مربعات الأدوار
+local function ClearAllRoleBoxes()
+    for playerName, box in pairs(playerRoleBoxes) do
+        if box and box.Parent then
+            box:Destroy()
+        end
+    end
+    playerRoleBoxes = {}
+end
+
+-- دالة حفظ الإعدادات
+local function SaveSettings()
+    -- حفظ الإعدادات في ملف أو في data store
+    print("Settings saved!")
+end
 
 local function DetectPlayerRole(player)
     local backpack = player.Backpack
@@ -98,7 +125,99 @@ local function CreateRoleBox(player, role)
     end)
 end
 
+-- دالة القضاء على لاعب محدد
+local function EliminatePlayer(playerName)
+    if targetedPlayers[playerName] then
+        return false -- تم استهداف اللاعب بالفعل
+    end
 
+    if TeleportToPlayer(playerName) then
+        -- تحديد اللاعب كمستهدف
+        targetedPlayers[playerName] = true
+
+        -- التحقق من تجهيز أداة القتل
+        local localPlayer = game.Players.LocalPlayer
+        local character = localPlayer.Character
+        local backpack = localPlayer.Backpack
+
+        local hasMurderWeapon = false
+        local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser"}
+
+        -- محاولة تجهيز سلاح القتل إذا لم يكن مجهزاً بالفعل
+        for _, itemName in pairs(murdererItems) do
+            if character and character:FindFirstChild(itemName) then
+                hasMurderWeapon = true
+                break
+            elseif backpack and backpack:FindFirstChild(itemName) then
+                backpack:FindFirstChild(itemName).Parent = character
+                hasMurderWeapon = true
+                break
+            end
+        end
+
+        if hasMurderWeapon then
+            -- محاكاة الهجوم
+            local virtualInputManager = game:GetService("VirtualInputManager")
+            virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+            wait(0.1)
+            virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+
+            return true
+        end
+    end
+    return false
+end
+
+-- دالة القضاء على جميع اللاعبين
+local function EliminateAllPlayers()
+    if not eliminationEnabled then
+        return 0, 0
+    end
+
+    local targetCount = 0
+    local successCount = 0
+
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and not targetedPlayers[player.Name] then
+            targetCount = targetCount + 1
+            if EliminatePlayer(player.Name) then
+                successCount = successCount + 1
+                wait(1) -- انتظار بين عمليات القتل لتجنب الكشف
+            end
+        end
+    end
+
+    return targetCount, successCount
+end
+
+-- دالة الانتقال إلى لاعب محدد
+local function TeleportToPlayer(playerName)
+    local player = game.Players:FindFirstChild(playerName)
+    local localPlayer = game.Players.LocalPlayer
+
+    if player and player.Character and localPlayer.Character then
+        local targetHRP = player.Character:FindFirstChild("HumanoidRootPart")
+        local localHRP = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+        if targetHRP and localHRP then
+            -- إضافة إزاحة بسيطة لتجنب الكشف
+            localHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
+            return true
+        end
+    end
+    return false
+end
+
+-- تحديث قائمة اللاعبين المتاحين للتنقل
+local function GetPlayerList()
+    local playerList = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    return playerList
+end
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/RedzLibV5/refs/heads/main/Source.lua"))()
 
@@ -191,79 +310,9 @@ mainTab:AddToggle({
     end
 })
 
---فنشكن خاصه ب قتل جميع
--- دالة القضاء على جميع اللاعبين
-local targetedPlayers = {}
-
-local function EliminateAllPlayers()
-    if not eliminationEnabled then
-        return false
-    end
-
-    local targetCount = 0
-    local successCount = 0
-
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and not targetedPlayers[player.Name] then
-            targetCount = targetCount + 1
-            if EliminatePlayer(player.Name) then
-                successCount = successCount + 1
-                wait(1) -- انتظار بين عمليات القتل لتجنب الكشف
-            end
-        end
-    end
-
-    return targetCount, successCount
-end
-
--- دالة القضاء على لاعب محدد
-local function EliminatePlayer(playerName)
-    if targetedPlayers[playerName] then
-        return false -- تم استهداف اللاعب بالفعل
-    end
-
-    if TeleportToPlayer(playerName) then
-        -- تحديد اللاعب كمستهدف
-        targetedPlayers[playerName] = true
-
-        -- التحقق من تجهيز أداة القتل
-        local localPlayer = game.Players.LocalPlayer
-        local character = localPlayer.Character
-        local backpack = localPlayer.Backpack
-
-        local hasMurderWeapon = false
-        local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser"}
-
-        -- محاولة تجهيز سلاح القتل إذا لم يكن مجهزاً بالفعل
-        for _, itemName in pairs(murdererItems) do
-            if character and character:FindFirstChild(itemName) then
-                hasMurderWeapon = true
-                break
-            elseif backpack and backpack:FindFirstChild(itemName) then
-                backpack:FindFirstChild(itemName).Parent = character
-                hasMurderWeapon = true
-                break
-            end
-        end
-
-        if hasMurderWeapon then
-            -- محاكاة الهجوم
-            local virtualInputManager = game:GetService("VirtualInputManager")
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-            wait(0.1)
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-
-            return true
-        end
-    end
-    return false
-end
---نهايه
-
 mainTab:AddSection({
     Name = " ...ESP... "
 })
-
 
 mainTab:AddToggle({
     Name = "ESP Player Boxes",
@@ -291,61 +340,10 @@ mainTab:AddToggle({
     end
 })
 
-
---فنشكن تنقل
--- دالة الانتقال إلى لاعب محدد
-local function TeleportToPlayer(playerName)
-    local player = game.Players:FindFirstChild(playerName)
-    local localPlayer = game.Players.LocalPlayer
-
-    if player and player.Character and localPlayer.Character then
-        local targetHRP = player.Character:FindFirstChild("HumanoidRootPart")
-        local localHRP = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-        if targetHRP and localHRP then
-            -- إضافة إزاحة بسيطة لتجنب الكشف
-            localHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
-            return true
-        end
-    end
-    return false
-end
-
--- دالة للانتقال إلى لاعب محدد
-local function TeleportToPlayer(playerName)
-    local player = game.Players:FindFirstChild(playerName)
-    local localPlayer = game.Players.LocalPlayer
-    
-    if player and player.Character and localPlayer.Character then
-        local targetHRP = player.Character:FindFirstChild("HumanoidRootPart")
-        local localHRP = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-        
-        if targetHRP and localHRP then
-            -- إضافة إزاحة بسيطة لتجنب الكشف
-            localHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
-            return true
-        end
-    end
-    return false
-end
-
--- تحديث قائمة اللاعبين المتاحين للتنقل
-local function GetPlayerList()
-    local playerList = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer then
-            table.insert(playerList, player.Name)
-        end
-    end
-    return playerList
-end
---نهايه
-
 local teleportTab = window:MakeTab({
     Title = "Teleport",
     Icon = "rbxassetid://10709752906"
 })
-
 
 teleportTab:AddSection({
     Name = "teleport"
@@ -387,9 +385,6 @@ teleportTab:AddButton({
         end
     end
 })
-
---فنشكن الانتقال ل ممسدس
-
 
 -- متغير لتخزين الموقع الأصلي للشخصية
 local originalPosition = nil
@@ -479,7 +474,6 @@ local function PickupDroppedGun()
     end
 end
 
---نهايه
 -- زر للتنقل إلى المسدس المُسقط وأخذه
 teleportTab:AddButton({
     Name = "Pickup Dropped Gun",
@@ -558,7 +552,7 @@ playerTab:AddToggle({
 })
 
 -- إضافة سلايدر للتحكم في قيمة قوة القفز
-palyerTab:AddSlider({
+playerTab:AddSlider({
     Name = "تعديل قوة القفز",
     Min = 50,
     Max = 250,
@@ -610,7 +604,7 @@ playerTab:AddToggle({
 })
 
 -- إضافة سلايدر للتحكم في قيمة السرعة
-palyerTab:AddSlider({
+playerTab:AddSlider({
     Name = "تعديل السرعة",
     Min = 16,
     Max = 150,
@@ -684,7 +678,6 @@ Players.LocalPlayer.CharacterAdded:Connect(function(Character)
     end
 end)
 
-
 local settingsTab = window:MakeTab({
     Title = "seting",
     Icon = "rbxassetid://10709810948"
@@ -728,7 +721,6 @@ settingsTab:AddButton({
     end
 })
 
-
 settingsTab:AddButton({
   Name = "Increase FPS",
   Callback = function()
@@ -762,52 +754,7 @@ settingsTab:AddButton({
       warn("All attempts to increase FPS failed.")
   end
 })
--- زر رفع جودة الرسوميات
-settingsTab:AddButton({
-  Name = "Improve Graphics",
-  Callback = function()
-      -- محاولة الطريقة الأولى: تغيير الجودة مباشرة إلى المستوى الأعلى
-      local success, errorMessage = pcall(function()
-          settings().Rendering.QualityLevel = "Level21"
-          print("Attempt 1: Graphics quality set to Level21.")
-      end)
 
-      if not success then
-          warn("Attempt 1 failed:", errorMessage)
-          -- الطريقة الثانية: زيادة الجودة تدريجيًا
-          local currentLevel = tonumber(settings().Rendering.QualityLevel:match("%d+")) or 1
-          while currentLevel < 21 do
-              currentLevel = currentLevel + 1
-              local newLevel = string.format("Level%02d", currentLevel)
-              local successStep, errorMessageStep = pcall(function()
-                  settings().Rendering.QualityLevel = newLevel
-                  print("Attempt 2: Graphics quality increased to", newLevel)
-              end)
-
-              if not successStep then
-                  warn("Attempt 2 failed at level", newLevel, ":", errorMessageStep)
-                  break
-              end
-          end
-
-          if currentLevel < 21 then
-              -- الطريقة الثالثة: إعادة الضبط إلى القيم الافتراضية
-              local successReset, errorMessageReset = pcall(function()
-                  settings().Rendering.QualityLevel = "Level01" -- إعادة الجودة إلى المستوى الأدنى
-                  print("Attempt 3: Reset graphics quality to default.")
-              end)
-
-              if not successReset then
-                  warn("Attempt 3 failed:", errorMessageReset)
-              else
-                  print("Graphics quality reset to default successfully.")
-              end
-          end
-      else
-          print("Graphics quality improved successfully!")
-      end
-  end
-})
 -- زر إزالة الضباب
 settingsTab:AddButton({
     Name = "Remove Fog",
@@ -821,6 +768,103 @@ settingsTab:AddButton({
     end
 })
 
+-- إضافة زر لتحسين الأداء العام
+settingsTab:AddButton({
+    Name = "Optimize Performance",
+    Callback = function()
+        -- تعطيل الظلال
+        pcall(function()
+            game.Lighting.GlobalShadows = false
+            print("Global shadows disabled")
+        end)
+        
+        -- تقليل جودة التفاصيل
+        pcall(function()
+            settings().Rendering.QualityLevel = 1
+            print("Rendering quality reduced")
+        end)
+        
+        -- إزالة الآثار البصرية
+        pcall(function()
+            for _, v in pairs(game.Lighting:GetChildren()) do
+                if v:IsA("BloomEffect") or v:IsA("BlurEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") then
+                    v.Enabled = false
+                end
+            end
+            print("Visual effects disabled")
+        end)
+        
+        -- تقليل المسافة المرئية
+        pcall(function()
+            game.Workspace.StreamingEnabled = true
+            settings().Rendering.StreamingEnabled = true
+            print("Streaming enabled")
+        end)
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "تحسين الأداء",
+            Text = "تم تحسين أداء اللعبة",
+            Duration = 3
+        })
+    end
+})
+
+-- إضافة قسم للإضاءة
+settingsTab:AddSection({
+    Name = "lighting"
+})
+
+-- إضافة زر لزيادة الإضاءة
+settingsTab:AddButton({
+    Name = "Increase Brightness",
+    Callback = function()
+        pcall(function()
+            game.Lighting.Brightness = 3 -- زيادة السطوع
+            game.Lighting.ClockTime = 14 -- وقت النهار
+            game.Lighting.Ambient = Color3.fromRGB(200, 200, 200) -- إضاءة محيطة أعلى
+            print("Brightness increased!")
+        end)
+    end
+})
+
+-- إضافة زر لتفعيل الوضع الليلي
+settingsTab:AddButton({
+    Name = "Night Mode",
+    Callback = function()
+        pcall(function()
+            game.Lighting.ClockTime = 0 -- وقت الليل
+            game.Lighting.Brightness = 0.5 -- خفض السطوع
+            game.Lighting.Ambient = Color3.fromRGB(50, 50, 80) -- إضاءة زرقاء
+            game.Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 80) -- إضاءة خارجية زرقاء
+            print("Night mode activated!")
+        end)
+    end
+})
+
+-- إضافة قسم للمميزات الأخرى
+settingsTab:AddSection({
+    Name = "other features"
+})
+
+-- إضافة زر لتنظيف الذاكرة
+settingsTab:AddButton({
+    Name = "Clean Memory",
+    Callback = function()
+        pcall(function()
+            for i = 1, 10 do
+                game:GetService("Debris"):AddItem(Instance.new("Frame"), 0)
+            end
+            collectgarbage("collect")
+            print("Memory cleaned!")
+        end)
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "تنظيف الذاكرة",
+            Text = "تم تنظيف الذاكرة بنجاح",
+            Duration = 3
+        })
+    end
+})
 
  -- حفظ الإعدادات تلقائيًا كل دقيقة
 spawn(function()
