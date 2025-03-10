@@ -21,5 +21,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ## Blox fruit tps blox strap
 
 ```luau
-loadstring(game:HttpGet("https://github.com/Front-Evill/Script-Hub/blob/main/Bloxfruit_strap.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Bloxfruit_strap.lua"))()
+```
+
+## Blox fruit sword zoro
+
+```luau
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Leg.lua"))()
 ```
