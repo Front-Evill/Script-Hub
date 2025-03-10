@@ -560,70 +560,27 @@ teleportTab:AddSection({
     Name = "teleport"
 })
 
-local function TeleportToPlayer(playerName)
-    local targetPlayer = Players:FindFirstChild(playerName)
-    if not targetPlayer then
-        warn("اللاعب غير موجود: " .. playerName)
-        return false
+local teleportDropdown = teleportTab:AddDropdown({
+    Name = "Select Player",
+    Default = "None",
+    Options = {"None"}, -- Will be updated with player names
+    Callback = function(Value)
+        -- Nothing to do here, just storing the selection
     end
+})
 
-    local targetCharacter = targetPlayer.Character
-    local localCharacter = LocalPlayer.Character
-
-    if not targetCharacter or not localCharacter then
-        warn("اللاعب أو الهدف غير موجود!")
-        return false
+-- Update player dropdown
+spawn(function()
+    while wait(5) do
+        local playerNames = {"None"}
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                table.insert(playerNames, player.Name)
+            end
+        end
+        teleportDropdown:Refresh(playerNames, true)
     end
-
-    local targetRoot = targetCharacter:FindFirstChild("HumanoidRootPart")
-    local localRoot = localCharacter:FindFirstChild("HumanoidRootPart")
-
-    if not targetRoot or not localRoot then
-        warn("جزء HumanoidRootPart غير موجود!")
-        return false
-    end
-
-    -- الانتقال السلس باستخدام Tween
-    local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)  -- مدة الانتقال: 2 ثانية
-    local tween = TweenService:Create(localRoot, tweenInfo, {CFrame = targetRoot.CFrame})
-    tween:Play()
-
-    tween.Completed:Wait()  -- انتظر حتى ينتهي الانتقال
-    return true
-end
-
--- دالة لالتقاط المسدس المُسقط
-local function PickupDroppedGun()
-    local droppedGun = workspace:FindFirstChild("DroppedGun")  -- افترض أن المسدس المُسقط له اسم "DroppedGun"
-    if not droppedGun then
-        warn("لم يتم العثور على المسدس المُسقط!")
-        return false
-    end
-
-    local localCharacter = LocalPlayer.Character
-    if not localCharacter then
-        warn("الشخصية المحلية غير موجودة!")
-        return false
-    end
-
-    local humanoidRootPart = localCharacter:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then
-        warn("error")
-        return false
-    end
-
-    -- الانتقال إلى موقع المسدس
-    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)  -- مدة الانتقال: 1 ثانية
-    local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = droppedGun.CFrame})
-    tween:Play()
-
-    tween.Completed:Wait()  -- انتظر حتى ينتهي الانتقال
-
-    -- افترض أنك تريد إضافة المسدس إلى مخزون اللاعب
-    droppedGun:Destroy()  -- قم بإزالة المسدس من العالم
-    print("true")
-    return true
-end
+end)
 
 -- زر للانتقال إلى لاعب معين
 teleportTab:AddButton({
@@ -632,12 +589,12 @@ teleportTab:AddButton({
         local selectedPlayerName = teleportDropdown.Value
         if selectedPlayerName and selectedPlayerName ~= "None" then
             if TeleportToPlayer(selectedPlayerName) then
-                print("erorr: " .. selectedPlayerName)
+                print("Teleported to: " .. selectedPlayerName)
             else
-                print("erorr: " .. selectedPlayerName)
+                print("Failed to teleport to: " .. selectedPlayerName)
             end
         else
-            print("erorr")
+            print("Please select a player first")
         end
     end
 })
@@ -650,16 +607,6 @@ teleportTab:AddButton({
             print("تم التقاط المسدس بنجاح والعودة إلى الموقع الأصلي.")
         else
             print("فشل في التقاط المسدس.")
-        end
-    end
-})-- زر للتنقل إلى المسدس المُسقط وأخذه
-teleportTab:AddButton({
-    Name = "Pickup Dropped Gun",
-    Callback = function()
-        if PickupDroppedGun() then
-            print("Successfully picked up the dropped gun and returned to the original position.")
-        else
-            print("Failed to pick up the dropped gun.")
         end
     end
 })
