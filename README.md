@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ## fly script (true)
 
 ```luau
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/fly.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
 ```
 
 ## mm2 script (BETA) 
