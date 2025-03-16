@@ -8,26 +8,6 @@ local Player = Players.LocalPlayer
 local RenderStepped = RunService.RenderStepped
 local Heartbeat = RunService.Heartbeat
 
-
-function Main:AddImage(Configs)
-    local ImageName = Configs[1] or Configs.Name or Configs.Title or "Image"
-    local ImageDesc = Configs[2] or Configs.Desc or Configs.Description or ""
-    local ImageAsset = Configs[3] or Configs.Asset or "Frontimg" -- افتراضيًا، استخدم الصورة التي أضفتها
-
-    local Button, LabelFunc = ButtonFrame(Container, ImageName, ImageDesc, UDim2.new(1, -180))
-    local ImageFrame = InsertTheme(Create("Frame", Button, {Size = UDim2.new(0, 150, 0, 18), Position = UDim2.new(1, -10, 0.5), AnchorPoint = Vector2.new(1, 0.5), BackgroundColor3 = Theme["Color Stroke"]}), "Stroke")
-    Make("Corner", ImageFrame, UDim.new(0, 4))
-
-    local ImageLabel = InsertTheme(Create("ImageLabel", ImageFrame, {Size = UDim2.new(0.85, 0, 0.85, 0), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1, Image = redzlib.Assets[ImageAsset]}), "Text")
-
-    local Image = {}
-    function Image:Destroy()
-        Button:Destroy()
-    end
-
-    return Image
-end
-
 -- Initialize required variables
 local playerRoleBoxes = {}
 local roleBoxesEnabled = false
