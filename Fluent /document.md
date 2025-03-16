@@ -17,3 +17,38 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
 })
 ```
+
+## Tab
+```lua
+-- Fluent provides Lucide Icons, they are optional
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+```
+### section 
+
+```lua
+local Section = Tab:AddSection("Section Name")
+Section:AddParagraph({
+    Title = "Paragraph"
+})
+```
+### Notifications
+
+```lua
+Fluent:Notify({
+        Title = "Notification",
+        Content = "This is a notification",
+        SubContent = "SubContent", -- Optional
+        Duration = 5 -- Set to nil to make the notification not disappear
+})
+```
+### Paragraphs
+
+```lua
+Tab:AddParagraph({
+    Title = "Paragraph",
+    Content = "This is a paragraph.\nSecond line!"
+})
+```
