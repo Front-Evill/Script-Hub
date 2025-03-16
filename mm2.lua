@@ -324,18 +324,12 @@ end)
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/RedzLibV5/refs/heads/main/Source.lua"))()
 
-local MinimizeButton = SetProps(CloseButton:Clone(), {
-		Position = UDim2.new(1, -35, 0.5),
-		Image = "rbxassetid://73031703958632",
-		Name = "Minimize"
-	})
-
 -- تعريف النافذة الرئيسية
 local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    Decal = "rbxassetid://111125720813548"  -- استبدل الرقم هنا
+    TIcon = "rbxassetid://73031703958632"  -- استبدل الرقم هنا
 })
 
 --قسم ديسكورد
