@@ -882,7 +882,8 @@ local redzlib = {
 			["xoctagon"] = "rbxassetid://10747384037",
 			["xsquare"] = "rbxassetid://10747384217",
 			["zoomin"] = "rbxassetid://10747384552",
-			["zoomout"] = "rbxassetid://10747384679"
+			["zoomout"] = "rbxassetid://10747384679",
+			["Frontimg"] = "rbxassetid://73031703958632",
 		}
 	end)()
 }
