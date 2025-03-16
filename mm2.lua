@@ -329,7 +329,7 @@ local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    TIcon = "rbxassetid://73031703958632"  -- استبدل الرقم هنا
+    Image = "rbxassetid://73031703958632"  -- استبدل الرقم هنا
 })
 
 --قسم ديسكورد
