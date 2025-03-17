@@ -82,7 +82,7 @@ local Tabs = {
 local toggleBtn, removeToggleBtn = createToggleButton()
 
 -- إضافة زر لحذف الواجهة والزر في تبويب الإعدادات
-Tabs.Settings:AddButton({
+Tabs.Main:AddButton({
     Title = "حذف الواجهة والزر",
     Description = "حذف واجهة Fluent وزر التبديل معاً",
     Callback = function()
