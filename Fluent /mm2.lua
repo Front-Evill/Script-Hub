@@ -1,4 +1,3 @@
--- تحميل مكتبة Fluent
 local Library = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 -- إنشاء النافذة الرئيسية
@@ -12,20 +11,42 @@ local Window = Library:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- إنشاء زر صورة REDZ
+-- إنشاء زر صورة REDZ بشكل دائري في وسط أعلى الشاشة
 local function createRedzButton()
     -- إنشاء الزر
     local imageButton = Instance.new("ImageButton")
-    imageButton.Position = UDim2.new(1, -60, 0, 20) -- الزاوية اليمنى العليا
-    imageButton.Size = UDim2.new(0, 50, 0, 50)
+    imageButton.Position = UDim2.new(0.5, -20, 0, 10) -- وسط أعلى الشاشة
+    imageButton.Size = UDim2.new(0, 40, 0, 40) -- حجم أصغر قليلاً
     imageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     imageButton.BorderSizePixel = 0
     imageButton.Image = "rbxassetid://73031703958632" -- استبدل برقم معرف الصورة الخاصة بك
     imageButton.ScaleType = Enum.ScaleType.Fit
     imageButton.Parent = game:GetService("CoreGui")
     
+    -- جعل الزر دائري
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0) -- نصف القطر 1 يجعل الشكل دائري تماماً
+    UICorner.Parent = imageButton
+    
+    -- إضافة تأثير عند تحريك الماوس فوق الزر
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    UIStroke.Thickness = 2
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Parent = imageButton
+    UIStroke.Transparency = 1 -- غير مرئي بشكل افتراضي
+    
     -- متغير لتتبع حالة النافذة
     local windowVisible = true
+    
+    -- عملية تحريك الماوس فوق الزر
+    imageButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+    end)
+    
+    imageButton.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
+    end)
     
     -- عملية النقر على الزر
     imageButton.MouseButton1Click:Connect(function()
@@ -53,8 +74,8 @@ end
 
 -- إنشاء التبويبات والمحتوى في النافذة
 local Tabs = {
-    Main = Window:AddTab({ Title = "الرئيسية", Icon = "rbxassetid://ICON_ID" }),
-    Settings = Window:AddTab({ Title = "الإعدادات", Icon = "rbxassetid://ICON_ID" })
+    Main = Window:AddTab({ Title = "الرئيسية", Icon = "rbxassetid://73031703958632" }),
+    Settings = Window:AddTab({ Title = "الإعدادات", Icon = "rbxassetid://73031703958632" })
 }
 
 -- إضافة بعض المحتوى للنافذة
