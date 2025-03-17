@@ -72,6 +72,10 @@ end
 -- إنشاء التبويبات
 local Tabs = {
     Main = Window:AddTab({ Title = "main", Icon = "rbxassetid://103167069627270" })
+    Teleport = Window:AddTab({ Title = "main", Icon = "rbxassetid://139926030461" })
+    Player = Window:AddTab({ Title = "main", Icon = "rbxassetid://112831378967496" })
+    Esp = Window:AddTab({ Title = "main", Icon = "rbxassetid://103167069627270" })
+	server = Window:AddTab({ Title = "main", Icon = "rbxassetid://93989683556149" })
 }
 
 -- إضافة محتوى للتبويب الرئيسي
