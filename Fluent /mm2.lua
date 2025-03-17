@@ -1,5 +1,8 @@
 local Library = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
+-- تخزين مرجع للواجهة الرئيسية
+local fluentInterface = nil
+
 -- إنشاء النافذة الرئيسية
 local Window = Library:CreateWindow({
     Title = "Fluent " .. Library.Version,
@@ -11,81 +14,104 @@ local Window = Library:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- إنشاء زر صورة REDZ بشكل دائري في وسط أعلى الشاشة
-local function createRedzButton()
+
+--كل ما يخص الصوره 
+
+
+-- حفظ مرجع الواجهة
+fluentInterface = Window
+
+-- إنشاء زر التبديل
+local function createToggleButton()
+    -- إنشاء ScreenGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ToggleButtonGui"
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.DisplayOrder = 9999
+    
+    -- محاولة وضع الـ ScreenGui في الأصل المناسب
+    pcall(function() screenGui.Parent = game:GetService("CoreGui") end)
+    if not screenGui.Parent then
+        pcall(function() screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end)
+    end
+    
     -- إنشاء الزر
-    local imageButton = Instance.new("ImageButton")
-    imageButton.Position = UDim2.new(0.5, -20, 0, 10) -- وسط أعلى الشاشة
-    imageButton.Size = UDim2.new(0, 40, 0, 40) -- حجم أصغر قليلاً
-    imageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    imageButton.BorderSizePixel = 0
-    imageButton.Image = "rbxassetid://73031703958632" -- استبدل برقم معرف الصورة الخاصة بك
-    imageButton.ScaleType = Enum.ScaleType.Fit
-    imageButton.Parent = game:GetService("CoreGui")
-    
-    -- جعل الزر دائري
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(1, 0) -- نصف القطر 1 يجعل الشكل دائري تماماً
-    UICorner.Parent = imageButton
-    
-    -- إضافة تأثير عند تحريك الماوس فوق الزر
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    UIStroke.Thickness = 2
-    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke.Parent = imageButton
-    UIStroke.Transparency = 1 -- غير مرئي بشكل افتراضي
+    local toggleButton = Instance.new("ImageButton")
+    toggleButton.Size = UDim2.new(0, 40, 0, 40)
+    toggleButton.Position = UDim2.new(0.5, -20, 0, 3) -- وضع أعلى أكثر
+    toggleButton.BackgroundTransparency = 1
+    toggleButton.Image = "rbxassetid://73031703958632"
+    toggleButton.ZIndex = 10
+    toggleButton.Parent = screenGui
     
     -- متغير لتتبع حالة النافذة
     local windowVisible = true
     
-    -- عملية تحريك الماوس فوق الزر
-    imageButton.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
-    end)
-    
-    imageButton.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.3), {Transparency = 1}):Play()
-    end)
-    
-    -- عملية النقر على الزر
-    imageButton.MouseButton1Click:Connect(function()
+    -- وظيفة النقر على الزر
+    toggleButton.MouseButton1Click:Connect(function()
         windowVisible = not windowVisible
-        -- فتح أو إغلاق النافذة
         if windowVisible then
-            Library:Notify({
-                Title = "فتح الواجهة",
-                Content = "تم فتح الواجهة",
-                Duration = 2
-            })
             Window:Show()
         else
-            Library:Notify({
-                Title = "إغلاق الواجهة",
-                Content = "تم إغلاق الواجهة",
-                Duration = 2
-            })
             Window:Hide()
         end
     end)
     
-    return imageButton
+    -- دالة حذف الزر
+    local function removeButton()
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end
+    
+    return toggleButton, removeButton
 end
+--نهايه
 
--- إنشاء التبويبات والمحتوى في النافذة
+-- إنشاء التبويبات
 local Tabs = {
-    Main = Window:AddTab({ Title = "الرئيسية", Icon = "rbxassetid://73031703958632" }),
-    Settings = Window:AddTab({ Title = "الإعدادات", Icon = "rbxassetid://73031703958632" })
+    Main = Window:AddTab({ Title = "main", Icon = "rbxassetid://103167069627270" })
 }
 
--- إضافة بعض المحتوى للنافذة
+-- إضافة محتوى للتبويب الرئيسي
 Tabs.Main:AddButton({
     Title = "زر تجريبي",
     Description = "هذا زر تجريبي",
     Callback = function()
-        print("تم النقر على الزر")
+        -- ترك فارغ لتجنب الطباعة
     end
 })
 
--- استخدام الدالة لإنشاء زر REDZ
-local redzBtn = createRedzButton()
+-- استخدام دالة إنشاء الزر
+local toggleBtn, removeToggleBtn = createToggleButton()
+
+-- إضافة زر لحذف الواجهة والزر في تبويب الإعدادات
+Tabs.Settings:AddButton({
+    Title = "حذف الواجهة والزر",
+    Description = "حذف واجهة Fluent وزر التبديل معاً",
+    Callback = function()
+        -- حذف زر التبديل أولاً
+        if removeToggleBtn then
+            removeToggleBtn()
+        end
+        
+        -- ثم حذف واجهة Fluent
+        pcall(function()
+            if fluentInterface then
+                fluentInterface:Destroy()
+            end
+        end)
+    end
+})
+
+-- إضافة خيار لإظهار/إخفاء الزر
+Tabs.Settings:AddToggle({
+    Title = "إظهار/إخفاء زر التبديل",
+    Default = true,
+    Callback = function(Value)
+        if toggleBtn then
+            toggleBtn.Visible = Value
+        end
+    end
+})
