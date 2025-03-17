@@ -78,15 +78,6 @@ local Tabs = {
     Server = Window:AddTab({ Title = "Server", Icon = "rbxassetid://93989683556149"   })
 }
 
--- إضافة محتوى للتبويب الرئيسي
-Tabs.Main:AddButton({
-    Title = "زر تجريبي",
-    Description = "هذا زر تجريبي",
-    Callback = function()
-        -- ترك فارغ لتجنب الطباعة
-    end
-})
-
 -- استخدام دالة إنشاء الزر
 local toggleBtn, removeToggleBtn = createToggleButton()
 
