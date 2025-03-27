@@ -4,62 +4,86 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 
-local Player = Players.LocalPlayer
-local RenderStepped = RunService.RenderStepped
-local Heartbeat = RunService.Heartbeat
+-- تحميل المكتبة
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/redz/Source.lua"))()
 
--- Initialize required variables
-local playerRoleBoxes = {}
+-- المتغيرات الأساسية
+local Player = Players.LocalPlayer
 local roleBoxesEnabled = false
 local targetedPlayers = {}
 
---فنشكن
-
+-- ألوان الأدوار
 local roleColors = {
     Murderer = Color3.fromRGB(255, 0, 0),      -- أحمر للقاتل
     Sheriff = Color3.fromRGB(0, 0, 255),       -- أزرق للشرطي
     Innocent = Color3.fromRGB(0, 255, 0)       -- أخضر للمسالم
 }
 
--- دالة التحقق من حالة اللعبة
-local function CheckGameState()
-    -- بسيطة للتحقق من حالة اللعبة
-    return "InGame" -- افتراضيًا سنفترض أن اللعبة جارية
-end
-
--- Function to automatically detect player roles
-local function AutoDetectPlayerRoles()
-    if not roleBoxesEnabled then return end
+-- تحسين دالة البحث عن السيف
+local function FindKnifeInBackpack()
+    local player = Players.LocalPlayer
+    local backpack = player.Backpack
     
-    for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-        if player ~= game.Players.LocalPlayer then
-            local role = DetectPlayerRole(player)
-            if role then
-                CreateRoleBox(player, role)
-            end
+    -- قائمة محدثة بأسماء السكاكين
+    local knives = {
+        "Knife", "Blade", "Darkblade", "Chroma", "Corrupt", 
+        "Slasher", "Laser", "Dagger", "Claw", "Scythe", "Sickle"
+    }
+    
+    for _, knifeName in ipairs(knives) do
+        local knife = backpack:FindFirstChild(knifeName)
+        if knife then
+            knife.Parent = player.Character
+            return true, knifeName
         end
     end
+    
+    return false, nil
 end
 
-local function ClearAllRoleBoxes()
-    for playerName, boxInfo in pairs(playerRoleBoxes) do
-        if boxInfo.box and boxInfo.box.Parent then
-            boxInfo.box:Destroy()
-        end
-        if boxInfo.label and boxInfo.label.Parent then
-            boxInfo.label:Destroy()
+-- دالة لسحب جميع اللاعبين للمكان نفسه
+local function PullAllPlayersToMe()
+    local localPlayer = Players.LocalPlayer
+    local localCharacter = localPlayer.Character
+    
+    if not localCharacter or not localCharacter:FindFirstChild("HumanoidRootPart") then
+        print("يجب أن تكون حياً لسحب اللاعبين")
+        return false
+    end
+    
+    local pullPosition = localCharacter.HumanoidRootPart.CFrame
+    
+    -- عدد اللاعبين الذين تمت معالجتهم
+    local pulledPlayers = 0
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local playerCharacter = player.Character
+            local humanoidRootPart = playerCharacter:FindFirstChild("HumanoidRootPart")
+            
+            -- استخدام TweenService للنقل السلس
+            local tweenInfo = TweenInfo.new(
+                0.5,  -- وقت النقل
+                Enum.EasingStyle.Sine,  -- نمط التحرك
+                Enum.EasingDirection.Out,
+                0,  -- عدد التكرارات
+                false,  -- عكس الحركة
+                0  -- تأخير قبل البدء
+            )
+            
+            local tween = TweenService:Create(humanoidRootPart, tweenInfo, {
+                CFrame = pullPosition * CFrame.new(math.random(-3, 3), 0, math.random(-3, 3))
+            })
+            
+            tween:Play()
+            pulledPlayers = pulledPlayers + 1
         end
     end
-    playerRoleBoxes = {}
+    
+    return pulledPlayers > 0, pulledPlayers
 end
 
--- دالة حفظ الإعدادات
-local function SaveSettings()
-    -- حفظ الإعدادات في ملف أو في data store
-    print("Settings saved!")
-end
-
--- Improved DetectPlayerRole function with more comprehensive detection
+-- دالة كشف دور اللاعب
 local function DetectPlayerRole(player)
     local backpack = player.Backpack
     local character = player.Character
@@ -68,11 +92,11 @@ local function DetectPlayerRole(player)
         return nil
     end
     
-    -- More comprehensive weapon lists
+    -- قوائم الأسلحة المحدثة
     local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser", "Dagger", "Claw", "Scythe", "Sickle"}
     local sheriffItems = {"Gun", "Revolver", "Pistol", "Luger", "Blaster", "Deagle", "Sheriff", "Glock", "Handgun"}
     
-    -- Check both character and backpack for items
+    -- دالة فرعية للبحث عن العناصر
     local function checkForItems(container, itemList)
         if not container then return false end
         
@@ -86,12 +110,12 @@ local function DetectPlayerRole(player)
         return false
     end
     
-    -- Check for murder weapons in character or backpack
+    -- التحقق من وجود سلاح القاتل
     if checkForItems(character, murdererItems) or checkForItems(backpack, murdererItems) then
         return "Murderer"
     end
     
-    -- Check for sheriff weapons in character or backpack
+    -- التحقق من وجود سلاح الشريف
     if checkForItems(character, sheriffItems) or checkForItems(backpack, sheriffItems) then
         return "Sheriff"
     end
@@ -99,10 +123,12 @@ local function DetectPlayerRole(player)
     return "Innocent"
 end
 
--- Improved ESP function to work better with role detection
+-- إنشاء صندوق ESP للاعبين
+local playerRoleBoxes = {}
+
 local function CreateRoleBox(player, role)
     if player == game.Players.LocalPlayer then
-        return -- Ignore local player
+        return
     end
     
     local character = player.Character
@@ -110,7 +136,7 @@ local function CreateRoleBox(player, role)
         return
     end
     
-    -- Remove previous box if exists
+    -- إزالة الصندوق السابق إن وجد
     if playerRoleBoxes[player.Name] then
         if playerRoleBoxes[player.Name].box and playerRoleBoxes[player.Name].box.Parent then
             playerRoleBoxes[player.Name].box:Destroy()
@@ -125,15 +151,13 @@ local function CreateRoleBox(player, role)
         return
     end
     
-    -- Get character size
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     
-    if not humanoid or not rootPart then
+    if not rootPart then
         return
     end
     
-    -- Create ESP box
+    -- إنشاء صندوق ESP
     local box = Instance.new("BoxHandleAdornment")
     box.Name = "RoleBox_" .. player.Name
     box.Adornee = rootPart
@@ -142,12 +166,12 @@ local function CreateRoleBox(player, role)
     box.Transparency = 0.5
     box.Color3 = roleColors[role] or Color3.fromRGB(255, 255, 255)
     
-    -- Calculate box size to fit character
+    -- حساب حجم الصندوق
     local characterSize = character:GetExtentsSize()
     box.Size = characterSize * 1.05
     box.Parent = rootPart
     
-    -- Add player name and role label
+    -- إضافة ملصق باسم اللاعب والدور
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "PlayerLabel_" .. player.Name
     billboard.Adornee = rootPart
@@ -167,22 +191,22 @@ local function CreateRoleBox(player, role)
     nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     nameLabel.Parent = billboard
     
-    -- Store box and label for later reference
+    -- حفظ الصندوق والملصق للرجوع إليهما لاحقًا
     playerRoleBoxes[player.Name] = {
         box = box,
         label = billboard
     }
     
-    -- Ensure box visibility through walls with continuous updates
+    -- التأكد من ظهور الصندوق عبر الجدران
     spawn(function()
         while wait(0.1) do
             if roleBoxesEnabled and box and box.Parent and character and character.Parent then
-                -- Check distance and adjust transparency
+                -- التحقق من المسافة وتعديل الشفافية
                 local distance = (rootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
                 local transparency = math.clamp(distance / 100, 0.3, 0.8)
                 box.Transparency = transparency
                 
-                -- Update box size if character size changes
+                -- تحديث حجم الصندوق
                 local newSize = character:GetExtentsSize()
                 box.Size = newSize * 1.05
             else
@@ -201,206 +225,73 @@ local function CreateRoleBox(player, role)
     end)
 end
 
--- دالة القضاء على لاعب محدد
-local function EliminatePlayer(playerName)
-    if targetedPlayers[playerName] then
-        return false -- تم استهداف اللاعب بالفعل
-    end
-
-    if TeleportToPlayer(playerName) then
-        -- تحديد اللاعب كمستهدف
-        targetedPlayers[playerName] = true
-
-        -- التحقق من تجهيز أداة القتل
-        local localPlayer = game.Players.LocalPlayer
-        local character = localPlayer.Character
-        local backpack = localPlayer.Backpack
-
-        local hasMurderWeapon = false
-        local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser"}
-
-        -- محاولة تجهيز سلاح القتل إذا لم يكن مجهزاً بالفعل
-        for _, itemName in pairs(murdererItems) do
-            if character and character:FindFirstChild(itemName) then
-                hasMurderWeapon = true
-                break
-            elseif backpack and backpack:FindFirstChild(itemName) then
-                backpack:FindFirstChild(itemName).Parent = character
-                hasMurderWeapon = true
-                break
-            end
+-- دالة مسح جميع صناديق الأدوار
+local function ClearAllRoleBoxes()
+    for playerName, boxInfo in pairs(playerRoleBoxes) do
+        if boxInfo.box and boxInfo.box.Parent then
+            boxInfo.box:Destroy()
         end
-
-        if hasMurderWeapon then
-            -- محاكاة الهجوم
-            local virtualInputManager = game:GetService("VirtualInputManager")
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-            wait(0.1)
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-
-            return true
+        if boxInfo.label and boxInfo.label.Parent then
+            boxInfo.label:Destroy()
         end
     end
-    return false
+    playerRoleBoxes = {}
 end
 
--- دالة القضاء على جميع اللاعبين
-local function EliminateAllPlayers()
-    local targetCount = 0
-    local successCount = 0
-
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and not targetedPlayers[player.Name] then
-            targetCount = targetCount + 1
-            if EliminatePlayer(player.Name) then
-                successCount = successCount + 1
-                wait(1) -- انتظار بين عمليات القتل لتجنب الكشف
-            end
-        end
-    end
-
-    return targetCount, successCount
-end
-
--- دالة الانتقال إلى لاعب محدد
--- Function to apply character skin
-local function applyCharacterSkin(characterId)
-    if not isAlive() then 
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Character Skin",
-            Text = "You need to be alive to change skins",
-            Duration = 3
-        })
-        return false
-    end
-    
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    
-    -- Save current position and properties
-    local position = character:GetPrimaryPartCFrame()
-    local health = character.Humanoid.Health
-    local walkSpeed = character.Humanoid.WalkSpeed
-    local jumpPower = character.Humanoid.JumpPower
-    
-    -- Create a new character model
-    local newCharacter = game:GetObjects("rbxassetid://" .. characterId)[1]
-    if not newCharacter then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Character Skin",
-            Text = "Failed to load character skin",
-            Duration = 3
-        })
-        return false
-    end
-    
-    -- Parent the new character to workspace and set up
-    newCharacter.Parent = workspace
-    player.Character = newCharacter
-    
-    -- Setup new character
-    newCharacter:SetPrimaryPartCFrame(position)
-    newCharacter.Humanoid.Health = health
-    newCharacter.Humanoid.WalkSpeed = walkSpeed
-    newCharacter.Humanoid.JumpPower = jumpPower
-    
-    -- Clean up old character
-    character:Destroy()
-    
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Character Skin",
-        Text = "Character skin applied",
-        Duration = 3
-    })
-    return true
-end
-
--- Run auto detection every few seconds
-spawn(function()
-    while wait(3) do
-        pcall(AutoDetectPlayerRoles)
-    end
-end)
-
-local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/redz/Source.lua"))()
-
--- تعريف النافذة الرئيسية
+-- إنشاء النافذة الرئيسية
 local window = redzlib:MakeWindow({
     Name = "Script Mm2",
     SubTitle = "by Front_9",
     SaveFolder = "",
-    Image = "rbxassetid://73031703958632"  -- استبدل الرقم هنا
+    Image = "rbxassetid://73031703958632"
 })
 
---قسم ديسكورد
-local discordTab = window:MakeTab({
-    Title = "acount fruit",
-    Icon = "rbxassetid://17079723166"
-})
-
-discordTab:AddSection({
-    Name = " ... Discord... "
-})
-
-discordTab:AddDiscordInvite({
-    Name = "Join Our Community", -- نص الدعوة
-    Logo = "rbxassetid://10709752906",
-    Invite = "https://discord.gg/vr7" -- رابط الدعوة الخاص بك
-})
-
-discordTab:AddSection({
-    Name = " ...guns.lol... "
-})
-
-discordTab:AddDiscordInvite({
-    Name = "Join Our Community", -- نص الدعوة
-    Logo = "rbxassetid://12089799843",
-    Invite = "https://guns.lol/front_evill" -- رابط الدعوة الخاص بك
-})
---نهايه
-
--- قسم رئيسي
+-- القسم الرئيسي
 local mainTab = window:MakeTab({
     Title = "Main",
     Icon = "rbxassetid://10723407389"
 })
 
 mainTab:AddSection({
-    Name = " ...fly... "
+    Name = " ...Auto Kill... "
 })
 
+-- زر القتل المتقدم
 mainTab:AddButton({
-    Name = "Activate Flight Script", -- اسم الزر
-    Desc = "Click to activate the flight script", -- وصف الزر
+    Name = "Advanced Kill All",
+    Desc = "Find knife and pull all players to you",
     Callback = function()
-        -- هنا يتم تنفيذ سكربت الطيران
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/PROG-404/front-script/refs/heads/main/Source.lua"))()
-        print("Flight script activated!") -- رسالة تأكيد في الكونسول
-    end
-})
-
-mainTab:AddSection({
-    Name = " ...Auto win... "
-})
-
--- Added button instead of toggle for elimination
-mainTab:AddButton({
-    Name = "Eliminate All Players",
-    Desc = "Attempt to eliminate all players in the game",
-    Callback = function()
-        local targetCount, successCount = EliminateAllPlayers()
-        if targetCount == 0 then
-            print("No targets found.")
+        -- محاولة العثور على سكين أولاً
+        local knifeFound, knifeName = FindKnifeInBackpack()
+        
+        if not knifeFound then
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Auto Elimination",
-                Text = "No targets found.",
+                Title = "Auto Kill",
+                Text = "No knife found in backpack!",
                 Duration = 3
             })
-        else
-            print("Attempted to eliminate " .. targetCount .. " players. Successfully eliminated " .. successCount .. " players.")
+            return
+        end
+        
+        -- سحب جميع اللاعبين
+        local success, playersPulled = PullAllPlayersToMe()
+        
+        if success then
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Auto Elimination",
-                Text = "Eliminated " .. successCount .. "/" .. targetCount .. " players.",
+                Title = "Auto Kill",
+                Text = "Pulled " .. playersPulled .. " players with " .. knifeName .. "!",
+                Duration = 3
+            })
+            
+            -- محاكاة الهجوم بعد سحب اللاعبين
+            local virtualInputManager = game:GetService("VirtualInputManager")
+            virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+            wait(0.1)
+            virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+        else
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Auto Kill",
+                Text = "Failed to pull players!",
                 Duration = 3
             })
         end
@@ -671,296 +562,6 @@ playerTab:AddButton({
     end
 })
 
--- إضافة قسم المشيات
-playerTab:AddSection({
-    Name = "Animations"
-})
-
-playerTab:AddButton({
-    Name = "Astronaut Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=891621366"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=891633237"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=891667138"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=891636393"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=891627522"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=891609353"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=891617961"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Astronaut Animation applied",
-            Duration = 3
-        })
-    end
-})
-
-playerTab:AddButton({
-    Name = "Superhero Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616111295"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616113536"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616122287"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616117076"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616115533"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616104706"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616108001"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Superhero Animation applied",
-            Duration = 3
-        })
-    end
-})
-
--- Add more popular animations
-playerTab:AddButton({
-    Name = "Zombie Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616158929"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616160636"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616168032"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616163682"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616161997"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616156119"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616157476"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Zombie Animation applied",
-            Duration = 3
-        })
-    end
-})
-
-playerTab:AddButton({
-    Name = "Ninja Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=656117400"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=656118341"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=656121766"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=656118852"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=656117878"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=656114359"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=656115606"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Ninja Animation applied",
-            Duration = 3
-        })
-    end
-})
-
-playerTab:AddButton({
-    Name = "Robot Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616088211"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616089559"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616095330"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616091570"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616090535"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616086039"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616087089"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Robot Animation applied",
-            Duration = 3
-        })
-    end
-})
-
-playerTab:AddButton({
-    Name = "Stylish Animation",
-    Callback = function()
-        if not isAlive() then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation",
-                Text = "You need to be alive to use animations",
-                Duration = 3
-            })
-            return 
-        end
-        
-        local Animate = game.Players.LocalPlayer.Character.Animate
-        Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616136790"
-        Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616138447"
-        Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616146177"
-        Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616140816"
-        Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616139451"
-        Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616133594"
-        Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616134815"
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation",
-            Text = "Stylish Animation applied",
-            Duration = 3
-        })
-    end
-})
-
--- Add new Character Skins section
-playerTab:AddSection({
-    Name = "Character Skins"
-})
-
--- Function to apply character skin
-local function applyCharacterSkin(characterId)
-    if not isAlive() then 
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Character Skin",
-            Text = "You need to be alive to change skins",
-            Duration = 3
-        })
-        return false
-    end
-    
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    
-    -- Save current position and properties
-    local position = character:GetPrimaryPartCFrame()
-    local health = character.Humanoid.Health
-    local walkSpeed = character.Humanoid.WalkSpeed
-    local jumpPower = character.Humanoid.JumpPower
-    
-    -- Create a new character model
-    local newCharacter = game:GetObjects("rbxassetid://" .. characterId)[1]
-    if not newCharacter then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Character Skin",
-            Text = "Failed to load character skin",
-            Duration = 3
-        })
-        return false
-    end
-    
-    -- Parent the new character to workspace and set up
-    newCharacter.Parent = workspace
-    player.Character = newCharacter
-    
-    -- Setup new character
-    newCharacter:SetPrimaryPartCFrame(position)
-    newCharacter.Humanoid.Health = health
-    newCharacter.Humanoid.WalkSpeed = walkSpeed
-    newCharacter.Humanoid.JumpPower = jumpPower
-    
-    -- Clean up old character
-    character:Destroy()
-    
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Character Skin",
-        Text = "Character skin applied",
-        Duration = 3
-    })
-    return true
-end
-
--- Add popular character skins
-playerTab:AddButton({
-    Name = "Noob Skin",
-    Callback = function()
-        applyCharacterSkin("1117652448") -- Basic noob character ID
-    end
-})
-
-playerTab:AddButton({
-    Name = "Zombie Skin",
-    Callback = function()
-        applyCharacterSkin("7560153869") -- Zombie character ID
-    end
-})
-
-playerTab:AddButton({
-    Name = "Slender Skin",
-    Callback = function()
-        applyCharacterSkin("6772599158") -- Slender character ID
-    end
-})
-
-playerTab:AddButton({
-    Name = "Knight Skin",
-    Callback = function()
-        applyCharacterSkin("7242526462") -- Knight character ID
-    end
-})
-
-playerTab:AddButton({
-    Name = "Ninja Skin",
-    Callback = function()
-        applyCharacterSkin("6889073485") -- Ninja character ID
-    end
-})
-
-playerTab:AddButton({
-    Name = "Restore Default Skin",
-    Callback = function()
-        -- Force respawn to restore default character
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        if character then
-            character:BreakJoints()
-        end
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Character Skin",
-            Text = "Default skin will be restored on respawn",
-            Duration = 3
-        })
-    end
-})
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -1177,103 +778,6 @@ settingsTab:AddButton({
     end
 })
 
--- إضافة زر لتحسين الأداء العام
-settingsTab:AddButton({
-    Name = "Optimize Performance",
-    Callback = function()
-        -- تعطيل الظلال
-        pcall(function()
-            game.Lighting.GlobalShadows = false
-            print("Global shadows disabled")
-        end)
-        
-        -- تقليل جودة التفاصيل
-        pcall(function()
-            settings().Rendering.QualityLevel = 1
-            print("Rendering quality reduced")
-        end)
-        
-        -- إزالة الآثار البصرية
-        pcall(function()
-            for _, v in pairs(game.Lighting:GetChildren()) do
-                if v:IsA("BloomEffect") or v:IsA("BlurEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") then
-                    v.Enabled = false
-                end
-            end
-            print("Visual effects disabled")
-        end)
-        
-        -- تقليل المسافة المرئية
-        pcall(function()
-            game.Workspace.StreamingEnabled = true
-            settings().Rendering.StreamingEnabled = true
-            print("Streaming enabled")
-        end)
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "تحسين الأداء",
-            Text = "تم تحسين أداء اللعبة",
-            Duration = 3
-        })
-    end
-})
-
--- إضافة قسم للإضاءة
-settingsTab:AddSection({
-    Name = "lighting"
-})
-
--- إضافة زر لزيادة الإضاءة
-settingsTab:AddButton({
-    Name = "Increase Brightness",
-    Callback = function()
-        pcall(function()
-            game.Lighting.Brightness = 3 -- زيادة السطوع
-            game.Lighting.ClockTime = 14 -- وقت النهار
-            game.Lighting.Ambient = Color3.fromRGB(200, 200, 200) -- إضاءة محيطة أعلى
-            print("Brightness increased!")
-        end)
-    end
-})
-
--- إضافة زر لتفعيل الوضع الليلي
-settingsTab:AddButton({
-    Name = "Night Mode",
-    Callback = function()
-        pcall(function()
-            game.Lighting.ClockTime = 0 -- وقت الليل
-            game.Lighting.Brightness = 0.5 -- خفض السطوع
-            game.Lighting.Ambient = Color3.fromRGB(50, 50, 80) -- إضاءة زرقاء
-            game.Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 80) -- إضاءة خارجية زرقاء
-            print("Night mode activated!")
-        end)
-    end
-})
-
--- إضافة قسم للمميزات الأخرى
-settingsTab:AddSection({
-    Name = "other features"
-})
-
--- إضافة زر لتنظيف الذاكرة
-settingsTab:AddButton({
-    Name = "Clean Memory",
-    Callback = function()
-        pcall(function()
-            for i = 1, 10 do
-                game:GetService("Debris"):AddItem(Instance.new("Frame"), 0)
-            end
-            collectgarbage("collect")
-            print("Memory cleaned!")
-        end)
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Clean Memory",
-            Text = "Memory has been cleaned",
-            Duration = 3
-        })
-    end
-})
 
  -- حفظ الإعدادات تلقائيًا كل دقيقة
 spawn(function()
@@ -1289,8 +793,3 @@ game:GetService("CoreGui").ChildRemoved:Connect(function(child)
         print("Script closed")
     end
 end)
-
-game:GetService("StarterGui"):SetCore("SendNotification", { 
-    Title = "hello baby";
-    Text = "script by front_9";
-})
