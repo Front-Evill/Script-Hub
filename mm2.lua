@@ -3,28 +3,27 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
 
--- تحميل المكتبة
+-- تحميل المكتبة الأساسية
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/redz/Source.lua"))()
 
--- المتغيرات الأساسية
+-- متغيرات عامة
 local Player = Players.LocalPlayer
 local roleBoxesEnabled = false
 local targetedPlayers = {}
 
--- ألوان الأدوار
+-- ألوان الأدوار (تحسين التصميم)
 local roleColors = {
-    Murderer = Color3.fromRGB(255, 0, 0),      -- أحمر للقاتل
-    Sheriff = Color3.fromRGB(0, 0, 255),       -- أزرق للشرطي
-    Innocent = Color3.fromRGB(0, 255, 0)       -- أخضر للمسالم
+    Murderer = Color3.fromRGB(220, 20, 60),    -- أحمر غني
+    Sheriff = Color3.fromRGB(30, 144, 255),    -- أزرق داكن
+    Innocent = Color3.fromRGB(50, 205, 50)     -- أخضر مشرق
 }
 
--- تحسين دالة البحث عن السيف
+-- دالة متقدمة للبحث عن السكين
 local function FindKnifeInBackpack()
-    local player = Players.LocalPlayer
-    local backpack = player.Backpack
-    
-    -- قائمة محدثة بأسماء السكاكين
+    local backpack = Player.Backpack
     local knives = {
         "Knife", "Blade", "Darkblade", "Chroma", "Corrupt", 
         "Slasher", "Laser", "Dagger", "Claw", "Scythe", "Sickle"
@@ -33,7 +32,7 @@ local function FindKnifeInBackpack()
     for _, knifeName in ipairs(knives) do
         local knife = backpack:FindFirstChild(knifeName)
         if knife then
-            knife.Parent = player.Character
+            knife.Parent = Player.Character
             return true, knifeName
         end
     end
@@ -41,34 +40,22 @@ local function FindKnifeInBackpack()
     return false, nil
 end
 
--- دالة لسحب جميع اللاعبين للمكان نفسه
+-- دالة متقدمة لسحب اللاعبين
 local function PullAllPlayersToMe()
-    local localPlayer = Players.LocalPlayer
-    local localCharacter = localPlayer.Character
-    
+    local localCharacter = Player.Character
     if not localCharacter or not localCharacter:FindFirstChild("HumanoidRootPart") then
-        print("يجب أن تكون حياً لسحب اللاعبين")
-        return false
+        return false, 0
     end
     
     local pullPosition = localCharacter.HumanoidRootPart.CFrame
-    
-    -- عدد اللاعبين الذين تمت معالجتهم
     local pulledPlayers = 0
     
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local playerCharacter = player.Character
-            local humanoidRootPart = playerCharacter:FindFirstChild("HumanoidRootPart")
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= Player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = otherPlayer.Character.HumanoidRootPart
             
-            -- استخدام TweenService للنقل السلس
             local tweenInfo = TweenInfo.new(
-                0.5,  -- وقت النقل
-                Enum.EasingStyle.Sine,  -- نمط التحرك
-                Enum.EasingDirection.Out,
-                0,  -- عدد التكرارات
-                false,  -- عكس الحركة
-                0  -- تأخير قبل البدء
+                0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out
             )
             
             local tween = TweenService:Create(humanoidRootPart, tweenInfo, {
@@ -83,26 +70,20 @@ local function PullAllPlayersToMe()
     return pulledPlayers > 0, pulledPlayers
 end
 
--- دالة كشف دور اللاعب
+-- دالة كشف دور اللاعب مع تحسينات
 local function DetectPlayerRole(player)
     local backpack = player.Backpack
     local character = player.Character
     
-    if not character then
-        return nil
-    end
+    if not character then return nil end
     
-    -- قوائم الأسلحة المحدثة
-    local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser", "Dagger", "Claw", "Scythe", "Sickle"}
-    local sheriffItems = {"Gun", "Revolver", "Pistol", "Luger", "Blaster", "Deagle", "Sheriff", "Glock", "Handgun"}
+    local murdererWeapons = {"Knife", "Blade", "Dagger", "Scythe"}
+    local sheriffWeapons = {"Gun", "Revolver", "Pistol", "Deagle"}
     
-    -- دالة فرعية للبحث عن العناصر
-    local function checkForItems(container, itemList)
-        if not container then return false end
-        
+    local function hasWeapon(container, weaponList)
         for _, item in pairs(container:GetChildren()) do
-            for _, itemName in pairs(itemList) do
-                if string.find(string.lower(item.Name), string.lower(itemName)) then
+            for _, weaponName in pairs(weaponList) do
+                if item.Name:lower():find(weaponName:lower()) then
                     return true
                 end
             end
@@ -110,188 +91,61 @@ local function DetectPlayerRole(player)
         return false
     end
     
-    -- التحقق من وجود سلاح القاتل
-    if checkForItems(character, murdererItems) or checkForItems(backpack, murdererItems) then
+    if hasWeapon(character, murdererWeapons) or hasWeapon(backpack, murdererWeapons) then
         return "Murderer"
     end
     
-    -- التحقق من وجود سلاح الشريف
-    if checkForItems(character, sheriffItems) or checkForItems(backpack, sheriffItems) then
+    if hasWeapon(character, sheriffWeapons) or hasWeapon(backpack, sheriffWeapons) then
         return "Sheriff"
     end
     
     return "Innocent"
 end
 
--- إنشاء صندوق ESP للاعبين
-local playerRoleBoxes = {}
-
-local function CreateRoleBox(player, role)
-    if player == game.Players.LocalPlayer then
-        return
-    end
-    
-    local character = player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then
-        return
-    end
-    
-    -- إزالة الصندوق السابق إن وجد
-    if playerRoleBoxes[player.Name] then
-        if playerRoleBoxes[player.Name].box and playerRoleBoxes[player.Name].box.Parent then
-            playerRoleBoxes[player.Name].box:Destroy()
-        end
-        if playerRoleBoxes[player.Name].label and playerRoleBoxes[player.Name].label.Parent then
-            playerRoleBoxes[player.Name].label:Destroy()
-        end
-        playerRoleBoxes[player.Name] = nil
-    end
-    
-    if not roleBoxesEnabled or not role then
-        return
-    end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    
-    if not rootPart then
-        return
-    end
-    
-    -- إنشاء صندوق ESP
-    local box = Instance.new("BoxHandleAdornment")
-    box.Name = "RoleBox_" .. player.Name
-    box.Adornee = rootPart
-    box.AlwaysOnTop = true
-    box.ZIndex = 10
-    box.Transparency = 0.5
-    box.Color3 = roleColors[role] or Color3.fromRGB(255, 255, 255)
-    
-    -- حساب حجم الصندوق
-    local characterSize = character:GetExtentsSize()
-    box.Size = characterSize * 1.05
-    box.Parent = rootPart
-    
-    -- إضافة ملصق باسم اللاعب والدور
-    local billboard = Instance.new("BillboardGui")
-    billboard.Name = "PlayerLabel_" .. player.Name
-    billboard.Adornee = rootPart
-    billboard.Size = UDim2.new(0, 200, 0, 50)
-    billboard.StudsOffset = Vector3.new(0, 3, 0)
-    billboard.AlwaysOnTop = true
-    billboard.Parent = rootPart
-    
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 1, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.TextColor3 = roleColors[role] or Color3.fromRGB(255, 255, 255)
-    nameLabel.Text = player.Name .. " [" .. role .. "]"
-    nameLabel.TextSize = 14
-    nameLabel.Font = Enum.Font.SourceSansBold
-    nameLabel.TextStrokeTransparency = 0.5
-    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    nameLabel.Parent = billboard
-    
-    -- حفظ الصندوق والملصق للرجوع إليهما لاحقًا
-    playerRoleBoxes[player.Name] = {
-        box = box,
-        label = billboard
-    }
-    
-    -- التأكد من ظهور الصندوق عبر الجدران
-    spawn(function()
-        while wait(0.1) do
-            if roleBoxesEnabled and box and box.Parent and character and character.Parent then
-                -- التحقق من المسافة وتعديل الشفافية
-                local distance = (rootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-                local transparency = math.clamp(distance / 100, 0.3, 0.8)
-                box.Transparency = transparency
-                
-                -- تحديث حجم الصندوق
-                local newSize = character:GetExtentsSize()
-                box.Size = newSize * 1.05
-            else
-                if playerRoleBoxes[player.Name] then
-                    if playerRoleBoxes[player.Name].box and playerRoleBoxes[player.Name].box.Parent then
-                        playerRoleBoxes[player.Name].box:Destroy()
-                    end
-                    if playerRoleBoxes[player.Name].label and playerRoleBoxes[player.Name].label.Parent then
-                        playerRoleBoxes[player.Name].label:Destroy()
-                    end
-                    playerRoleBoxes[player.Name] = nil
-                end
-                break
-            end
-        end
-    end)
-end
-
--- دالة مسح جميع صناديق الأدوار
-local function ClearAllRoleBoxes()
-    for playerName, boxInfo in pairs(playerRoleBoxes) do
-        if boxInfo.box and boxInfo.box.Parent then
-            boxInfo.box:Destroy()
-        end
-        if boxInfo.label and boxInfo.label.Parent then
-            boxInfo.label:Destroy()
-        end
-    end
-    playerRoleBoxes = {}
-end
-
--- إنشاء النافذة الرئيسية
+-- تنظيم النافذة الرئيسية مع تحسينات بصرية
 local window = redzlib:MakeWindow({
-    Name = "Script Mm2",
-    SubTitle = "by Front_9",
-    SaveFolder = "",
-    Image = "rbxassetid://73031703958632"
+    Name = "🔫 Murder Mystery 2 Script",
+    SubTitle = "بواسطة Front_9",
+    SaveFolder = "MM2_Script_Settings"
 })
 
--- القسم الرئيسي
-local mainTab = window:MakeTab({
-    Title = "Main",
+-- تبويب القتل والهجوم
+local attackTab = window:MakeTab({
+    Title = "🗡️ القتال والهجوم",
     Icon = "rbxassetid://10723407389"
 })
 
-mainTab:AddSection({
-    Name = " ...Auto Kill... "
+attackTab:AddSection({
+    Name = "⚔️ خيارات القتل المتقدمة"
 })
 
--- زر القتل المتقدم
-mainTab:AddButton({
-    Name = "Advanced Kill All",
-    Desc = "Find knife and pull all players to you",
+attackTab:AddButton({
+    Name = "قتل متقدم بالسكين",
+    Desc = "العثور على سكين وسحب جميع اللاعبين",
     Callback = function()
-        -- محاولة العثور على سكين أولاً
         local knifeFound, knifeName = FindKnifeInBackpack()
         
         if not knifeFound then
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Auto Kill",
-                Text = "No knife found in backpack!",
+            StarterGui:SetCore("SendNotification", {
+                Title = "فشل الاقتحام",
+                Text = "لم يتم العثور على سكين!",
                 Duration = 3
             })
             return
         end
         
-        -- سحب جميع اللاعبين
         local success, playersPulled = PullAllPlayersToMe()
         
         if success then
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Auto Kill",
-                Text = "Pulled " .. playersPulled .. " players with " .. knifeName .. "!",
+            StarterGui:SetCore("SendNotification", {
+                Title = "نجاح الاقتحام",
+                Text = "تم سحب " .. playersPulled .. " لاعب باستخدام " .. knifeName .. "!",
                 Duration = 3
             })
-            
-            -- محاكاة الهجوم بعد سحب اللاعبين
-            local virtualInputManager = game:GetService("VirtualInputManager")
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-            wait(0.1)
-            virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
         else
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Auto Kill",
-                Text = "Failed to pull players!",
+            StarterGui:SetCore("SendNotification", {
+                Title = "فشل الاقتحام",
+                Text = "تعذر سحب اللاعبين!",
                 Duration = 3
             })
         end
@@ -793,3 +647,6 @@ game:GetService("CoreGui").ChildRemoved:Connect(function(child)
         print("Script closed")
     end
 end)
+
+
+end
