@@ -961,6 +961,107 @@ playerTab:AddButton({
     end
 })
 
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
+local RenderStepped = RunService.RenderStepped
+local Heartbeat = RunService.Heartbeat
+
+-- Initialize required variables
+local playerRoleBoxes = {}
+local roleBoxesEnabled = false
+local targetedPlayers = {}
+
+--فنشكن
+
+local roleColors = {
+    Murderer = Color3.fromRGB(255, 0, 0),      -- أحمر للقاتل
+    Sheriff = Color3.fromRGB(0, 0, 255),       -- أزرق للشرطي
+    Innocent = Color3.fromRGB(0, 255, 0)       -- أخضر للمسالم
+}
+
+-- دالة التحقق من حالة اللعبة
+local function CheckGameState()
+    -- بسيطة للتحقق من حالة اللعبة
+    return "InGame" -- افتراضيًا سنفترض أن اللعبة جارية
+end
+
+-- Function to automatically detect player roles
+local function AutoDetectPlayerRoles()
+    if not roleBoxesEnabled then return end
+    
+    for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local role = DetectPlayerRole(player)
+            if role then
+                CreateRoleBox(player, role)
+            end
+        end
+    end
+end
+
+local function ClearAllRoleBoxes()
+    for playerName, boxInfo in pairs(playerRoleBoxes) do
+        if boxInfo.box and boxInfo.box.Parent then
+            boxInfo.box:Destroy()
+        end
+        if boxInfo.label and boxInfo.label.Parent then
+            boxInfo.label:Destroy()
+        end
+    end
+    playerRoleBoxes = {}
+end
+
+-- دالة حفظ الإعدادات
+local function SaveSettings()
+    -- حفظ الإعدادات في ملف أو في data store
+    print("Settings saved!")
+end
+
+-- Improved DetectPlayerRole function with more comprehensive detection
+local function DetectPlayerRole(player)
+    local backpack = player.Backpack
+    local character = player.Character
+    
+    if not character then
+        return nil
+    end
+    
+    -- More comprehensive weapon lists
+    local murdererItems = {"Knife", "Blade", "Darkblade", "Chroma", "Corrupt", "Slasher", "Laser", "Dagger", "Claw", "Scythe", "Sickle"}
+    local sheriffItems = {"Gun", "Revolver", "Pistol", "Luger", "Blaster", "Deagle", "Sheriff", "Glock", "Handgun"}
+    
+    -- Check both character and backpack for items
+    local function checkForItems(container, itemList)
+        if not container then return false end
+        
+        for _, item in pairs(container:GetChildren()) do
+            for _, itemName in pairs(itemList) do
+                if string.find(string.lower(item.Name), string.lower(itemName)) then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+    
+    -- Check for murder weapons in character or backpack
+    if checkForItems(character, murdererItems) or checkForItems(backpack, murdererItems) then
+        return "Murderer"
+    end
+    
+    -- Check for sheriff weapons in character or backpack
+    if checkForItems(character, sheriffItems) or checkForItems(backpack, sheriffItems) then
+        return "Sheriff"
+    end
+    
+    return "Innocent"
+end
+
 -- Improved ESP function to work better with role detection
 local function CreateRoleBox(player, role)
     if player == game.Players.LocalPlayer then
@@ -1062,83 +1163,6 @@ local function CreateRoleBox(player, role)
         end
     end)
 end
-
-local settingsTab = window:MakeTab({
-    Title = "seting",
-    Icon = "rbxassetid://10709810948"
-})
-
--- إضافة سكشن السيرفرات
-settingsTab:AddSection({
-    Name = "servers"
-})
-
--- زر الانتقال إلى سيرفر جديد
-settingsTab:AddButton({
-    Name = "new server",
-    Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        local placeId = game.PlaceId
-        
-        local servers = {}
-        local req = HttpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"))
-        
-        for _, server in pairs(req.data) do
-            if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                table.insert(servers, server.id)
-            end
-        end
-        
-        if #servers > 0 then
-            TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)])
-        else
-            TeleportService:Teleport(placeId)
-        end
-    end
-})
-
--- زر إعادة الاتصال بنفس السيرفر
-settingsTab:AddButton({
-    Name = "rejoin",
-    Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
-    end
-})
-
-settingsTab:AddButton({
-  Name = "Increase FPS",
-  Callback = function()
-      -- قائمة بالقيم المحتملة لـ FPS
-      local fpsOptions = {30, 60, 120, nil} -- nil تعني إزالة الحد
-      local currentOption = 1
-
-      -- محاولة تعيين FPS باستخدام الخيارات المتاحة
-      while currentOption <= #fpsOptions do
-          local targetFPS = fpsOptions[currentOption]
-          local success, errorMessage = pcall(function()
-              if targetFPS then
-                  setfpscap(targetFPS)
-                  print("FPS cap set to", targetFPS)
-              else
-                  setfpscap(nil) -- إزالة الحد
-                  print("FPS cap removed.")
-              end
-          end)
-
-          if success then
-              print("FPS increased successfully!")
-              return -- الخروج من الدالة عند النجاح
-          else
-              warn("Failed to set FPS cap to", targetFPS, ":", errorMessage)
-              currentOption = currentOption + 1 -- الانتقال إلى الخيار التالي
-          end
-      end
-
-      -- إذا فشلت جميع المحاولات
-      warn("All attempts to increase FPS failed.")
-  end
-})
 
 -- زر إزالة الضباب
 settingsTab:AddButton({
