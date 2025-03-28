@@ -18,8 +18,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/mm2.lua"))
 ```
 
-## Dance script (true) 
+## Dead Rails(Beta) 
 
 ```luau
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/DANCE.lua"))
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Dead_Rails.lua"))
 ```
