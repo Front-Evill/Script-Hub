@@ -330,19 +330,18 @@ local Tabs = {
     Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    Players = Window:AddTab({ Title = "Players", Icon = "Player"}),
-
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
 
+local flyfront = Tabs.Msin:AddSection("Fly")
 local AutofarmMain = Tabs.Main:AddSection("Auto Farms")
 local AutoMurderMain = Tabs.Main:AddSection("Auto Murder")
 local TrollingMain = Tabs.Main:AddSection("Trolling")
-local flyfront = Tabs.Msin:AddSection("Fly")
 
 flyfront:AddButton({
-    Name = "Activate Flight Script", -- اسم الزر
+    Title = "Fly GUI!!",
+    Description = nil,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
     end
