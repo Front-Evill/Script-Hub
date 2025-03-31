@@ -3,7 +3,7 @@ local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/newre
 local window = redzlib:MakeWindow({
     Name = "MM2 ", 
     SubTitle = "By FRONNT / VR7",
-    SaveFolder = ""
+    SaveFolder = "/...F...V...R...A.../"
 })
 
 local Discord = window:MakeTab({
@@ -11,8 +11,9 @@ local Discord = window:MakeTab({
     Icon = "rbxassetid://123456789" -- icons 
 })
 
-Discoord:AddSection({
-    Name = "Discoord FRONT"
+-- تصحيح: كان هناك خطأ في اسم المتغير (Discoord بدلاً من Discord)
+Discord:AddSection({
+    Name = "Discord FRONT"
 })
 
 
@@ -22,7 +23,8 @@ Discord:AddDiscordInvite({
     Invite = "https://discord.gg/3rfd8aKree"
 })
 
-Discoord:AddSection({
+-- تصحيح: كان هناك خطأ في اسم المتغير (Discoord بدلاً من Discord)
+Discord:AddSection({
     Name = "Discord VR7"
 })
 
@@ -39,12 +41,12 @@ local Main = window:MakeTab({
 })
 
 Main:AddSection({
-        Name = "Auro Farm"
+    Name = "Auto Farm"
 })
 
 Main:AddButton({
     Name = "Kill all",
-    Default = "قتل الجميع",
+    Desc = "قتل الجميع",  -- تصحيح: تم تغيير Default إلى Desc
     Callback = function()
         if game.Players.LocalPlayer.Backpack:FindFirstChild("Knife") or game.Players.LocalPlayer.Character:FindFirstChild("Knife") then
             local Players = game:GetService("Players")
@@ -64,7 +66,19 @@ Main:AddButton({
                     -- العودة للموقع الأصلي
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = originalCFrame
                 end
-            end    
+            end
+            
+            -- تصحيح: تم تصحيح الشروط المتداخلة وإضافة Main بدلاً من tab
+            Main:AddParagraph({
+                Title = "Ez",
+                Text = "All mnuper is dead"
+            })
+        else    
+            Main:AddParagraph({
+                Title = "Error",
+                Text = "you is not murdyer"
+            })
+        end
     end
 })
 
@@ -82,9 +96,11 @@ Esp:AddSection({
 local ESPEnabled = false
 local ESPBoxes = {}
 
-Main:AddToggle({
+-- تصحيح: تم نقل هذا الكود إلى تبويب Esp بدلاً من Main
+Esp:AddToggle({
     Name = "Esp All",
-    Default = "كشف جميع لاعبين موجودين",
+    Default = false,  -- تصحيح: تم تغيير النص إلى قيمة منطقية
+    Desc = "كشف جميع لاعبين موجودين",  -- تصحيح: تم إضافة خاصية Desc
     Callback = function(value)
         ESPEnabled = value
         
@@ -175,12 +191,10 @@ local Telepord = window:MakeTab({
 })
 
 
-
 local seting = window:MakeTab({
     Title = "Seting Script", --name
     Icon = "rbxassetid://10709810948" -- icons 
 })
-
 
 
 local Server = window:MakeTab({
@@ -191,6 +205,20 @@ local Server = window:MakeTab({
 Server:AddSection({
     Name = "Server"
 })
+
+-- تصحيح: إضافة تعريف للـ Functions إذا لم يكن موجوداً
+local Functions = {}
+Functions.Notify = function(title, text)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = title;
+        Text = text;
+        Duration = 5;
+    })
+end
+
+Functions.StopAllTweens = function()
+    -- فارغة لأن هذه الدالة لم تكن معرفة في الكود الأصلي
+end
 
 -- زر الانتقال إلى سيرفر آخر
 Server:AddButton({
