@@ -3,7 +3,7 @@ local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/newre
 local window = redzlib:MakeWindow({
     Name = "MM2 ", 
     SubTitle = "By FRONNT / VR7",
-    SaveFolder = "/...F...V...R...A.../"
+    SaveFolder = ""
 })
 
 local Discord = window:MakeTab({
@@ -64,19 +64,7 @@ Main:AddButton({
                     -- العودة للموقع الأصلي
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = originalCFrame
                 end
-            end
-          else
-            tab:AddParagraph({
-                Title = "Ez",
-                Text = "All mnuper is dead"
-            })
-          end    
-        else    
-            Main:AddParagraph({
-                Title = "Error",
-                Text = "you is not murdyer"
-            })
-        end
+            end    
     end
 })
 
