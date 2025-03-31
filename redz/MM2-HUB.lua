@@ -35,20 +35,14 @@ Discord:AddDiscordInvite({
 
 local Main = window:MakeTab({
     Title = "Main",
-    Icon = "rbxassetid://" -- id icons 
+    Icon = "rbxassetid://103167069627270" 
 })
 
 Main:AddSection({
-    Name = "FARM"
+        Name = "Auro Farm"
 })
 
-
--- داخل Tab3 (الفارم)
-local Section = Tab3:AddSection({
-    Name = "أدوات القتل"
-})
-
-Tab3:AddButton({
+Main:AddButton({
     Name = "Kill all",
     Default = "قتل الجميع",
     Callback = function()
@@ -87,13 +81,14 @@ Tab3:AddButton({
 })
 
 
-Main:AddSection({
-    Name = ""
+local Esp = window:MakeTab({
+    Title = "Esp",
+    Icon = "rbxassetid://123456789"
 })
 
--- داخل Tab4 (كشف الاماكن)
-local Section = Tab4:AddSection({
-    Name = "كشف اللاعبين (ESP)"
+
+Esp:AddSection({
+    Name = "ESP"
 })
 
 local ESPEnabled = false
@@ -179,3 +174,170 @@ function createESP(player)
         end
     end)
 end
+
+
+Esp:AddSection({
+    Name = "Gun Esp"
+})
+
+
+local Telepord = window:MakeTab({
+    Title = "Teleport", --name
+    Icon = "rbxassetid://139926030461097" -- icons 
+})
+
+
+
+local seting = window:MakeTab({
+    Title = "Seting Script", --name
+    Icon = "rbxassetid://10709810948" -- icons 
+})
+
+
+
+local Server = window:MakeTab({
+    Title = "Server", -- name
+    Icon = "rbxassetid://93989683556149" -- icoon
+})
+
+Server:AddSection({
+    Name = "Server"
+})
+
+-- زر الانتقال إلى سيرفر آخر
+Server:AddButton({
+    Name = "New Server",
+    Desc = "الانتقال إلى سيرفر مختلف",
+    Callback = function()
+        window:Dialog({
+            Title = "تأكيد الانتقال | are you sure ?",
+            Content = "هل أنت متأكد أنك تريد الانتقال إلى سيرفر آخر؟",
+            Buttons = {
+                {
+                    Title = "نعم | Yes",
+                    Callback = function()
+                        local TeleportService = game:GetService("TeleportService")
+                        local PlaceId = game.PlaceId
+                        
+                        local function joinDifferentServer()
+                            -- الحصول على قائمة السيرفرات المتاحة
+                            local servers = {}
+                            local pageSize = 100
+                            local success, errorMessage = pcall(function()
+                                -- استخدام GetGlobalInstances() للحصول على قائمة بالسيرفرات المتاحة
+                                local res = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit="..pageSize))
+                                for _, server in ipairs(res.data) do
+                                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                                        table.insert(servers, server)
+                                    end
+                                end
+                            end)
+                            
+                            if #servers > 0 then
+                                -- اختيار سيرفر عشوائي واستبعاد السيرفر الحالي
+                                local selectedServer = servers[math.random(1, #servers)]
+                                TeleportService:TeleportToPlaceInstance(PlaceId, selectedServer.id, game.Players.LocalPlayer)
+                            else
+                                -- إذا لم يتم العثور على سيرفرات، قم بإنشاء سيرفر جديد
+                                TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
+                            end
+                        end
+                        
+                        Functions.Notify("جارٍ الانتقال", "جارٍ البحث عن سيرفر متاح...")
+                        joinDifferentServer()
+                    end
+                },
+                {
+                    Title = "No | لا"
+                }
+            }
+        })
+    end
+})
+
+-- زر إعادة الاتصال بنفس السيرفر (Rejoin)
+Server:AddButton({
+    Name = "Rejoin",
+    Desc = "الخروج و الدخول ب نفس سيرفر",
+    Callback = function()
+        window:Dialog({
+            Title = "تأكيد إعادة الاتصال | are you sure ?",
+            Content = "هل أنت متأكد أنك تريد إعادة الاتصال بنفس السيرفر؟ | are yoou sure?",
+            Buttons = {
+                {
+                    Title = "نعم | yes",
+                    Callback = function()
+                        local TeleportService = game:GetService("TeleportService")
+                        local Players = game:GetService("Players")
+                        local LocalPlayer = Players.LocalPlayer
+                        
+                        Functions.Notify("جارٍ إعادة الاتصال", "سيتم إعادة الاتصال بالسيرفر حالاً...")
+                        
+                        -- إلغاء أي عمليات جارية قبل إعادة الاتصال
+                        Functions.StopAllTweens()
+                        
+                        if getgenv().FlyConnection then
+                            getgenv().FlyConnection:Disconnect()
+                        end
+                        
+                        if getgenv().FlyPart then
+                            getgenv().FlyPart:Destroy()
+                        end
+                        
+                        -- إعادة الاتصال بنفس السيرفر باستخدام معرف السيرفر الحالي
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+                    end
+                },
+                {
+                    Title = "لا | No"
+                }
+            }
+        })
+    end
+})
+
+Server:AddParagraph({
+    Title = "كيف استعله؟", -- example 
+    Text = [[
+        - new server; يقوم ب نقلك الئ سيرفر جديد
+        - rejoin ; يجعلك تخرج و تدخل الئ نفس سيرفر
+        - ما فائده rejoin ? ; تحتاجه اذا كان لديك خطاء في العبه او شيء لاك (lag)
+    ]]
+})
+
+
+Server:AddSection({
+    Name = "mnpuer"
+})
+
+-- الوصول إلى خدمة اللاعبين
+local Players = game:GetService("Players")
+
+-- إنشاء فقرة لعرض عدد اللاعبين
+local playerCountParagraph = Server:AddParagraph({
+    Title = "Number of players",
+    Text = "عدد لاعبين ..."
+})
+
+-- دالة لتحديث معلومات اللاعبين
+function updatePlayerCount()
+    local playerCount = #Players:GetPlayers()
+    local maxPlayers = Players.MaxPlayers
+    
+    -- تحديث عدد اللاعبين
+    playerCountParagraph:SetText(playerCount .. " / " .. maxPlayers .. " لاعب")
+end
+
+-- تحديث المعلومات عند تشغيل السكربت
+updatePlayerCount()
+
+-- تحديث المعلومات كل 5 ثوانٍ
+spawn(function()
+    while wait(5) do
+        updatePlayerCount()
+    end
+end)
+
+-- تحديث فوري عند انضمام أو مغادرة لاعب
+Players.PlayerAdded:Connect(updatePlayerCount)
+Players.PlayerRemoving:Connect(updatePlayerCount)
