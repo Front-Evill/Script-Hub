@@ -15,7 +15,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ## mm2 script (BETA) 
 
 ```luau
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/redz/MM2-HUB.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/obf_1nvkqF0cc31eTEu0sK0uQPBy1CWf0SH98d7qT0rJRX6fy0kTb6Ngw3w70S778N9z.lua.txt"))()
 ```
 
 ## Dead Rails(Beta) 
