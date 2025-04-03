@@ -317,7 +317,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By Front / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -330,7 +330,7 @@ local Tabs = {
     Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    Player = Window:AddTab({ Title = "Player", Icon = "user-round" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "15948142987" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -1081,9 +1081,9 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-local HumanoidPlayer = Tabs.Main:AddSection("Player anime")
+local HumanoidPlayer = Tabs.Player:AddSection("Player anime")
 
-local HumanoidPlayer = Tab:AddToggle("InfiniteJump", {
+local HumanoidPlayer = Tabs:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
     Description = nil,
     Default = false,
