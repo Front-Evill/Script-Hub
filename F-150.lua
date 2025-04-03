@@ -1083,7 +1083,7 @@ getgenv().Ready = true
 
 local HumanoidPlayer = Tabs.Player:AddSection("Player anime")
 
-local HumanoidPlayer = Tabs:AddToggle("InfiniteJump", {
+local HumanoidPlayer = Player:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
     Description = nil,
     Default = false,
