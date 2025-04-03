@@ -317,7 +317,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By Front / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -334,9 +334,18 @@ local Tabs = {
 local Options = Fluent.Options
 Window:SelectTab(1)
 
+local FlyHubMain = Tabs.Main:AddSection("Fly")
 local AutofarmMain = Tabs.Main:AddSection("Auto Farms")
 local AutoMurderMain = Tabs.Main:AddSection("Auto Murder")
 local TrollingMain = Tabs.Main:AddSection("Trolling")
+
+FlyHubMain:AddButton({
+    Title = "Fly Script",
+    Description = "Very important button",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
+    end
+})
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
     Title = "AutoCoins", 
