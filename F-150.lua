@@ -330,7 +330,6 @@ local Tabs = {
     Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    Player = Window:AddTab({ Title = "Player", Icon = "15948142987" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -1080,29 +1079,3 @@ PlacesTeleport:AddButton({
     end
 })
 getgenv().Ready = true
-
-local HumanoidPlayer = Tabs.Player:AddSection("Player anime")
-
-HumanoidPlayer:AddToggle("InfiniteJump",{
-    Title = "Infinite Jump",
-    Description = nil,
-    Default = false,
-    Callback = function(state)
-        infiniteJumpEnabled = state
-        if state then
-               print("Infinite Jump enabled!")
-            else
-                print("Infinite Jump disabled!")
-            end
-        end
-    end 
-})
-
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if infiniteJumpEnabled then
-        local player = game.Players.LocalPlayer
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
-end)
