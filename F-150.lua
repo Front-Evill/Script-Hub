@@ -1086,25 +1086,26 @@ getgenv().Ready = true
 
 local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
 
-PlkFarmPlayer:AddToggle("InfiniteJump",{
-    Title = "Ininite Jump", 
+PlkFarmPlayer:AddToggle("InfiniteJump", {
+    Title = "Infinite Jump",
     Description = nil,
     Default = false,
     Callback = function(state)
-        infiniteJumpEnabled = Value
+        infiniteJumpEnabled = state
         if state then
-            Notify("the  script has been on")
+            Notify("The script has been turned on")
         else
-            Notify("the script has been off")
+            Notify("The script has been turned off")
         end
-    end 
+    end
 })
+
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if infiniteJumpEnabled then
         local player = game.Players.LocalPlayer
         if player.Character and player.Character:FindFirstChild("Humanoid") then
             player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end 
+        end
     end
 end)
 
