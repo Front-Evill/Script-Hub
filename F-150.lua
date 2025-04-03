@@ -1083,18 +1083,19 @@ getgenv().Ready = true
 
 local HumanoidPlayer = Tabs.Player:AddSection("Player anime")
 
-local HumanoidPlayer = Player:AddToggle("InfiniteJump", {
+HumanoidPlayer:AddToggle("InfiniteJump",{
     Title = "Infinite Jump",
     Description = nil,
     Default = false,
     Callback = function(state)
         infiniteJumpEnabled = state
         if state then
-            print("Infinite Jump enabled!")
-        else
-            print("Infinite Jump disabled!")
+               print("Infinite Jump enabled!")
+            else
+                print("Infinite Jump disabled!")
+            end
         end
-    end
+    end 
 })
 
 game:GetService("UserInputService").JumpRequest:Connect(function()
