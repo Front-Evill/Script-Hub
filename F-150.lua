@@ -21,15 +21,6 @@ local RaritesColor = {
 }
 --Functions
 
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if infiniteJumpEnabled then
-        local player = game.Players.LocalPlayer
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end 
-    end
-end)
-
 local function Notify(Title,Dis)
     pcall(function()
         Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
@@ -327,7 +318,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By Front / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -1102,9 +1093,19 @@ PlkFarmPlayer:AddToggle("InfiniteJump",{
     Callback = function(state)
         infiniteJumpEnabled = Value
         if state then
-            print("Infinite Jump enabled!")
+            Notify("the  script has been on")
         else
-            Notify("Error, the Toggle not working !!!")
+            Notify("the script has been off")
         end
     end 
 })
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end 
+    end
+end)
+
+---------------- haha -------------------
