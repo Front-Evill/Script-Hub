@@ -333,6 +333,7 @@ local Tabs = {
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Server = Window:AddTab({ Title = "Server", Icon = "server" }),
+    setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -1211,7 +1212,33 @@ NoClipPlayer:AddToggle("Noclip", {
     end
 })
 
-local FarmsServerHub = Tabs.Server:AddSection("JOIN & NEW SERVER")
+
+---------------- server haha ----------------
+local FarmsServerHub = Tabs.Server:AddSection("Server")
+
+FarmsServerHub:AddButton({
+    Title = "Join New Server",
+    Description = "Teleport to a different server of the same game",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        
+        local servers = {}
+        local page = TeleportService:GetSortedServersInfoForPlaceId(placeId, 100)
+        for _, server in ipairs(page) do
+            if server.playing < server.maxPlayers then
+                table.insert(servers, server)
+            end
+        end
+        if #servers > 0 then
+            local randomServer = servers[math.random(1, #servers)]
+            TeleportService:TeleportToPlaceInstance(placeId, randomServer.id, game.Players.LocalPlayer)
+        else
+            TeleportService:Teleport(placeId, game.Players.LocalPlayer)
+        end    
+    end
+})
+
 
 FarmsServerHub:AddButton({
     Title = "Rejoin Same Server",
@@ -1225,29 +1252,88 @@ FarmsServerHub:AddButton({
     end
 })
 
-FarmsServerHub:AddButton({
-    Title = "Join New Server",
-    Description = "Teleport to a different server of the same game",
+
+---------------- Setting -------------------
+local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
+local FarmFpsQuServer = Tabs.Setting:AddSection("FPS & Quality")
+
+
+FarmsSettingHub:AddButton({
+    Title = "Remove Fog",
+    Description = "Removes all fog from the game",
     Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        local placeId = game.PlaceId
-        
-        -- الحصول على قائمة من السيرفرات المتاحة
-        local servers = {}
-        local page = TeleportService:GetSortedServersInfoForPlaceId(placeId, 100)
-        for _, server in ipairs(page) do
-            if server.playing < server.maxPlayers then
-                table.insert(servers, server)
+        game.Lighting.FogStart = 0
+        game.Lighting.FogEnd = 9999999
+        game.Lighting.Atmosphere.Density = 0
+        game.Lighting.Atmosphere.Haze = 0
+    end
+})
+
+
+FarmFpsQuServer:AddButton({
+    Title = "FPS Boost",
+    Description = "Improves frame rate by reducing graphics",
+    Callback = function()
+        game.Lighting.GlobalShadows = false
+        settings().Rendering.QualityLevel = 1
+        local skybox = game.Lighting:FindFirstChildOfClass("Sky")
+        if skybox then
+            skybox.StarCount = 0
+            skybox.CelestialBodiesShown = false
+        end
+        workspace.Terrain.WaterWaveSize = 0
+        workspace.Terrain.WaterWaveSpeed = 0
+        workspace.Terrain.WaterReflectance = 0
+        workspace.Terrain.WaterTransparency = 1
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(game.Players.LocalPlayer.Character) then
+                obj.CastShadow = false
+            end
+            
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 1
+            end
+            
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+                obj.Enabled = false
+            end
+            
+            if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = false
             end
         end
+    end
+})
+
+
+FarmFpsQuServer:AddButton({
+    Title = "Quality Boost",
+    Description = "Enhances visual quality of the game",
+    Callback = function()
+        game.Lighting.GlobalShadows = true
+        settings().Rendering.QualityLevel = 21
+        local bloom = Instance.new("BloomEffect")
+        bloom.Intensity = 0.25
+        bloom.Size = 20
+        bloom.Threshold = 1
+        bloom.Name = "QualityBloom"
+        bloom.Parent = game.Lighting
         
-        -- الانتقال إلى سيرفر عشوائي مختلف
-        if #servers > 0 then
-            local randomServer = servers[math.random(1, #servers)]
-            TeleportService:TeleportToPlaceInstance(placeId, randomServer.id, game.Players.LocalPlayer)
-        else
-            -- إذا لم يتم العثور على سيرفرات متاحة
-            TeleportService:Teleport(placeId, game.Players.LocalPlayer)
-        end
+        local colorCorrection = Instance.new("ColorCorrectionEffect")
+        colorCorrection.Brightness = 0.05
+        colorCorrection.Contrast = 0.05
+        colorCorrection.Saturation = 0.1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Name = "QualityColorCorrection"
+        colorCorrection.Parent = game.Lighting
+
+        game.Lighting.Ambient = Color3.fromRGB(25, 25, 25)
+        game.Lighting.Brightness = 2
+        game.Lighting.ClockTime = 14
+        
+        workspace.Terrain.WaterReflectance = 0.5
+        workspace.Terrain.WaterTransparency = 0.65
+        workspace.Terrain.WaterWaveSize = 0.15
+        workspace.Terrain.WaterWaveSpeed = 10
     end
 })
