@@ -2,20 +2,20 @@
 
 ## Script imbot For Blox Fruit (BETA) 🍓 😋 
 
-```luau
+```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/aimpot_Blox.lua"))()
 ```
 
 ## fly script (true)
 
-```luau
+```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
 ```
 
 ## mm2 script (BETA) 
 
-```luau
-loadstring(game:HttpGet(""))()
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/MM2-FRONT-7SON.lua.txt"))()
 ```
 
 ## Dead Rails(Beta) 
