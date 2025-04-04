@@ -1561,13 +1561,14 @@ AnimationHubSetting:AddButton({
     Description = "Apply Magsa animations (R15)",
     Callback = function()
         local animations = {
-            idle = 3489171152,
-            walk = 3489173414,
-            run = 3489175274,
-            jump = 3489174223,
-            fall = 3489174223
+            idle =  754637456,
+            walk =  754636298,
+            run  =  754635032,
+            jump =  754637084,
+            fall =  754636589,
+            swim =  754638471,
+            climb = 754639239
         }
-        
         ApplyAnimation("Magsa Animation Package", animations)
     end
  })
@@ -1593,11 +1594,13 @@ AnimationHubSetting:AddButton({
     Description = "Apply Levitation animations (R15)",
     Callback = function()
         local animations = {
-            idle = 616006778,
-            walk = 616013216,
-            run = 616010382,
-            jump = 616008087,
-            fall = 616005863
+            idle = 619542203,
+            walk = 619544080,
+            run = 619543231,
+            jump = 619542888,
+            fall = 619541867,
+            climb = 619541458,
+            swin = 619543721 
         }
         
         ApplyAnimation("Levitation Animation Pack", animations)
