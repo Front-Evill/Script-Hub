@@ -1256,7 +1256,7 @@ FarmsServerHub:AddButton({
 
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
+local AnimationHubSetting = Tabs.Setting:AddSection("Animation For R15")
 local FarmMoodHub = Tabs.Setting:AddSection("Mood")
 
 ----------- FOG -------------
@@ -1580,7 +1580,6 @@ local function ApplyAnimation(animName, animations)
         ApplyAnimation("Levitation Animation Pack", animations)
     end
  })
-
 ----------------- MOODE ---------------
 
 FarmMoodHub:AddButton({
