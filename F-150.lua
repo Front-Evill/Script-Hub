@@ -1088,7 +1088,6 @@ getgenv().Ready = true
 local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
 local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
 local NoClipPlayer = Tabs.Player:AddSection("No clip")
-local Player = Tabs.Player:AddSection("")
 
 ----------------- Infinite Jump --------------------
 
@@ -1213,38 +1212,6 @@ NoClipPlayer:AddToggle("Noclip", {
 })
 
 local FarmsServerHub = Tabs.Server:AddSection("Server")
-
-FarmsServerHub:AddButton({
-    Title = "Join New Server",
-    Description = "Teleport to a different server of the same game",
-    Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        local placeId = game.PlaceId
-        
-        -- الحصول على قائمة من السيرفرات المتاحة
-        local servers = {}
-        local page = TeleportService:GetSortedServersInfoForPlaceId(placeId, 100)
-        for _, server in ipairs(page) do
-            if server.playing < server.maxPlayers then
-                table.insert(servers, server)
-            end
-        end
-        
-        -- الانتقال إلى سيرفر عشوائي مختلف
-        if #servers > 0 then
-            local randomServer = servers[math.random(1, #servers)]
-            TeleportService:TeleportToPlaceInstance(placeId, randomServer.id, game.Players.LocalPlayer)
-        else
-            -- إذا لم يتم العثور على سيرفرات متاحة
-            TeleportService:Teleport(placeId, game.Players.LocalPlayer)
-        end
-           
-        else
-            Notify("Oops Error")
-        end    
-    end
-})
-
 
 FarmsServerHub:AddButton({
     Title = "Rejoin Same Server",
