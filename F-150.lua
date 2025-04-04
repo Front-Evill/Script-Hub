@@ -1254,11 +1254,13 @@ FarmsServerHub:AddButton({
 
 
 ---------------- Setting -------------------
+
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
+local AnimationSetting = Tabs.Setting:AddSection("Animation")
 
 
+----------- FOG -------------
 FarmsSettingHub:AddButton({
     Title = "Remove Fog",
     Description = "Removes all fog from the game",
@@ -1270,7 +1272,7 @@ FarmsSettingHub:AddButton({
     end
 })
 
-
+-------- FPS ---------
 FarmFpsQuSetting:AddButton({
     Title = "FPS Boost",
     Description = "Improves frame rate by reducing graphics",
@@ -1306,7 +1308,7 @@ FarmFpsQuSetting:AddButton({
     end
 })
 
-
+------------------------ QUALITY --------------------------
 FarmFpsQuSetting:AddButton({
     Title = "Quality Boost",
     Description = "Enhances visual quality of the game",
@@ -1339,9 +1341,8 @@ FarmFpsQuSetting:AddButton({
     end
 })
 
-
--- إضافة قائمة منسدلة لاختيار حزم الأنيميشن
-AnimationHubSetting:AddDropdown({
+-------------- Animation -----------------
+AnimationSetting:AddDropdown({
     Title = "Animation Packs",
     Description = "Change your character animations (visible to others)",
     Values = {
@@ -1359,12 +1360,10 @@ AnimationHubSetting:AddDropdown({
         local character = player.Character or player.CharacterAdded:Wait()
         local humanoid = character:WaitForChild("Humanoid")
         
-        -- حذف الأنيميشنات السابقة إذا وجدت
         for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
             animTrack:Stop()
         end
         
-        -- حذف أي أنيميشن تم إنشاؤه مسبقًا
         for _, anim in pairs(character:GetChildren()) do
             if anim.Name:match("CustomAnim_") then
                 anim:Destroy()
@@ -1372,13 +1371,10 @@ AnimationHubSetting:AddDropdown({
         end
         
         if selected == "Default" then
-            -- استعادة الأنيميشن الافتراضي
             character:BreakJoints()
             player:LoadCharacter()
             return
         end
-        
-        -- هذه قائمة تحتوي على معرفات (IDs) للأنيميشنات المختلفة
         local animationIDs = {
             ["Oldschool Animation Pack"] = {
                 idle = 5319828216,
@@ -1417,10 +1413,8 @@ AnimationHubSetting:AddDropdown({
             }
         }
         
-        -- تطبيق الأنيميشن المختار
         local animations = animationIDs[selected]
         if animations then
-            -- إنشاء وتشغيل الأنيميشنات المخصصة
             for animType, animID in pairs(animations) do
                 local anim = Instance.new("Animation")
                 anim.Name = "CustomAnim_" .. animType
@@ -1432,7 +1426,6 @@ AnimationHubSetting:AddDropdown({
                 if animType == "idle" then
                     animTrack:Play()
                 elseif animType == "walk" then
-                    -- تشغيل أنيميشن المشي عند المشي
                     humanoid.Running:Connect(function(speed)
                         if speed > 0.1 and speed < 10 and not humanoid.Jump then
                             if not animTrack.IsPlaying then
@@ -1445,7 +1438,6 @@ AnimationHubSetting:AddDropdown({
                         end
                     end)
                 elseif animType == "run" then
-                    -- تشغيل أنيميشن الجري عند الجري
                     humanoid.Running:Connect(function(speed)
                         if speed >= 10 and not humanoid.Jump then
                             if not animTrack.IsPlaying then
@@ -1458,7 +1450,6 @@ AnimationHubSetting:AddDropdown({
                         end
                     end)
                 elseif animType == "jump" then
-                    -- تشغيل أنيميشن القفز عند القفز
                     humanoid.Jumping:Connect(function(jumping)
                         if jumping then
                             animTrack:Play()
@@ -1467,7 +1458,6 @@ AnimationHubSetting:AddDropdown({
                         end
                     end)
                 elseif animType == "fall" then
-                    -- تشغيل أنيميشن السقوط عند السقوط
                     humanoid.StateChanged:Connect(function(oldState, newState)
                         if newState == Enum.HumanoidStateType.Freefall then
                             animTrack:Play()
@@ -1479,7 +1469,6 @@ AnimationHubSetting:AddDropdown({
             end
         end
         
-        -- إخطار اللاعب بنجاح تغيير الأنيميشن
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Animation Changed",
             Text = "Now using " .. selected,
