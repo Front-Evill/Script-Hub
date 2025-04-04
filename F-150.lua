@@ -333,7 +333,7 @@ local Tabs = {
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Server = Window:AddTab({ Title = "Server", Icon = "server" }),
-    setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
+    Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
