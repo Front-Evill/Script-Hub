@@ -1388,7 +1388,7 @@ FarmsServerHub:AddButton({
 
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
+local AnimationHubSetting = Tabs.Setting:AddSection("Animation (Beta) ")
 local FarmMoodHub = Tabs.Setting:AddSection("Mood")
 
 ----------- FOG -------------
