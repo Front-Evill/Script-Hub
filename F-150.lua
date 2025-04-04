@@ -1257,7 +1257,7 @@ FarmsServerHub:AddButton({
 
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local AnimationSetting = Tabs.Setting:AddSection("Animation")
+local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
 
 
 ----------- FOG -------------
@@ -1342,70 +1342,279 @@ FarmFpsQuSetting:AddButton({
 })
 
 -------------- Animation -----------------
-AnimationSetting:AddDropdown({
-    Title = "Animation Packs",
-    Description = "Change your character animations (visible to others)",
-    Values = {
-        "Default",
-        "Oldschool Animation Pack",
-        "Robot Animation Package",
-        "Magsa Animation Package", 
-        "Robot Animation Pack",
-        "Levitation Animation Pack"
-    },
-    Default = "Default",
-    Multi = false,
-    Callback = function(selected)
+
+-- زر للأنيميشن الافتراضي
+AnimationHubSetting:AddButton({
+    Title = "Default Animation",
+    Description = "Reset to default animations (R6/R15)",
+    Callback = function()
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
         
-        for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
-            animTrack:Stop()
-        end
-        
+        -- حذف الأنيميشنات السابقة
         for _, anim in pairs(character:GetChildren()) do
             if anim.Name:match("CustomAnim_") then
                 anim:Destroy()
             end
         end
         
-        if selected == "Default" then
-            character:BreakJoints()
-            player:LoadCharacter()
-            return
+        -- إعادة تحميل الشخصية للعودة للأنيميشن الافتراضي
+        character:BreakJoints()
+        player:LoadCharacter()
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Animation Reset",
+            Text = "Default animations restored",
+            Duration = 3
+        })
+    end
+})
+
+-- دالة عامة لتطبيق الأنيميشن
+local function ApplyAnimation(animName, animations)
+    local player = game.Players.LocalPlayer
+    
+    -- دالة للتطبيق على الشخصية
+    local function setupAnimations(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        local rigType = humanoid.RigType
+        
+        -- حذف الأنيميشنات السابقة إذا وجدت
+        for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
+            animTrack:Stop()
         end
-        local animationIDs = {
-            ["Oldschool Animation Pack"] = {
+        
+        -- حذف أي أنيميشن تم إنشاؤه مسبقًا
+        for _, anim in pairs(character:GetChildren()) do
+            if anim.Name:match("CustomAnim_") then
+                anim:Destroy()
+            end
+        end
+        
+        -- تحديد الأنيميشنات المناسبة للـ rig type
+        local animSet = rigType == Enum.HumanoidRigType.R15 and animations.R15 or animations.R6
+        
+        -- إنشاء وتشغيل الأنيميشنات المخصصة
+        for animType, animID in pairs(animSet) do
+            local anim = Instance.new("Animation")
+            anim.Name = "CustomAnim_" .. animType
+            anim.AnimationId = "rbxassetid://" .. animID
+            anim.Parent = character
+            
+            local animTrack = humanoid:LoadAnimation(anim)
+            
+            if animType == "idle" then
+                animTrack:Play()
+            elseif animType == "walk" then
+                humanoid.Running:Connect(function(speed)
+                    if speed > 0.1 and speed < 10 and not humanoid.Jump then
+                        if not animTrack.IsPlaying then
+                            animTrack:Play()
+                        end
+                    else
+                        if animTrack.IsPlaying then
+                            animTrack:Stop()
+                        end
+                    end
+                end)
+            elseif animType == "run" then
+                humanoid.Running:Connect(function(speed)
+                    if speed >= 10 and not humanoid.Jump then
+                        if not animTrack.IsPlaying then
+                            animTrack:Play()
+                        end
+                    else
+                        if animTrack.IsPlaying then
+                            animTrack:Stop()
+                        end
+                    end
+                end)
+            elseif animType == "jump" then
+                humanoid.Jumping:Connect(function(jumping)
+                    if jumping then
+                        animTrack:Play()
+                    else
+                        animTrack:Stop()
+                    end
+                end)
+            elseif animType == "fall" then
+                humanoid.StateChanged:Connect(function(oldState, newState)
+                    if newState == Enum.HumanoidStateType.Freefall then
+                        animTrack:Play()
+                    elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
+                        animTrack:Stop()
+                    end
+                end)
+            end
+        end
+    end
+    
+    local character = player.Character
+    if character then
+        setupAnimations(character)
+    end
+    
+    -- تطبيق الأنيميشن على الشخصية الجديدة بعد إعادة النشر
+    player.CharacterAdded:Connect(setupAnimations)
+    
+    -- إظهار إشعار بتغيير الأنيميشن
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Animation Changed",
+        Text = "Now using " .. animName,
+        Duration = 3
+    })
+    
+    -- لجعل الأنيميشن مرئياً للاعبين الآخرين
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local AnimEvent = ReplicatedStorage:FindFirstChild("AnimationEvent")
+    
+    if not AnimEvent then
+        AnimEvent = Instance.new("RemoteEvent")
+        AnimEvent.Name = "AnimationEvent"
+        AnimEvent.Parent = ReplicatedStorage
+        
+        -- إعداد النظام لمزامنة الأنيميشن لجميع اللاعبين
+        local function setupRemoteSystem()
+            local function onAnimEventFired(fromPlayer, animationData)
+                for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+                    if otherPlayer ~= fromPlayer then
+                        AnimEvent:FireClient(otherPlayer, fromPlayer.Name, animationData)
+                    end
+                end
+            end
+            
+            AnimEvent.OnServerEvent:Connect(onAnimEventFired)
+        end
+        
+        setupRemoteSystem()
+    end
+    
+    -- إرسال معلومات الأنيميشن للاعبين الآخرين
+    AnimEvent:FireServer(player.Name, {
+        animType = animName,
+        rig = player.Character.Humanoid.RigType.Name
+    })
+end
+
+-- زر لـ Oldschool Animation Pack
+AnimationHubSetting:AddButton({
+    Title = "Oldschool Animation Pack",
+    Description = "Apply Oldschool animations (R6/R15)",
+    Callback = function()
+        local animations = {
+            R15 = {
                 idle = 5319828216,
                 walk = 5319847204,
                 run = 5319844329,
                 jump = 5319841935,
                 fall = 5319839762
             },
-            ["Robot Animation Package"] = {
+            R6 = {
+                idle = 5319828216, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                walk = 5319847204,
+                run = 5319844329,
+                jump = 5319841935,
+                fall = 5319839762
+            }
+        }
+        
+        ApplyAnimation("Oldschool Animation Pack", animations)
+    end
+})
+
+-- زر لـ Robot Animation Package
+AnimationHubSetting:AddButton({
+    Title = "Robot Animation Package",
+    Description = "Apply Robot animations (R6/R15)",
+    Callback = function()
+        local animations = {
+            R15 = {
                 idle = 616088211,
                 walk = 616146177,
                 run = 616163682,
                 jump = 616139451,
                 fall = 616134815
             },
-            ["Magsa Animation Package"] = {
+            R6 = {
+                idle = 616088211, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                walk = 616146177,
+                run = 616163682,
+                jump = 616139451,
+                fall = 616134815
+            }
+        }
+        
+        ApplyAnimation("Robot Animation Package", animations)
+    end
+})
+
+-- زر لـ Magsa Animation Package
+AnimationHubSetting:AddButton({
+    Title = "Magsa Animation Package",
+    Description = "Apply Magsa animations (R6/R15)",
+    Callback = function()
+        local animations = {
+            R15 = {
                 idle = 3489171152,
                 walk = 3489171152,
                 run = 3489173414,
                 jump = 3489175274,
                 fall = 3489174223
             },
-            ["Robot Animation Pack"] = {
+            R6 = {
+                idle = 3489171152, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                walk = 3489171152,
+                run = 3489173414,
+                jump = 3489175274,
+                fall = 3489174223
+            }
+        }
+        
+        ApplyAnimation("Magsa Animation Package", animations)
+    end
+})
+
+-- زر لـ Robot Animation Pack
+AnimationHubSetting:AddButton({
+    Title = "Robot Animation Pack",
+    Description = "Apply Robot animations (R6/R15)",
+    Callback = function()
+        local animations = {
+            R15 = {
                 idle = 5712866595,
                 walk = 5712850190,
                 run = 5712856902,
                 jump = 5712848865,
                 fall = 5712852267
             },
-            ["Levitation Animation Pack"] = {
+            R6 = {
+                idle = 5712866595, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                walk = 5712850190,
+                run = 5712856902,
+                jump = 5712848865,
+                fall = 5712852267
+            }
+        }
+        
+        ApplyAnimation("Robot Animation Pack", animations)
+    end
+})
+
+-- زر لـ Levitation Animation Pack
+AnimationHubSetting:AddButton({
+    Title = "Levitation Animation Pack",
+    Description = "Apply Levitation animations (R6/R15)",
+    Callback = function()
+        local animations = {
+            R15 = {
                 idle = 616006778,
+                walk = 616013216,
+                run = 616010382,
+                jump = 616008087,
+                fall = 616005863
+            },
+            R6 = {
+                idle = 616006778, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
                 walk = 616013216,
                 run = 616010382,
                 jump = 616008087,
@@ -1413,66 +1622,6 @@ AnimationSetting:AddDropdown({
             }
         }
         
-        local animations = animationIDs[selected]
-        if animations then
-            for animType, animID in pairs(animations) do
-                local anim = Instance.new("Animation")
-                anim.Name = "CustomAnim_" .. animType
-                anim.AnimationId = "rbxassetid://" .. animID
-                anim.Parent = character
-                
-                local animTrack = humanoid:LoadAnimation(anim)
-                
-                if animType == "idle" then
-                    animTrack:Play()
-                elseif animType == "walk" then
-                    humanoid.Running:Connect(function(speed)
-                        if speed > 0.1 and speed < 10 and not humanoid.Jump then
-                            if not animTrack.IsPlaying then
-                                animTrack:Play()
-                            end
-                        else
-                            if animTrack.IsPlaying then
-                                animTrack:Stop()
-                            end
-                        end
-                    end)
-                elseif animType == "run" then
-                    humanoid.Running:Connect(function(speed)
-                        if speed >= 10 and not humanoid.Jump then
-                            if not animTrack.IsPlaying then
-                                animTrack:Play()
-                            end
-                        else
-                            if animTrack.IsPlaying then
-                                animTrack:Stop()
-                            end
-                        end
-                    end)
-                elseif animType == "jump" then
-                    humanoid.Jumping:Connect(function(jumping)
-                        if jumping then
-                            animTrack:Play()
-                        else
-                            animTrack:Stop()
-                        end
-                    end)
-                elseif animType == "fall" then
-                    humanoid.StateChanged:Connect(function(oldState, newState)
-                        if newState == Enum.HumanoidStateType.Freefall then
-                            animTrack:Play()
-                        elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
-                            animTrack:Stop()
-                        end
-                    end)
-                end
-            end
-        end
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Animation Changed",
-            Text = "Now using " .. selected,
-            Duration = 3
-        })
+        ApplyAnimation("Levitation Animation Pack", animations)
     end
 })
