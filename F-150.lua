@@ -332,6 +332,7 @@ local Tabs = {
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
+    Server = Window:AddTab({ Title = "Server", Icon = "https://www.roblox.com/asset/?id=93989683556149" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -1085,6 +1086,11 @@ PlacesTeleport:AddButton({
 getgenv().Ready = true
 
 local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
+local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
+local NoClipPlayer = Tabs.Player:AddSection("No clip")
+local Player = Tabs.Player:AddSection("")
+
+----------------- Infinite Jump --------------------
 
 PlkFarmPlayer:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
@@ -1109,4 +1115,145 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 
----------------- haha -------------------
+----------------- speed & jump --------------------
+
+SpeedJumpPlayer:AddToggle("HighJump", {
+    Title = "High Jump",
+    Description = "Enables higher jumping ability",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
+        else
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+    end
+})
+
+
+SpeedJumpPlayer:AddToggle("SpeedBoost", {
+    Title = "Speed Boost",
+    Description = "Increases movement speed",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+        else
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+})
+
+----------------- No clip --------------------
+
+
+NoClipPlayer:AddToggle("Noclip", {
+    Title = "Noclip",
+    Description = "Walk through walls and obstacles",
+    Default = false,
+    Callback = function(state)
+        _G.Noclip = state
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        local noclipConnection
+        if state then
+            noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                if not _G.Noclip then 
+                    if noclipConnection then
+                        noclipConnection:Disconnect()
+                    end
+                    return
+                end
+                
+                if character and character:FindFirstChild("Humanoid") then
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if noclipConnection then
+                noclipConnection:Disconnect()
+            end
+            
+            if character then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+        player.CharacterAdded:Connect(function(newCharacter)
+            character = newCharacter
+            wait(1)
+            if _G.Noclip then
+                noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                    if not _G.Noclip then 
+                        if noclipConnection then
+                            noclipConnection:Disconnect()
+                        end
+                        return
+                    end
+                    
+                    if character and character:FindFirstChild("Humanoid") then
+                        for _, part in pairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+    end
+})
+
+local FarmsServerHub = Tabs.Server:AddSection("Server")
+
+FarmsServerHub:AddButton({
+    Title = "Join New Server",
+    Description = "Teleport to a different server of the same game",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        
+        -- الحصول على قائمة من السيرفرات المتاحة
+        local servers = {}
+        local page = TeleportService:GetSortedServersInfoForPlaceId(placeId, 100)
+        for _, server in ipairs(page) do
+            if server.playing < server.maxPlayers then
+                table.insert(servers, server)
+            end
+        end
+        
+        -- الانتقال إلى سيرفر عشوائي مختلف
+        if #servers > 0 then
+            local randomServer = servers[math.random(1, #servers)]
+            TeleportService:TeleportToPlaceInstance(placeId, randomServer.id, game.Players.LocalPlayer)
+        else
+            -- إذا لم يتم العثور على سيرفرات متاحة
+            TeleportService:Teleport(placeId, game.Players.LocalPlayer)
+        end
+           
+        else
+            Notify("Oops Error")
+        end    
+    end
+})
+
+
+FarmsServerHub:AddButton({
+    Title = "Rejoin Same Server",
+    Description = "Reconnect to the current server",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        local jobId = game.JobId
+        
+        TeleportService:TeleportToPlaceInstance(placeId, jobId, game.Players.LocalPlayer)
+    end
+})
