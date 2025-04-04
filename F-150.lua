@@ -1255,7 +1255,8 @@ FarmsServerHub:AddButton({
 
 ---------------- Setting -------------------
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
-local FarmFpsQuServer = Tabs.Setting:AddSection("FPS & Quality")
+local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
+local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
 
 
 FarmsSettingHub:AddButton({
@@ -1270,7 +1271,7 @@ FarmsSettingHub:AddButton({
 })
 
 
-FarmFpsQuServer:AddButton({
+FarmFpsQuSetting:AddButton({
     Title = "FPS Boost",
     Description = "Improves frame rate by reducing graphics",
     Callback = function()
@@ -1306,7 +1307,7 @@ FarmFpsQuServer:AddButton({
 })
 
 
-FarmFpsQuServer:AddButton({
+FarmFpsQuSetting:AddButton({
     Title = "Quality Boost",
     Description = "Enhances visual quality of the game",
     Callback = function()
@@ -1335,5 +1336,154 @@ FarmFpsQuServer:AddButton({
         workspace.Terrain.WaterTransparency = 0.65
         workspace.Terrain.WaterWaveSize = 0.15
         workspace.Terrain.WaterWaveSpeed = 10
+    end
+})
+
+
+-- إضافة قائمة منسدلة لاختيار حزم الأنيميشن
+AnimationHubSetting:AddDropdown({
+    Title = "Animation Packs",
+    Description = "Change your character animations (visible to others)",
+    Values = {
+        "Default",
+        "Oldschool Animation Pack",
+        "Robot Animation Package",
+        "Magsa Animation Package", 
+        "Robot Animation Pack",
+        "Levitation Animation Pack"
+    },
+    Default = "Default",
+    Multi = false,
+    Callback = function(selected)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        -- حذف الأنيميشنات السابقة إذا وجدت
+        for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
+            animTrack:Stop()
+        end
+        
+        -- حذف أي أنيميشن تم إنشاؤه مسبقًا
+        for _, anim in pairs(character:GetChildren()) do
+            if anim.Name:match("CustomAnim_") then
+                anim:Destroy()
+            end
+        end
+        
+        if selected == "Default" then
+            -- استعادة الأنيميشن الافتراضي
+            character:BreakJoints()
+            player:LoadCharacter()
+            return
+        end
+        
+        -- هذه قائمة تحتوي على معرفات (IDs) للأنيميشنات المختلفة
+        local animationIDs = {
+            ["Oldschool Animation Pack"] = {
+                idle = 5319828216,
+                walk = 5319847204,
+                run = 5319844329,
+                jump = 5319841935,
+                fall = 5319839762
+            },
+            ["Robot Animation Package"] = {
+                idle = 616088211,
+                walk = 616146177,
+                run = 616163682,
+                jump = 616139451,
+                fall = 616134815
+            },
+            ["Magsa Animation Package"] = {
+                idle = 3489171152,
+                walk = 3489171152,
+                run = 3489173414,
+                jump = 3489175274,
+                fall = 3489174223
+            },
+            ["Robot Animation Pack"] = {
+                idle = 5712866595,
+                walk = 5712850190,
+                run = 5712856902,
+                jump = 5712848865,
+                fall = 5712852267
+            },
+            ["Levitation Animation Pack"] = {
+                idle = 616006778,
+                walk = 616013216,
+                run = 616010382,
+                jump = 616008087,
+                fall = 616005863
+            }
+        }
+        
+        -- تطبيق الأنيميشن المختار
+        local animations = animationIDs[selected]
+        if animations then
+            -- إنشاء وتشغيل الأنيميشنات المخصصة
+            for animType, animID in pairs(animations) do
+                local anim = Instance.new("Animation")
+                anim.Name = "CustomAnim_" .. animType
+                anim.AnimationId = "rbxassetid://" .. animID
+                anim.Parent = character
+                
+                local animTrack = humanoid:LoadAnimation(anim)
+                
+                if animType == "idle" then
+                    animTrack:Play()
+                elseif animType == "walk" then
+                    -- تشغيل أنيميشن المشي عند المشي
+                    humanoid.Running:Connect(function(speed)
+                        if speed > 0.1 and speed < 10 and not humanoid.Jump then
+                            if not animTrack.IsPlaying then
+                                animTrack:Play()
+                            end
+                        else
+                            if animTrack.IsPlaying then
+                                animTrack:Stop()
+                            end
+                        end
+                    end)
+                elseif animType == "run" then
+                    -- تشغيل أنيميشن الجري عند الجري
+                    humanoid.Running:Connect(function(speed)
+                        if speed >= 10 and not humanoid.Jump then
+                            if not animTrack.IsPlaying then
+                                animTrack:Play()
+                            end
+                        else
+                            if animTrack.IsPlaying then
+                                animTrack:Stop()
+                            end
+                        end
+                    end)
+                elseif animType == "jump" then
+                    -- تشغيل أنيميشن القفز عند القفز
+                    humanoid.Jumping:Connect(function(jumping)
+                        if jumping then
+                            animTrack:Play()
+                        else
+                            animTrack:Stop()
+                        end
+                    end)
+                elseif animType == "fall" then
+                    -- تشغيل أنيميشن السقوط عند السقوط
+                    humanoid.StateChanged:Connect(function(oldState, newState)
+                        if newState == Enum.HumanoidStateType.Freefall then
+                            animTrack:Play()
+                        elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
+                            animTrack:Stop()
+                        end
+                    end)
+                end
+            end
+        end
+        
+        -- إخطار اللاعب بنجاح تغيير الأنيميشن
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Animation Changed",
+            Text = "Now using " .. selected,
+            Duration = 3
+        })
     end
 })
