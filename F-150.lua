@@ -1351,7 +1351,6 @@ local function ApplyAnimation(animName, animations)
     local function setupAnimations(character)
         local humanoid = character:WaitForChild("Humanoid")
         
-        -- التأكد من أن الشخصية هي R15
         if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
             game:GetService("StarterGui"):SetCore("SendNotification", {
                 Title = "Animation Error",
@@ -1361,21 +1360,17 @@ local function ApplyAnimation(animName, animations)
             return
         end
         
-        -- إيقاف جميع الأنيميشنات الحالية
         for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
             animTrack:Stop()
         end
         
-        -- حذف الأنيميشنات المخصصة السابقة
         for _, anim in pairs(character:GetChildren()) do
             if anim.Name:match("CustomAnim_") then
                 anim:Destroy()
             end
         end
         
-        -- إنشاء وتطبيق الأنيميشنات الجديدة
         for animType, animID in pairs(animations) do
-            -- التحقق من صلاحية معرف الأنيميشن
             if type(animID) ~= "number" or animID <= 0 then
                 continue
             end
@@ -1580,6 +1575,7 @@ local function ApplyAnimation(animName, animations)
         ApplyAnimation("Levitation Animation Pack", animations)
     end
  })
+
 ----------------- MOODE ---------------
 
 FarmMoodHub:AddButton({
