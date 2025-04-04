@@ -612,7 +612,6 @@ TrollingMain:AddButton({
 
 local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
 local OptionsTargetting = Tabs.Targetting:AddSection("Options")
-local OptionsTargetting = Tabs.Targetting:AddSection("Options")
 
 local TargetInput = PlayerNameTargetting:AddInput("Input", {
     Title = "Player Name",
@@ -1258,7 +1257,7 @@ FarmsServerHub:AddButton({
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
 local AnimationHubSetting = Tabs.Setting:AddSection("Animation")
-
+local FarmMoodHub = Tabs.Setting:AddSection("Mood")
 
 ----------- FOG -------------
 FarmsSettingHub:AddButton({
@@ -1351,14 +1350,12 @@ AnimationHubSetting:AddButton({
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         
-        -- حذف الأنيميشنات السابقة
         for _, anim in pairs(character:GetChildren()) do
             if anim.Name:match("CustomAnim_") then
                 anim:Destroy()
             end
         end
         
-        -- إعادة تحميل الشخصية للعودة للأنيميشن الافتراضي
         character:BreakJoints()
         player:LoadCharacter()
         
@@ -1368,33 +1365,27 @@ AnimationHubSetting:AddButton({
             Duration = 3
         })
     end
-})
-
--- دالة عامة لتطبيق الأنيميشن
-local function ApplyAnimation(animName, animations)
+ })
+ 
+ local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
     
-    -- دالة للتطبيق على الشخصية
     local function setupAnimations(character)
         local humanoid = character:WaitForChild("Humanoid")
         local rigType = humanoid.RigType
         
-        -- حذف الأنيميشنات السابقة إذا وجدت
         for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
             animTrack:Stop()
         end
         
-        -- حذف أي أنيميشن تم إنشاؤه مسبقًا
         for _, anim in pairs(character:GetChildren()) do
             if anim.Name:match("CustomAnim_") then
                 anim:Destroy()
             end
         end
         
-        -- تحديد الأنيميشنات المناسبة للـ rig type
         local animSet = rigType == Enum.HumanoidRigType.R15 and animations.R15 or animations.R6
         
-        -- إنشاء وتشغيل الأنيميشنات المخصصة
         for animType, animID in pairs(animSet) do
             local anim = Instance.new("Animation")
             anim.Name = "CustomAnim_" .. animType
@@ -1454,17 +1445,14 @@ local function ApplyAnimation(animName, animations)
         setupAnimations(character)
     end
     
-    -- تطبيق الأنيميشن على الشخصية الجديدة بعد إعادة النشر
     player.CharacterAdded:Connect(setupAnimations)
     
-    -- إظهار إشعار بتغيير الأنيميشن
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Animation Changed",
         Text = "Now using " .. animName,
         Duration = 3
     })
     
-    -- لجعل الأنيميشن مرئياً للاعبين الآخرين
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local AnimEvent = ReplicatedStorage:FindFirstChild("AnimationEvent")
     
@@ -1473,7 +1461,6 @@ local function ApplyAnimation(animName, animations)
         AnimEvent.Name = "AnimationEvent"
         AnimEvent.Parent = ReplicatedStorage
         
-        -- إعداد النظام لمزامنة الأنيميشن لجميع اللاعبين
         local function setupRemoteSystem()
             local function onAnimEventFired(fromPlayer, animationData)
                 for _, otherPlayer in pairs(game.Players:GetPlayers()) do
@@ -1489,15 +1476,13 @@ local function ApplyAnimation(animName, animations)
         setupRemoteSystem()
     end
     
-    -- إرسال معلومات الأنيميشن للاعبين الآخرين
     AnimEvent:FireServer(player.Name, {
         animType = animName,
         rig = player.Character.Humanoid.RigType.Name
     })
-end
-
--- زر لـ Oldschool Animation Pack
-AnimationHubSetting:AddButton({
+ end
+ 
+ AnimationHubSetting:AddButton({
     Title = "Oldschool Animation Pack",
     Description = "Apply Oldschool animations (R6/R15)",
     Callback = function()
@@ -1510,7 +1495,7 @@ AnimationHubSetting:AddButton({
                 fall = 5319839762
             },
             R6 = {
-                idle = 5319828216, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                idle = 5319828216,
                 walk = 5319847204,
                 run = 5319844329,
                 jump = 5319841935,
@@ -1520,10 +1505,9 @@ AnimationHubSetting:AddButton({
         
         ApplyAnimation("Oldschool Animation Pack", animations)
     end
-})
-
--- زر لـ Robot Animation Package
-AnimationHubSetting:AddButton({
+ })
+ 
+ AnimationHubSetting:AddButton({
     Title = "Robot Animation Package",
     Description = "Apply Robot animations (R6/R15)",
     Callback = function()
@@ -1536,7 +1520,7 @@ AnimationHubSetting:AddButton({
                 fall = 616134815
             },
             R6 = {
-                idle = 616088211, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                idle = 616088211,
                 walk = 616146177,
                 run = 616163682,
                 jump = 616139451,
@@ -1546,10 +1530,9 @@ AnimationHubSetting:AddButton({
         
         ApplyAnimation("Robot Animation Package", animations)
     end
-})
-
--- زر لـ Magsa Animation Package
-AnimationHubSetting:AddButton({
+ })
+ 
+ AnimationHubSetting:AddButton({
     Title = "Magsa Animation Package",
     Description = "Apply Magsa animations (R6/R15)",
     Callback = function()
@@ -1562,7 +1545,7 @@ AnimationHubSetting:AddButton({
                 fall = 3489174223
             },
             R6 = {
-                idle = 3489171152, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                idle = 3489171152,
                 walk = 3489171152,
                 run = 3489173414,
                 jump = 3489175274,
@@ -1572,10 +1555,9 @@ AnimationHubSetting:AddButton({
         
         ApplyAnimation("Magsa Animation Package", animations)
     end
-})
-
--- زر لـ Robot Animation Pack
-AnimationHubSetting:AddButton({
+ })
+ 
+ AnimationHubSetting:AddButton({
     Title = "Robot Animation Pack",
     Description = "Apply Robot animations (R6/R15)",
     Callback = function()
@@ -1588,7 +1570,7 @@ AnimationHubSetting:AddButton({
                 fall = 5712852267
             },
             R6 = {
-                idle = 5712866595, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                idle = 5712866595,
                 walk = 5712850190,
                 run = 5712856902,
                 jump = 5712848865,
@@ -1598,10 +1580,9 @@ AnimationHubSetting:AddButton({
         
         ApplyAnimation("Robot Animation Pack", animations)
     end
-})
-
--- زر لـ Levitation Animation Pack
-AnimationHubSetting:AddButton({
+ })
+ 
+ AnimationHubSetting:AddButton({
     Title = "Levitation Animation Pack",
     Description = "Apply Levitation animations (R6/R15)",
     Callback = function()
@@ -1614,7 +1595,7 @@ AnimationHubSetting:AddButton({
                 fall = 616005863
             },
             R6 = {
-                idle = 616006778, -- استخدم نفس الأرقام للـ R6 أو استبدلها بأرقام خاصة بالـ R6
+                idle = 616006778,
                 walk = 616013216,
                 run = 616010382,
                 jump = 616008087,
@@ -1624,4 +1605,50 @@ AnimationHubSetting:AddButton({
         
         ApplyAnimation("Levitation Animation Pack", animations)
     end
-})
+ })
+
+----------------- MOODE ---------------
+
+FarmMoodHub:AddButton({
+    Title = "Night Mode",
+    Description = "Change game time to night",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 0
+        lighting.Brightness = 0.1
+        lighting.Ambient = Color3.fromRGB(20, 20, 30)
+        lighting.OutdoorAmbient = Color3.fromRGB(5, 5, 10)
+        lighting.FogEnd = 500
+        lighting.FogColor = Color3.fromRGB(0, 0, 20)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Day Mode",
+    Description = "Change game time to day",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 12
+        lighting.Brightness = 1.5
+        lighting.Ambient = Color3.fromRGB(150, 150, 150)
+        lighting.OutdoorAmbient = Color3.fromRGB(120, 120, 120)
+        lighting.FogEnd = 1000
+        lighting.FogColor = Color3.fromRGB(255, 255, 255)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Default Mode",
+    Description = "Reset lighting to default",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 14
+        lighting.Brightness = 1
+        lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        lighting.FogEnd = 100000
+        lighting.FogColor = Color3.fromRGB(191, 191, 191)
+    end
+ })
+
+ ----------------- ??? ---------------
