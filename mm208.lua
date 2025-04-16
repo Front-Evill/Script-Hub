@@ -20,9 +20,10 @@ local RaritesColor = {
     Default = Vector3.new(106, 106, 106)
 }
 --Functions
+
 local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
-    local connections = {}
+    local connections = {}  -- تخزين الاتصالات لإلغائها لاحقاً
     
     local function clearConnections()
         for _, connection in pairs(connections) do
@@ -32,14 +33,14 @@ local function ApplyAnimation(animName, animations)
     end
     
     local function setupAnimations(character)
-        clearConnections()
+        clearConnections()  -- إلغاء الاتصالات السابقة
         
         local humanoid = character:WaitForChild("Humanoid")
         
         if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "ERROR 😭",
-                Text = "Aniamtion for 15r",
+                Title = "Animation Error",
+                Text = "This animation pack works only with R15 rigs",
                 Duration = 3
             })
             return
@@ -56,84 +57,91 @@ local function ApplyAnimation(animName, animations)
         end
         
         for animType, animID in pairs(animations) do
-            if type(animID) == "number" and animID > 0 then
-                local anim = Instance.new("Animation")
-                anim.Name = "CustomAnim_" .. animType
-                anim.AnimationId = "rbxassetid://" .. animID
-                anim.Parent = character
-                
-                local success, animTrack = pcall(function()
-                    return humanoid:LoadAnimation(anim)
+            if type(animID) ~= "number" or animID <= 0 then
+                continue
+            end
+            
+            local anim = Instance.new("Animation")
+            anim.Name = "CustomAnim_" .. animType
+            anim.AnimationId = "rbxassetid://" .. animID
+            anim.Parent = character
+            
+            local success, animTrack = pcall(function()
+                return humanoid:LoadAnimation(anim)
+            end)
+            
+            if not success or not animTrack then
+                continue
+            end
+            
+            if animType == "idle" then
+                animTrack:Play()
+            elseif animType == "walk" then
+                local conn = humanoid.Running:Connect(function(speed)
+                    if speed > 0.1 and speed < 10 and not humanoid.Jump then
+                        if not animTrack.IsPlaying then
+                            animTrack:Play()
+                        end
+                    else
+                        if animTrack.IsPlaying then
+                            animTrack:Stop()
+                        end
+                    end
+                end)
+                table.insert(connections, conn)
+            elseif animType == "run" then
+                local conn = humanoid.Running:Connect(function(speed)
+                    if speed >= 10 and not humanoid.Jump then
+                        if not animTrack.IsPlaying then
+                            animTrack:Play()
+                        end
+                    else
+                        if animTrack.IsPlaying then
+                            animTrack:Stop()
+                        end
+                    end
+                end)
+                table.insert(connections, conn)
+            elseif animType == "jump" then
+                -- فحص إذا كان حدث Jumping موجود
+                local success, _ = pcall(function()
+                    return humanoid.Jumping
                 end)
                 
-                if success and animTrack then
-                    if animType == "idle" then
-                        animTrack:Play()
-                    elseif animType == "walk" then
-                        local conn = humanoid.Running:Connect(function(speed)
-                            if speed > 0.1 and speed < 10 and not humanoid.Jump then
-                                if not animTrack.IsPlaying then
-                                    animTrack:Play()
-                                end
-                            else
-                                if animTrack.IsPlaying then
-                                    animTrack:Stop()
-                                end
-                            end
-                        end)
-                        table.insert(connections, conn)
-                    elseif animType == "run" then
-                        local conn = humanoid.Running:Connect(function(speed)
-                            if speed >= 10 and not humanoid.Jump then
-                                if not animTrack.IsPlaying then
-                                    animTrack:Play()
-                                end
-                            else
-                                if animTrack.IsPlaying then
-                                    animTrack:Stop()
-                                end
-                            end
-                        end)
-                        table.insert(connections, conn)
-                    elseif animType == "jump" then
-                        local success, _ = pcall(function()
-                            return humanoid.Jumping
-                        end)
-                        
-                        if success then
-                            local conn = humanoid.Jumping:Connect(function(jumping)
-                                if jumping then
-                                    animTrack:Play()
-                                else
-                                    animTrack:Stop()
-                                end
-                            end)
-                            table.insert(connections, conn)
+                if success then
+                    local conn = humanoid.Jumping:Connect(function(jumping)
+                        if jumping then
+                            animTrack:Play()
                         else
-                            local conn = humanoid.StateChanged:Connect(function(_, newState)
-                                if newState == Enum.HumanoidStateType.Jumping then
-                                    animTrack:Play()
-                                elseif newState ~= Enum.HumanoidStateType.Jumping and animTrack.IsPlaying then
-                                    animTrack:Stop()
-                                end
-                            end)
-                            table.insert(connections, conn)
+                            animTrack:Stop()
                         end
-                    elseif animType == "fall" then
-                        local conn = humanoid.StateChanged:Connect(function(oldState, newState)
-                            if newState == Enum.HumanoidStateType.Freefall then
-                                animTrack:Play()
-                            elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
-                                animTrack:Stop()
-                            end
-                        end)
-                        table.insert(connections, conn)
-                    end
+                    end)
+                    table.insert(connections, conn)
+                else
+                    -- استخدام StateChanged كبديل
+                    local conn = humanoid.StateChanged:Connect(function(_, newState)
+                        if newState == Enum.HumanoidStateType.Jumping then
+                            animTrack:Play()
+                        elseif newState ~= Enum.HumanoidStateType.Jumping and animTrack.IsPlaying then
+                            animTrack:Stop()
+                        end
+                    end)
+                    table.insert(connections, conn)
                 end
+            elseif animType == "fall" then
+                local conn = humanoid.StateChanged:Connect(function(oldState, newState)
+                    if newState == Enum.HumanoidStateType.Freefall then
+                        animTrack:Play()
+                    elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
+                        animTrack:Stop()
+                    end
+                end)
+                table.insert(connections, conn)
             end
         end
     end
-
+ 
+    -- تنظيف قبل البدء من جديد
     clearConnections()
     
     local character = player.Character
@@ -141,16 +149,7 @@ local function ApplyAnimation(animName, animations)
         setupAnimations(character)
     end
     
-    local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
-    table.insert(connections, charAddedConn)
-    
-    return {
-        disconnect = function()
-            clearConnections()
-        end
-    }
-end
-
+    -- تخزين اتصال CharacterAdded للتنظيف لاحقاً
     local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
     table.insert(connections, charAddedConn)
     
@@ -184,6 +183,7 @@ end
     })
  end
  
+
 
 local function Notify(Title,Dis)
     pcall(function()
@@ -482,7 +482,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By Front / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -502,9 +502,20 @@ local Tabs = {
 local Options = Fluent.Options
 Window:SelectTab(1)
 
+local FlyHubMain = Tabs.Main:AddSection("Fly")
 local AutofarmMain = Tabs.Main:AddSection("Auto Farms")
 local AutoMurderMain = Tabs.Main:AddSection("Auto Murder")
 local TrollingMain = Tabs.Main:AddSection("Trolling")
+
+
+FlyHubMain:AddButton({
+    Title = "Fly Script",
+    Description =  nil,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
+    end
+})
+
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
     Title = "AutoCoins", 
@@ -1238,11 +1249,9 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-
 local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
 local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
 local NoClipPlayer = Tabs.Player:AddSection("No clip")
-local AnimationHub4 = Tabs.Player:AssSection("Animation")
 
 ----------------- Infinite Jump --------------------
 
@@ -1367,8 +1376,11 @@ NoClipPlayer:AddToggle("Noclip", {
 })
 
 
+---------------- Setting -------------------
+
 local FarmsSettingHub = Tabs.Setting:AddSection("FOG")
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
+local ServerHub3 = Tabs.Setting:AddSection("Server")
 local FarmMoodHub = Tabs.Setting:AddSection("Mood")
 
 ----------- FOG -------------
@@ -1452,6 +1464,9 @@ FarmFpsQuSetting:AddButton({
     end
 })
 
+
+
+
 ----------------- MOODE ---------------
 
 FarmMoodHub:AddButton({
@@ -1496,9 +1511,22 @@ FarmMoodHub:AddButton({
     end
  })
 
+ ----------------- TAB SCIN ---------------
+
+ local SwordHub1 = Tabs.Scain:AddSection("SWORD FREE 4/8 april 😐")
+ local GunHub2 = Tabs.Scain:AddSection("GUN FREE 4/8 april 😐")
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE 4/9 april 😐")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
- local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
+
+
+
+ --------------------------------  SC  SWORD FREE --------------------------------
  
+ --------------------------------  SC  GUN FREE   --------------------------------
+ 
+ --------------------------------  SC  DANCE FREE --------------------------------
+
+
  AnimationHub4:AddButton({
     Title = "Oldschool Animation Pack",
     Description = "Apply Oldschool animations (R15)",
@@ -1530,8 +1558,7 @@ FarmMoodHub:AddButton({
         ApplyAnimation("Robot Animation Package", animations)
     end
  })
-
-
+ 
  AnimationHub4:AddButton({
     Title = "Magsa Animation Package",
     Description = "Apply Magsa animations (R15)",
