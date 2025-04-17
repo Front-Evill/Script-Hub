@@ -23,35 +23,51 @@ local RaritesColor = {
 
 local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
-    local connections = {}  -- تخزين الاتصالات لإلغائها لاحقاً
     
-    -- إنشاء متغير عام لتخزين الحزمة الحالية
-    if not _G.CurrentAnimPack then
-        _G.CurrentAnimPack = {
-            name = "",
-            connections = {}
-        }
-    end
-    
-    -- إلغاء الاتصالات السابقة للحزمة الحالية
-    local function clearConnections()
-        for _, connection in pairs(_G.CurrentAnimPack.connections) do
-            if typeof(connection) == "RBXScriptConnection" and connection.Connected then
-                connection:Disconnect()
+    -- تنظيف الرسوم المتحركة والاتصالات الحالية
+    if _G.CurrentAnimSetup then
+        -- إلغاء جميع الاتصالات السابقة
+        for _, conn in pairs(_G.CurrentAnimSetup.connections) do
+            if typeof(conn) == "RBXScriptConnection" and conn.Connected then
+                conn:Disconnect()
             end
         end
-        _G.CurrentAnimPack.connections = {}
+        
+        -- إيقاف جميع الرسوم المتحركة وإزالتها
+        if _G.CurrentAnimSetup.character then
+            local humanoid = _G.CurrentAnimSetup.character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+                    track:Stop()
+                end
+            end
+            
+            for _, anim in pairs(_G.CurrentAnimSetup.character:GetChildren()) do
+                if anim:IsA("Animation") and anim.Name:match("CustomAnim_") then
+                    anim:Destroy()
+                end
+            end
+        end
     end
     
-    -- تنظيف الحزمة السابقة قبل تطبيق الجديدة
-    clearConnections()
+    -- إنشاء مجموعة جديدة للإعداد الحالي
+    _G.CurrentAnimSetup = {
+        name = animName,
+        connections = {},
+        animTracks = {},
+        character = nil,
+        lastState = "idle"
+    }
     
     local function setupAnimations(character)
         if not character then return end
         
+        -- تخزين مرجع للشخصية
+        _G.CurrentAnimSetup.character = character
+        
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         if not humanoid then
-            wait(0.5)
+            task.wait(0.5)
             humanoid = character:FindFirstChildOfClass("Humanoid")
             if not humanoid then return end
         end
@@ -67,8 +83,8 @@ local function ApplyAnimation(animName, animations)
         end
         
         -- إيقاف جميع الرسوم المتحركة الحالية
-        for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
-            animTrack:Stop()
+        for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+            track:Stop()
         end
         
         -- إزالة الرسوم المتحركة المخصصة السابقة
@@ -78,9 +94,10 @@ local function ApplyAnimation(animName, animations)
             end
         end
         
+        -- إنشاء وتحميل الرسوم المتحركة الجديدة
+        local animationObjects = {}
         local animTracks = {}
         
-        -- إنشاء وتحميل الرسوم المتحركة الجديدة
         for animType, animID in pairs(animations) do
             if type(animID) ~= "number" or animID <= 0 then
                 continue
@@ -90,123 +107,148 @@ local function ApplyAnimation(animName, animations)
             anim.Name = "CustomAnim_" .. animType
             anim.AnimationId = "rbxassetid://" .. animID
             anim.Parent = character
+            animationObjects[animType] = anim
             
             local success, animTrack = pcall(function()
                 return humanoid:LoadAnimation(anim)
             end)
             
-            if not success or not animTrack then
+            if success and animTrack then
+                animTracks[animType] = animTrack
+                
+                -- ضبط إعدادات الرسوم المتحركة
+                if animType == "idle" then
+                    animTrack.Priority = Enum.AnimationPriority.Core
+                    animTrack.Looped = true
+                elseif animType == "walk" or animType == "run" then
+                    animTrack.Priority = Enum.AnimationPriority.Movement
+                    animTrack.Looped = true
+                elseif animType == "jump" then
+                    animTrack.Priority = Enum.AnimationPriority.Action
+                elseif animType == "fall" then
+                    animTrack.Priority = Enum.AnimationPriority.Action
+                end
+            else
                 warn("فشل تحميل الرسم المتحرك: " .. animType)
-                continue
-            end
-            
-            animTracks[animType] = animTrack
-            
-            -- ضبط الأولوية وتكرار للرسوم المتحركة الأساسية
-            if animType == "idle" then
-                animTrack.Priority = Enum.AnimationPriority.Core
-                animTrack.Looped = true
-                animTrack:Play()
             end
         end
         
-        -- إعداد اتصالات الأحداث للرسوم المتحركة
+        _G.CurrentAnimSetup.animTracks = animTracks
         
-        -- المشي والجري
-        local movementConn = humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
-            local velocity = humanoid.RootPart and humanoid.RootPart.Velocity or Vector3.new(0, 0, 0)
-            local speed = velocity.Magnitude
-            
-            local isMoving = speed > 0.1 and humanoid:GetState() ~= Enum.HumanoidStateType.Jumping 
-                        and humanoid:GetState() ~= Enum.HumanoidStateType.Freefall
-            
-            if isMoving then
-                if speed >= 10 and animTracks["run"] then
-                    -- الركض
-                    if animTracks["walk"] and animTracks["walk"].IsPlaying then
-                        animTracks["walk"]:Stop()
-                    end
-                    if not animTracks["run"].IsPlaying then
-                        animTracks["run"]:Play()
-                    end
-                elseif speed < 10 and animTracks["walk"] then
-                    -- المشي
-                    if animTracks["run"] and animTracks["run"].IsPlaying then
-                        animTracks["run"]:Stop()
-                    end
-                    if not animTracks["walk"].IsPlaying then
-                        animTracks["walk"]:Play()
-                    end
-                end
-            else
-                -- إيقاف المشي والركض عند التوقف
-                if animTracks["walk"] and animTracks["walk"].IsPlaying then
-                    animTracks["walk"]:Stop()
-                end
-                if animTracks["run"] and animTracks["run"].IsPlaying then
-                    animTracks["run"]:Stop()
-                end
+        -- تشغيل حركة الوقوف مبدئياً
+        if animTracks["idle"] then
+            animTracks["idle"]:Play()
+            _G.CurrentAnimSetup.lastState = "idle"
+        end
+        
+        -- دالة تغيير الحالة - تتأكد من إيقاف الرسوم المتحركة غير المستخدمة
+        local function changeState(newState)
+            if _G.CurrentAnimSetup.lastState == newState then 
+                return -- تجنب التحديثات غير الضرورية
             end
-        end)
-        table.insert(_G.CurrentAnimPack.connections, movementConn)
-        
-        -- القفز والسقوط
-        local stateConn = humanoid.StateChanged:Connect(function(oldState, newState)
-            if newState == Enum.HumanoidStateType.Jumping then
-                if animTracks["jump"] then
-                    animTracks["jump"]:Play()
-                end
-                if animTracks["walk"] and animTracks["walk"].IsPlaying then
+            
+            -- إيقاف الرسوم المتحركة النشطة الحالية
+            if _G.CurrentAnimSetup.lastState ~= newState then
+                if _G.CurrentAnimSetup.lastState == "idle" and animTracks["idle"] and animTracks["idle"].IsPlaying then
+                    animTracks["idle"]:Stop()
+                elseif _G.CurrentAnimSetup.lastState == "walk" and animTracks["walk"] and animTracks["walk"].IsPlaying then
                     animTracks["walk"]:Stop()
-                end
-                if animTracks["run"] and animTracks["run"].IsPlaying then
+                elseif _G.CurrentAnimSetup.lastState == "run" and animTracks["run"] and animTracks["run"].IsPlaying then
                     animTracks["run"]:Stop()
-                end
-            elseif newState == Enum.HumanoidStateType.Freefall then
-                if animTracks["jump"] and animTracks["jump"].IsPlaying then
+                elseif _G.CurrentAnimSetup.lastState == "jump" and animTracks["jump"] and animTracks["jump"].IsPlaying then
                     animTracks["jump"]:Stop()
-                end
-                if animTracks["fall"] then
-                    animTracks["fall"]:Play()
-                end
-            elseif oldState == Enum.HumanoidStateType.Freefall or oldState == Enum.HumanoidStateType.Jumping then
-                -- إيقاف القفز والسقوط عند العودة للأرض
-                if animTracks["jump"] and animTracks["jump"].IsPlaying then
-                    animTracks["jump"]:Stop()
-                end
-                if animTracks["fall"] and animTracks["fall"].IsPlaying then
+                elseif _G.CurrentAnimSetup.lastState == "fall" and animTracks["fall"] and animTracks["fall"].IsPlaying then
                     animTracks["fall"]:Stop()
                 end
+            end
+            
+            -- تشغيل الرسم المتحرك الجديد
+            if newState == "idle" and animTracks["idle"] then
+                animTracks["idle"]:Play()
+            elseif newState == "walk" and animTracks["walk"] then
+                animTracks["walk"]:Play()
+            elseif newState == "run" and animTracks["run"] then
+                animTracks["run"]:Play()
+            elseif newState == "jump" and animTracks["jump"] then
+                animTracks["jump"]:Play()
+            elseif newState == "fall" and animTracks["fall"] then
+                animTracks["fall"]:Play()
+            end
+            
+            _G.CurrentAnimSetup.lastState = newState
+        end
+        
+        -- مراقبة تغييرات الحركة باستخدام RunService للحصول على دقة أعلى
+        local runService = game:GetService("RunService")
+        local movementConn = runService.Heartbeat:Connect(function()
+            if not character or not character:IsDescendantOf(game.Workspace) or not humanoid then
+                return
+            end
+            
+            local state = humanoid:GetState()
+            
+            -- معالجة حالات القفز والسقوط
+            if state == Enum.HumanoidStateType.Jumping then
+                changeState("jump")
+                return
+            elseif state == Enum.HumanoidStateType.Freefall then
+                changeState("fall")
+                return
+            end
+            
+            -- معالجة المشي والركض والوقوف
+            if humanoid.MoveDirection.Magnitude <= 0.1 then
+                -- شخصية متوقفة
+                changeState("idle")
+            else
+                -- شخصية تتحرك - التحقق من سرعة الحركة
+                local speed = humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude or 0
                 
-                -- إذا كان يتحرك، استمر بالتشغيل
-                local velocity = humanoid.RootPart and humanoid.RootPart.Velocity or Vector3.new(0, 0, 0)
-                local speed = velocity.Magnitude
-                
-                if speed > 0.1 then
-                    if speed >= 10 and animTracks["run"] then
-                        animTracks["run"]:Play()
-                    elseif animTracks["walk"] then
-                        animTracks["walk"]:Play()
-                    end
+                if speed >= 10 then
+                    changeState("run")
+                else
+                    changeState("walk")
                 end
             end
         end)
-        table.insert(_G.CurrentAnimPack.connections, stateConn)
         
-        -- إعادة تشغيل حركة الوقوف إذا توقفت الرسوم المتحركة الأخرى
-        local idleRestartConn = game:GetService("RunService").Heartbeat:Connect(function()
-            local currentState = humanoid:GetState()
-            local isIdle = currentState ~= Enum.HumanoidStateType.Jumping 
-                       and currentState ~= Enum.HumanoidStateType.Freefall
-                       and humanoid.MoveDirection.Magnitude <= 0.1
-            
-            if isIdle and animTracks["idle"] and not animTracks["idle"].IsPlaying then
-                animTracks["idle"]:Play()
+        table.insert(_G.CurrentAnimSetup.connections, movementConn)
+        
+        -- معالجة إعادة تعيين حالة التحريك
+        local resetConn = humanoid.Running:Connect(function(speed)
+            if speed < 0.1 and _G.CurrentAnimSetup.lastState ~= "idle" and 
+               humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and
+               humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+                changeState("idle")
             end
         end)
-        table.insert(_G.CurrentAnimPack.connections, idleRestartConn)
+        
+        table.insert(_G.CurrentAnimSetup.connections, resetConn)
+        
+        -- معالجة إضافية للحالات
+        local stateConn = humanoid.StateChanged:Connect(function(_, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                changeState("jump")
+            elseif newState == Enum.HumanoidStateType.Freefall then
+                changeState("fall")
+            elseif newState == Enum.HumanoidStateType.Landed then
+                -- عند الهبوط، التحقق من سرعة الحركة
+                if humanoid.MoveDirection.Magnitude > 0.1 then
+                    local speed = humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude or 0
+                    if speed >= 10 then
+                        changeState("run")
+                    else
+                        changeState("walk")
+                    end
+                else
+                    changeState("idle")
+                end
+            end
+        end)
+        
+        table.insert(_G.CurrentAnimSetup.connections, stateConn)
     end
- 
+
     local character = player.Character
     if character then
         setupAnimations(character)
@@ -214,10 +256,7 @@ local function ApplyAnimation(animName, animations)
     
     -- رصد شخصية جديدة عند إعادة التوليد
     local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
-    table.insert(_G.CurrentAnimPack.connections, charAddedConn)
-    
-    -- تحديث اسم الحزمة الحالية
-    _G.CurrentAnimPack.name = animName
+    table.insert(_G.CurrentAnimSetup.connections, charAddedConn)
     
     -- إشعار للاعب
     game:GetService("StarterGui"):SetCore("SendNotification", {
@@ -226,27 +265,21 @@ local function ApplyAnimation(animName, animations)
         Duration = 3
     })
     
-    -- إرسال معلومات الرسوم المتحركة للاعبين الآخرين
+    -- إرسال معلومات الرسوم المتحركة للاعبين الآخرين (اختياري)
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local AnimEvent = ReplicatedStorage:FindFirstChild("AnimationEvent")
     
-    if AnimEvent and AnimEvent:IsA("RemoteEvent") then
-        AnimEvent:FireServer(player.Name, {
-            animType = animName,
-            animations = animations
-        })
-    else
-        -- إنشاء الحدث إذا لم يكن موجوداً
-        if not AnimEvent then
-            AnimEvent = Instance.new("RemoteEvent")
-            AnimEvent.Name = "AnimationEvent"
-            AnimEvent.Parent = ReplicatedStorage
-        end
-        
-        -- إرسال بيانات الرسوم المتحركة
-        AnimEvent:FireServer(player.Name, {
-            animType = animName,
-            animations = animations
+    if not AnimEvent then
+        AnimEvent = Instance.new("RemoteEvent")
+        AnimEvent.Name = "AnimationEvent"
+        AnimEvent.Parent = ReplicatedStorage
+    end
+    
+    -- إرسال البيانات إلى الخادم
+    if AnimEvent:IsA("RemoteEvent") then
+        AnimEvent:FireServer({
+            playerName = player.Name,
+            animPack = animName
         })
     end
 end
