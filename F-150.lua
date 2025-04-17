@@ -25,37 +25,62 @@ local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
     local connections = {}  -- تخزين الاتصالات لإلغائها لاحقاً
     
-    local function clearConnections()
-        for _, connection in pairs(connections) do
-            connection:Disconnect()
-        end
-        connections = {}
+    -- إنشاء متغير عام لتخزين الحزمة الحالية
+    if not _G.CurrentAnimPack then
+        _G.CurrentAnimPack = {
+            name = "",
+            connections = {}
+        }
     end
     
+    -- إلغاء الاتصالات السابقة للحزمة الحالية
+    local function clearConnections()
+        for _, connection in pairs(_G.CurrentAnimPack.connections) do
+            if typeof(connection) == "RBXScriptConnection" and connection.Connected then
+                connection:Disconnect()
+            end
+        end
+        _G.CurrentAnimPack.connections = {}
+    end
+    
+    -- تنظيف الحزمة السابقة قبل تطبيق الجديدة
+    clearConnections()
+    
     local function setupAnimations(character)
-        clearConnections()  -- إلغاء الاتصالات السابقة
+        if not character then return end
         
-        local humanoid = character:WaitForChild("Humanoid")
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid then
+            wait(0.5)
+            humanoid = character:FindFirstChildOfClass("Humanoid")
+            if not humanoid then return end
+        end
         
+        -- التحقق من نوع Rig
         if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Animation Error",
-                Text = "This animation pack works only with R15 rigs",
+                Title = "خطأ في الرسوم المتحركة",
+                Text = "حزمة الرسوم المتحركة هذه تعمل فقط مع هياكل R15",
                 Duration = 3
             })
             return
         end
         
+        -- إيقاف جميع الرسوم المتحركة الحالية
         for _, animTrack in pairs(humanoid:GetPlayingAnimationTracks()) do
             animTrack:Stop()
         end
         
+        -- إزالة الرسوم المتحركة المخصصة السابقة
         for _, anim in pairs(character:GetChildren()) do
-            if anim.Name:match("CustomAnim_") then
+            if anim:IsA("Animation") and anim.Name:match("CustomAnim_") then
                 anim:Destroy()
             end
         end
         
+        local animTracks = {}
+        
+        -- إنشاء وتحميل الرسوم المتحركة الجديدة
         for animType, animID in pairs(animations) do
             if type(animID) ~= "number" or animID <= 0 then
                 continue
@@ -71,117 +96,160 @@ local function ApplyAnimation(animName, animations)
             end)
             
             if not success or not animTrack then
+                warn("فشل تحميل الرسم المتحرك: " .. animType)
                 continue
             end
             
+            animTracks[animType] = animTrack
+            
+            -- ضبط الأولوية وتكرار للرسوم المتحركة الأساسية
             if animType == "idle" then
+                animTrack.Priority = Enum.AnimationPriority.Core
+                animTrack.Looped = true
                 animTrack:Play()
-            elseif animType == "walk" then
-                local conn = humanoid.Running:Connect(function(speed)
-                    if speed > 0.1 and speed < 10 and not humanoid.Jump then
-                        if not animTrack.IsPlaying then
-                            animTrack:Play()
-                        end
-                    else
-                        if animTrack.IsPlaying then
-                            animTrack:Stop()
-                        end
-                    end
-                end)
-                table.insert(connections, conn)
-            elseif animType == "run" then
-                local conn = humanoid.Running:Connect(function(speed)
-                    if speed >= 10 and not humanoid.Jump then
-                        if not animTrack.IsPlaying then
-                            animTrack:Play()
-                        end
-                    else
-                        if animTrack.IsPlaying then
-                            animTrack:Stop()
-                        end
-                    end
-                end)
-                table.insert(connections, conn)
-            elseif animType == "jump" then
-                -- فحص إذا كان حدث Jumping موجود
-                local success, _ = pcall(function()
-                    return humanoid.Jumping
-                end)
-                
-                if success then
-                    local conn = humanoid.Jumping:Connect(function(jumping)
-                        if jumping then
-                            animTrack:Play()
-                        else
-                            animTrack:Stop()
-                        end
-                    end)
-                    table.insert(connections, conn)
-                else
-                    -- استخدام StateChanged كبديل
-                    local conn = humanoid.StateChanged:Connect(function(_, newState)
-                        if newState == Enum.HumanoidStateType.Jumping then
-                            animTrack:Play()
-                        elseif newState ~= Enum.HumanoidStateType.Jumping and animTrack.IsPlaying then
-                            animTrack:Stop()
-                        end
-                    end)
-                    table.insert(connections, conn)
-                end
-            elseif animType == "fall" then
-                local conn = humanoid.StateChanged:Connect(function(oldState, newState)
-                    if newState == Enum.HumanoidStateType.Freefall then
-                        animTrack:Play()
-                    elseif newState ~= Enum.HumanoidStateType.Freefall and oldState == Enum.HumanoidStateType.Freefall then
-                        animTrack:Stop()
-                    end
-                end)
-                table.insert(connections, conn)
             end
         end
+        
+        -- إعداد اتصالات الأحداث للرسوم المتحركة
+        
+        -- المشي والجري
+        local movementConn = humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
+            local velocity = humanoid.RootPart and humanoid.RootPart.Velocity or Vector3.new(0, 0, 0)
+            local speed = velocity.Magnitude
+            
+            local isMoving = speed > 0.1 and humanoid:GetState() ~= Enum.HumanoidStateType.Jumping 
+                        and humanoid:GetState() ~= Enum.HumanoidStateType.Freefall
+            
+            if isMoving then
+                if speed >= 10 and animTracks["run"] then
+                    -- الركض
+                    if animTracks["walk"] and animTracks["walk"].IsPlaying then
+                        animTracks["walk"]:Stop()
+                    end
+                    if not animTracks["run"].IsPlaying then
+                        animTracks["run"]:Play()
+                    end
+                elseif speed < 10 and animTracks["walk"] then
+                    -- المشي
+                    if animTracks["run"] and animTracks["run"].IsPlaying then
+                        animTracks["run"]:Stop()
+                    end
+                    if not animTracks["walk"].IsPlaying then
+                        animTracks["walk"]:Play()
+                    end
+                end
+            else
+                -- إيقاف المشي والركض عند التوقف
+                if animTracks["walk"] and animTracks["walk"].IsPlaying then
+                    animTracks["walk"]:Stop()
+                end
+                if animTracks["run"] and animTracks["run"].IsPlaying then
+                    animTracks["run"]:Stop()
+                end
+            end
+        end)
+        table.insert(_G.CurrentAnimPack.connections, movementConn)
+        
+        -- القفز والسقوط
+        local stateConn = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                if animTracks["jump"] then
+                    animTracks["jump"]:Play()
+                end
+                if animTracks["walk"] and animTracks["walk"].IsPlaying then
+                    animTracks["walk"]:Stop()
+                end
+                if animTracks["run"] and animTracks["run"].IsPlaying then
+                    animTracks["run"]:Stop()
+                end
+            elseif newState == Enum.HumanoidStateType.Freefall then
+                if animTracks["jump"] and animTracks["jump"].IsPlaying then
+                    animTracks["jump"]:Stop()
+                end
+                if animTracks["fall"] then
+                    animTracks["fall"]:Play()
+                end
+            elseif oldState == Enum.HumanoidStateType.Freefall or oldState == Enum.HumanoidStateType.Jumping then
+                -- إيقاف القفز والسقوط عند العودة للأرض
+                if animTracks["jump"] and animTracks["jump"].IsPlaying then
+                    animTracks["jump"]:Stop()
+                end
+                if animTracks["fall"] and animTracks["fall"].IsPlaying then
+                    animTracks["fall"]:Stop()
+                end
+                
+                -- إذا كان يتحرك، استمر بالتشغيل
+                local velocity = humanoid.RootPart and humanoid.RootPart.Velocity or Vector3.new(0, 0, 0)
+                local speed = velocity.Magnitude
+                
+                if speed > 0.1 then
+                    if speed >= 10 and animTracks["run"] then
+                        animTracks["run"]:Play()
+                    elseif animTracks["walk"] then
+                        animTracks["walk"]:Play()
+                    end
+                end
+            end
+        end)
+        table.insert(_G.CurrentAnimPack.connections, stateConn)
+        
+        -- إعادة تشغيل حركة الوقوف إذا توقفت الرسوم المتحركة الأخرى
+        local idleRestartConn = game:GetService("RunService").Heartbeat:Connect(function()
+            local currentState = humanoid:GetState()
+            local isIdle = currentState ~= Enum.HumanoidStateType.Jumping 
+                       and currentState ~= Enum.HumanoidStateType.Freefall
+                       and humanoid.MoveDirection.Magnitude <= 0.1
+            
+            if isIdle and animTracks["idle"] and not animTracks["idle"].IsPlaying then
+                animTracks["idle"]:Play()
+            end
+        end)
+        table.insert(_G.CurrentAnimPack.connections, idleRestartConn)
     end
  
-    -- تنظيف قبل البدء من جديد
-    clearConnections()
-    
     local character = player.Character
     if character then
         setupAnimations(character)
     end
     
-    -- تخزين اتصال CharacterAdded للتنظيف لاحقاً
+    -- رصد شخصية جديدة عند إعادة التوليد
     local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
-    table.insert(connections, charAddedConn)
+    table.insert(_G.CurrentAnimPack.connections, charAddedConn)
     
+    -- تحديث اسم الحزمة الحالية
+    _G.CurrentAnimPack.name = animName
+    
+    -- إشعار للاعب
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Animation Changed",
-        Text = "Now using " .. animName,
+        Title = "تم تغيير الرسوم المتحركة",
+        Text = "يتم الآن استخدام " .. animName,
         Duration = 3
     })
     
+    -- إرسال معلومات الرسوم المتحركة للاعبين الآخرين
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local AnimEvent = ReplicatedStorage:FindFirstChild("AnimationEvent")
     
-    if not AnimEvent then
-        AnimEvent = Instance.new("RemoteEvent")
-        AnimEvent.Name = "AnimationEvent"
-        AnimEvent.Parent = ReplicatedStorage
-        
-        local function onAnimEventFired(fromPlayer, animationData)
-            for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-                if otherPlayer ~= fromPlayer then
-                    AnimEvent:FireClient(otherPlayer, fromPlayer.Name, animationData)
-                end
-            end
+    if AnimEvent and AnimEvent:IsA("RemoteEvent") then
+        AnimEvent:FireServer(player.Name, {
+            animType = animName,
+            animations = animations
+        })
+    else
+        -- إنشاء الحدث إذا لم يكن موجوداً
+        if not AnimEvent then
+            AnimEvent = Instance.new("RemoteEvent")
+            AnimEvent.Name = "AnimationEvent"
+            AnimEvent.Parent = ReplicatedStorage
         end
         
-        AnimEvent.OnServerEvent:Connect(onAnimEventFired)
+        -- إرسال بيانات الرسوم المتحركة
+        AnimEvent:FireServer(player.Name, {
+            animType = animName,
+            animations = animations
+        })
     end
-    
-    AnimEvent:FireServer(player.Name, {
-        animType = animName
-    })
- end
+end
  
 
 
@@ -1513,21 +1581,15 @@ FarmMoodHub:AddButton({
 
  ----------------- TAB SCIN ---------------
 
- local SwordHub1 = Tabs.Scain:AddSection("SWORD FREE 4/8 april 😐")
- local GunHub2 = Tabs.Scain:AddSection("GUN FREE 4/8 april 😐")
- local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE 4/9 april 😐")
- local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
+ local SwordHub1 = Tabs.Scain:AddSection("SWORD FREE / soon")
+ local GunHub2 = Tabs.Scain:AddSection("GUN FREE / soon")
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE / soon")
+ local AnimationHub4 = Tabs.Scain:AddSection("Animation Free (BETA)")
 
 
 
- --------------------------------  SC  SWORD FREE --------------------------------
- 
- --------------------------------  SC  GUN FREE   --------------------------------
- 
- --------------------------------  SC  DANCE FREE --------------------------------
 
-
- AnimationHub4:AddButton({
+AnimationHub4:AddButton({
     Title = "Oldschool Animation Pack",
     Description = "Apply Oldschool animations (R15)",
     Callback = function()
@@ -1541,9 +1603,9 @@ FarmMoodHub:AddButton({
         
         ApplyAnimation("Oldschool Animation Pack", animations)
     end
- })
- 
- AnimationHub4:AddButton({
+})
+
+AnimationHub4:AddButton({
     Title = "Robot Animation Package",
     Description = "Apply Robot animations (R15)",
     Callback = function()
@@ -1557,9 +1619,9 @@ FarmMoodHub:AddButton({
         
         ApplyAnimation("Robot Animation Package", animations)
     end
- })
- 
- AnimationHub4:AddButton({
+})
+
+AnimationHub4:AddButton({
     Title = "Magsa Animation Package",
     Description = "Apply Magsa animations (R15)",
     Callback = function()
@@ -1573,9 +1635,9 @@ FarmMoodHub:AddButton({
         
         ApplyAnimation("Magsa Animation Package", animations)
     end
- })
- 
- AnimationHub4:AddButton({
+})
+
+AnimationHub4:AddButton({
     Title = "Robot Animation Pack",
     Description = "Apply Robot animations (R15)",
     Callback = function()
@@ -1589,9 +1651,9 @@ FarmMoodHub:AddButton({
         
         ApplyAnimation("Robot Animation Pack", animations)
     end
- })
- 
- AnimationHub4:AddButton({
+})
+
+AnimationHub4:AddButton({
     Title = "Levitation Animation Pack",
     Description = "Apply Levitation animations (R15)",
     Callback = function()
@@ -1605,4 +1667,4 @@ FarmMoodHub:AddButton({
         
         ApplyAnimation("Levitation Animation Pack", animations)
     end
- })
+})
