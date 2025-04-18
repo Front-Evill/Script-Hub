@@ -1616,7 +1616,7 @@ FarmMoodHub:AddButton({
 
  local SwordHub1 = Tabs.Scain:AddSection("SWORD FREE / soon")
  local GunHub2 = Tabs.Scain:AddSection("GUN FREE / soon")
- local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE / soon")
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free (BETA)")
 
 
