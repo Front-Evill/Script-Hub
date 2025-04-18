@@ -1616,7 +1616,7 @@ FarmMoodHub:AddButton({
 
  local SwordHub1 = Tabs.Scain:AddSection("SWORD FREE / soon")
  local GunHub2 = Tabs.Scain:AddSection("GUN FREE / soon")
- local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE / soon")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free (BETA)")
 
 
@@ -2020,5 +2020,324 @@ DanceHub3:AddButton({
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
+    end
+})
+
+-- رقصات محدثة مع إيقاف الرقصة عند الحركة أو القفز
+DanceHub3:AddButton({
+    Title = "رقصة الفرح",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        -- تشغيل رقصة بـ ID محدث
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4841405708" -- رقصة الفرح - محدثة
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        -- إيقاف الرقصة عند الحركة أو القفز
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "رقصة المشاعر",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4841407203" -- رقصة المشاعر - محدثة
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "رقصة هيب هوب",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://3189773368" -- رقصة هيب هوب - محدثة
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+-- رقصات MM2
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة فلوس",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212455378" -- رقصة فلوس من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة زومبي",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212457264" -- رقصة زومبي من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة لاي لاي",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212460119" -- رقصة لاي لاي من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة فليكس",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212458130" -- رقصة فليكس من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة الدوران",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212453130" -- رقصة الدوران من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "MM2 - رقصة علم",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4212451974" -- رقصة علم من MM2
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
     end
 })
