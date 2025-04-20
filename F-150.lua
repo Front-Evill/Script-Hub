@@ -1613,7 +1613,7 @@ FarmMoodHub:AddButton({
  })
 
  ----------------- TAB SCIN ---------------
- local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE / soon")
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free (BETA)")
 
 
@@ -1808,7 +1808,7 @@ DanceHub3:AddButton({
     end
 })
 
--- رقصات أخرى محدثة
+
 DanceHub3:AddButton({
     Title = "Dance Moves",
     Description = nil,
