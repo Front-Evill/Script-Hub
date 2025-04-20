@@ -1702,330 +1702,9 @@ AnimationHub4:AddButton({
     end
 })
 
--- Complete modified Dance Hub code with all dances
-DanceHub3:AddButton({
-    Title = "Floss Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://16488431869"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Zombie Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212499637"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Dab Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212499189"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Ninja Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212500292"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Groove Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212506118"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Hip Hop Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695500161"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Disco Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695493465"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Robot Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695525251"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Twirl Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695486745"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Silly Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212499771"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Breakdance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://5915648917"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Electro Shuffle",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695333486"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Orange Justice",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695342270"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Take The L",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4049646104"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Hype Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3695373233"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Default Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212499637"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Macarena",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4235834241"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Gangnam Style",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4235835055"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Moonwalk",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212500834"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "Carlton Dance",
-    Description = nil,
-    Callback = function()
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4235823281"
-        
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-    end
-})
-
 -- رقصات محدثة مع إيقاف الرقصة عند الحركة أو القفز
 DanceHub3:AddButton({
-    Title = "رقصة الفرح",
+    Title = "Floss Dance",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2034,7 +1713,7 @@ DanceHub3:AddButton({
         
         -- تشغيل رقصة بـ ID محدث
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4841405708" -- رقصة الفرح - محدثة
+        animation.AnimationId = "rbxassetid://5917459365" -- Floss Dance ID محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2062,7 +1741,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "رقصة المشاعر",
+    Title = "Orange Justice",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2070,7 +1749,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4841407203" -- رقصة المشاعر - محدثة
+        animation.AnimationId = "rbxassetid://3262592866" -- Orange Justice ID محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2097,7 +1776,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "رقصة هيب هوب",
+    Title = "Gangnam Style",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2105,7 +1784,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://3189773368" -- رقصة هيب هوب - محدثة
+        animation.AnimationId = "rbxassetid://11709484490" -- Gangnam Style ID محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2131,9 +1810,9 @@ DanceHub3:AddButton({
     end
 })
 
--- رقصات MM2
+-- MM2 رقصات مؤكدة العمل
 DanceHub3:AddButton({
-    Title = "MM2 - رقصة فلوس",
+    Title = "MM2 Gun",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2141,42 +1820,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212455378" -- رقصة فلوس من MM2
-        
-        local animTrack = humanoid:LoadAnimation(animation)
-        animTrack:Play()
-        
-        local connection
-        connection = humanoid.Running:Connect(function(speed)
-            if speed > 0 then
-                animTrack:Stop()
-                connection:Disconnect()
-            end
-        end)
-        
-        local jumpConnection
-        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
-            if newState == Enum.HumanoidStateType.Jumping then
-                animTrack:Stop()
-                jumpConnection:Disconnect()
-                if connection then
-                    connection:Disconnect()
-                end
-            end
-        end)
-    end
-})
-
-DanceHub3:AddButton({
-    Title = "MM2 - رقصة زومبي",
-    Description = nil,
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212457264" -- رقصة زومبي من MM2
+        animation.AnimationId = "rbxassetid://9982615727" -- MM2 Gun Emote محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2203,7 +1847,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "MM2 - رقصة لاي لاي",
+    Title = "MM2 Dab",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2211,7 +1855,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212460119" -- رقصة لاي لاي من MM2
+        animation.AnimationId = "rbxassetid://10214311282" -- MM2 Dab محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2238,7 +1882,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "MM2 - رقصة فليكس",
+    Title = "MM2 Sit",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2246,7 +1890,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212458130" -- رقصة فليكس من MM2
+        animation.AnimationId = "rbxassetid://10214363677" -- MM2 Sit محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2273,7 +1917,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "MM2 - رقصة الدوران",
+    Title = "MM2 Zombie",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2281,7 +1925,7 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212453130" -- رقصة الدوران من MM2
+        animation.AnimationId = "rbxassetid://10214375057" -- MM2 Zombie محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
@@ -2308,7 +1952,7 @@ DanceHub3:AddButton({
 })
 
 DanceHub3:AddButton({
-    Title = "MM2 - رقصة علم",
+    Title = "MM2 Floss",
     Description = nil,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -2316,7 +1960,77 @@ DanceHub3:AddButton({
         local humanoid = character:WaitForChild("Humanoid")
         
         local animation = Instance.new("Animation")
-        animation.AnimationId = "rbxassetid://4212451974" -- رقصة علم من MM2
+        animation.AnimationId = "rbxassetid://10214399880" -- MM2 Floss محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "Default Dance",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://5915693819" -- Default Dance محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "Take The L",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4841399916" -- Take The L محدث
         
         local animTrack = humanoid:LoadAnimation(animation)
         animTrack:Play()
