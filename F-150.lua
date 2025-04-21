@@ -19,7 +19,7 @@ local RaritesColor = {
     Red = Vector3.new(220, 0, 5),
     Default = Vector3.new(106, 106, 106)
 }
---Functions
+--Function
 
 local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
@@ -56,7 +56,9 @@ local function ApplyAnimation(animName, animations)
         connections = {},
         animTracks = {},
         character = nil,
-        lastState = "idle"
+        lastState = "idle",
+        toolEquipped = false,
+        currentTool = nil
     }
     
     local function setupAnimations(character)
@@ -82,9 +84,9 @@ local function ApplyAnimation(animName, animations)
             return
         end
         
-        -- إيقاف جميع الرسوم المتحركة الحالية
+        -- إيقاف جميع الرسوم المتحركة الحالية مع إضافة تأخير لتجنب التداخل
         for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-            track:Stop()
+            track:Stop(0.3) -- إضافة وقت انتقال سلس
         end
         
         -- إزالة الرسوم المتحركة المخصصة السابقة
@@ -97,6 +99,23 @@ local function ApplyAnimation(animName, animations)
         -- إنشاء وتحميل الرسوم المتحركة الجديدة
         local animationObjects = {}
         local animTracks = {}
+        
+        -- إضافة رسوم متحركة للأدوات
+        local toolAnimations = {
+            "toolIdle", -- وقوف مع أداة
+            "toolWalk", -- مشي مع أداة
+            "toolRun",  -- ركض مع أداة
+            "toolJump", -- قفز مع أداة
+            "toolFall"  -- سقوط مع أداة
+        }
+        
+        -- دمج قائمة الرسوم المتحركة الأساسية مع رسوم الأدوات
+        for _, toolAnim in ipairs(toolAnimations) do
+            if not animations[toolAnim] and animations[toolAnim:gsub("tool", ""):lower()] then
+                -- إذا لم يتم تحديد رسم متحرك للأداة، استخدم الرسم الأساسي المقابل
+                animations[toolAnim] = animations[toolAnim:gsub("tool", ""):lower()]
+            end
+        end
         
         for animType, animID in pairs(animations) do
             if type(animID) ~= "number" or animID <= 0 then
@@ -117,17 +136,23 @@ local function ApplyAnimation(animName, animations)
                 animTracks[animType] = animTrack
                 
                 -- ضبط إعدادات الرسوم المتحركة
-                if animType == "idle" then
+                if animType:match("idle") then
                     animTrack.Priority = Enum.AnimationPriority.Core
                     animTrack.Looped = true
-                elseif animType == "walk" or animType == "run" then
+                elseif animType:match("walk") or animType:match("run") then
                     animTrack.Priority = Enum.AnimationPriority.Movement
                     animTrack.Looped = true
-                elseif animType == "jump" then
-                    animTrack.Priority = Enum.AnimationPriority.Action
-                elseif animType == "fall" then
+                elseif animType:match("jump") or animType:match("fall") then
                     animTrack.Priority = Enum.AnimationPriority.Action
                 end
+                
+                -- إضافة وقت انتقال سلس لجميع الرسوم المتحركة
+                animTrack.Looped = animTrack.Looped -- الحفاظ على إعداد التكرار
+                
+                -- تخزين تردد تحديث الرسم المتحرك الأصلي
+                animTrack.TimePosition = 0
+                animTrack.WeightCurrent = 0
+                animTrack.WeightTarget = 1
             else
                 warn("فشل تحميل الرسم المتحرك: " .. animType)
             end
@@ -135,48 +160,79 @@ local function ApplyAnimation(animName, animations)
         
         _G.CurrentAnimSetup.animTracks = animTracks
         
+        -- تحديد ما إذا كان اللاعب يحمل أداة
+        local function isHoldingTool()
+            return character:FindFirstChildOfClass("Tool") ~= nil
+        end
+        
         -- تشغيل حركة الوقوف مبدئياً
-        if animTracks["idle"] then
-            animTracks["idle"]:Play()
+        if isHoldingTool() and animTracks["toolIdle"] then
+            animTracks["toolIdle"]:Play(0.3) -- إضافة وقت انتقال سلس
+            _G.CurrentAnimSetup.lastState = "toolIdle"
+            _G.CurrentAnimSetup.toolEquipped = true
+        elseif animTracks["idle"] then
+            animTracks["idle"]:Play(0.3) -- إضافة وقت انتقال سلس
             _G.CurrentAnimSetup.lastState = "idle"
         end
         
         -- دالة تغيير الحالة - تتأكد من إيقاف الرسوم المتحركة غير المستخدمة
         local function changeState(newState)
-            if _G.CurrentAnimSetup.lastState == newState then 
-                return -- تجنب التحديثات غير الضرورية
-            end
-            
-            -- إيقاف الرسوم المتحركة النشطة الحالية
-            if _G.CurrentAnimSetup.lastState ~= newState then
-                if _G.CurrentAnimSetup.lastState == "idle" and animTracks["idle"] and animTracks["idle"].IsPlaying then
-                    animTracks["idle"]:Stop()
-                elseif _G.CurrentAnimSetup.lastState == "walk" and animTracks["walk"] and animTracks["walk"].IsPlaying then
-                    animTracks["walk"]:Stop()
-                elseif _G.CurrentAnimSetup.lastState == "run" and animTracks["run"] and animTracks["run"].IsPlaying then
-                    animTracks["run"]:Stop()
-                elseif _G.CurrentAnimSetup.lastState == "jump" and animTracks["jump"] and animTracks["jump"].IsPlaying then
-                    animTracks["jump"]:Stop()
-                elseif _G.CurrentAnimSetup.lastState == "fall" and animTracks["fall"] and animTracks["fall"].IsPlaying then
-                    animTracks["fall"]:Stop()
+            -- تطبيق حالات الأدوات إذا كان يحمل أداة
+            local holdingTool = isHoldingTool()
+            if holdingTool and not newState:match("tool") then
+                -- تحويل الحالة العادية إلى حالة أداة
+                if newState == "idle" then
+                    newState = "toolIdle"
+                elseif newState == "walk" then
+                    newState = "toolWalk"
+                elseif newState == "run" then
+                    newState = "toolRun"
+                elseif newState == "jump" then
+                    newState = "toolJump"
+                elseif newState == "fall" then
+                    newState = "toolFall"
                 end
             end
             
-            -- تشغيل الرسم المتحرك الجديد
-            if newState == "idle" and animTracks["idle"] then
-                animTracks["idle"]:Play()
-            elseif newState == "walk" and animTracks["walk"] then
-                animTracks["walk"]:Play()
-            elseif newState == "run" and animTracks["run"] then
-                animTracks["run"]:Play()
-            elseif newState == "jump" and animTracks["jump"] then
-                animTracks["jump"]:Play()
-            elseif newState == "fall" and animTracks["fall"] then
-                animTracks["fall"]:Play()
+            -- تجنب التحديثات غير الضرورية
+            if _G.CurrentAnimSetup.lastState == newState then 
+                return
+            end
+            
+            -- الحصول على الرسم المتحرك الحالي والرسم المتحرك الجديد
+            local currentTrack = _G.CurrentAnimSetup.animTracks[_G.CurrentAnimSetup.lastState]
+            local newTrack = _G.CurrentAnimSetup.animTracks[newState]
+            
+            -- التحقق من وجود الرسوم المتحركة قبل المتابعة
+            if not newTrack then
+                -- إذا كان الرسم المتحرك الجديد غير موجود، استخدم البديل المناسب
+                if newState:match("tool") and animTracks[newState:gsub("tool", ""):lower()] then
+                    newTrack = animTracks[newState:gsub("tool", ""):lower()]
+                    newState = newState:gsub("tool", ""):lower()
+                elseif holdingTool and animTracks["toolIdle"] then
+                    newTrack = animTracks["toolIdle"]
+                    newState = "toolIdle"
+                elseif animTracks["idle"] then
+                    newTrack = animTracks["idle"]
+                    newState = "idle"
+                else
+                    return -- لا يوجد رسم متحرك مناسب
+                end
+            }
+            
+            -- إيقاف الرسم المتحرك الحالي بشكل تدريجي
+            if currentTrack and currentTrack.IsPlaying then
+                currentTrack:Stop(0.3) -- وقت انتقال سلس = 0.3 ثانية
+            end
+            
+            -- تشغيل الرسم المتحرك الجديد بشكل تدريجي
+            if newTrack then
+                newTrack:Play(0.3) -- وقت انتقال سلس = 0.3 ثانية
             end
             
             _G.CurrentAnimSetup.lastState = newState
-        end
+            _G.CurrentAnimSetup.toolEquipped = holdingTool
+        }
         
         -- مراقبة تغييرات الحركة باستخدام RunService للحصول على دقة أعلى
         local runService = game:GetService("RunService")
@@ -189,37 +245,93 @@ local function ApplyAnimation(animName, animations)
             
             -- معالجة حالات القفز والسقوط
             if state == Enum.HumanoidStateType.Jumping then
-                changeState("jump")
+                changeState(isHoldingTool() and "toolJump" or "jump")
                 return
             elseif state == Enum.HumanoidStateType.Freefall then
-                changeState("fall")
+                changeState(isHoldingTool() and "toolFall" or "fall")
                 return
             end
             
             -- معالجة المشي والركض والوقوف
             if humanoid.MoveDirection.Magnitude <= 0.1 then
                 -- شخصية متوقفة
-                changeState("idle")
+                changeState(isHoldingTool() and "toolIdle" or "idle")
             else
                 -- شخصية تتحرك - التحقق من سرعة الحركة
                 local speed = humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude or 0
                 
                 if speed >= 10 then
-                    changeState("run")
+                    changeState(isHoldingTool() and "toolRun" or "run")
                 else
-                    changeState("walk")
+                    changeState(isHoldingTool() and "toolWalk" or "walk")
                 end
             end
         end)
         
         table.insert(_G.CurrentAnimSetup.connections, movementConn)
         
+        -- معالجة تغييرات الأدوات
+        local function onChildAdded(child)
+            if child:IsA("Tool") then
+                _G.CurrentAnimSetup.currentTool = child
+                -- تغيير الرسم المتحرك إلى نمط الأداة المناسب
+                local currentState = _G.CurrentAnimSetup.lastState
+                if currentState:match("tool") then
+                    -- نحن بالفعل في نمط الأداة، لكن نحتاج إلى تحديث الرسم المتحرك
+                    changeState(currentState)
+                else
+                    -- التحويل إلى نمط الأداة المقابل
+                    local toolState = "toolIdle"
+                    if currentState == "walk" then
+                        toolState = "toolWalk"
+                    elseif currentState == "run" then
+                        toolState = "toolRun"
+                    elseif currentState == "jump" then
+                        toolState = "toolJump"
+                    elseif currentState == "fall" then
+                        toolState = "toolFall"
+                    end
+                    changeState(toolState)
+                }
+            end
+        end
+        
+        local function onChildRemoved(child)
+            if child:IsA("Tool") and _G.CurrentAnimSetup.currentTool == child then
+                _G.CurrentAnimSetup.currentTool = nil
+                -- تغيير الرسم المتحرك إلى النمط العادي المناسب
+                local currentState = _G.CurrentAnimSetup.lastState
+                if currentState:match("tool") then
+                    -- التحويل إلى النمط العادي المقابل
+                    local normalState = "idle"
+                    if currentState == "toolWalk" then
+                        normalState = "walk"
+                    elseif currentState == "toolRun" then
+                        normalState = "run"
+                    elseif currentState == "toolJump" then
+                        normalState = "jump"
+                    elseif currentState == "toolFall" then
+                        normalState = "fall"
+                    end
+                    changeState(normalState)
+                }
+            end
+        end
+        
+        local childAddedConn = character.ChildAdded:Connect(onChildAdded)
+        local childRemovedConn = character.ChildRemoved:Connect(onChildRemoved)
+        
+        table.insert(_G.CurrentAnimSetup.connections, childAddedConn)
+        table.insert(_G.CurrentAnimSetup.connections, childRemovedConn)
+        
         -- معالجة إعادة تعيين حالة التحريك
         local resetConn = humanoid.Running:Connect(function(speed)
-            if speed < 0.1 and _G.CurrentAnimSetup.lastState ~= "idle" and 
+            if speed < 0.1 and 
+               ((_G.CurrentAnimSetup.lastState == "walk" or _G.CurrentAnimSetup.lastState == "run") or
+                (_G.CurrentAnimSetup.lastState == "toolWalk" or _G.CurrentAnimSetup.lastState == "toolRun")) and 
                humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and
                humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
-                changeState("idle")
+                changeState(isHoldingTool() and "toolIdle" or "idle")
             end
         end)
         
@@ -228,25 +340,33 @@ local function ApplyAnimation(animName, animations)
         -- معالجة إضافية للحالات
         local stateConn = humanoid.StateChanged:Connect(function(_, newState)
             if newState == Enum.HumanoidStateType.Jumping then
-                changeState("jump")
+                changeState(isHoldingTool() and "toolJump" or "jump")
             elseif newState == Enum.HumanoidStateType.Freefall then
-                changeState("fall")
+                changeState(isHoldingTool() and "toolFall" or "fall")
             elseif newState == Enum.HumanoidStateType.Landed then
                 -- عند الهبوط، التحقق من سرعة الحركة
                 if humanoid.MoveDirection.Magnitude > 0.1 then
                     local speed = humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude or 0
                     if speed >= 10 then
-                        changeState("run")
+                        changeState(isHoldingTool() and "toolRun" or "run")
                     else
-                        changeState("walk")
+                        changeState(isHoldingTool() and "toolWalk" or "walk")
                     end
                 else
-                    changeState("idle")
+                    changeState(isHoldingTool() and "toolIdle" or "idle")
                 end
             end
         end)
         
         table.insert(_G.CurrentAnimSetup.connections, stateConn)
+        
+        -- التحقق من أي أدوات حالية
+        for _, child in pairs(character:GetChildren()) do
+            if child:IsA("Tool") then
+                onChildAdded(child)
+                break
+            end
+        end
     end
 
     local character = player.Character
@@ -283,8 +403,6 @@ local function ApplyAnimation(animName, animations)
         })
     end
 end
- 
-
 
 local function Notify(Title,Dis)
     pcall(function()
