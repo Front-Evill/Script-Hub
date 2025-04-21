@@ -146,9 +146,6 @@ local function ApplyAnimation(animName, animations)
                     animTrack.Priority = Enum.AnimationPriority.Action
                 end
                 
-                -- إضافة وقت انتقال سلس لجميع الرسوم المتحركة
-                animTrack.Looped = animTrack.Looped -- الحفاظ على إعداد التكرار
-                
                 -- تخزين تردد تحديث الرسم المتحرك الأصلي
                 animTrack.TimePosition = 0
                 animTrack.WeightCurrent = 0
@@ -218,7 +215,7 @@ local function ApplyAnimation(animName, animations)
                 else
                     return -- لا يوجد رسم متحرك مناسب
                 end
-            }
+            end
             
             -- إيقاف الرسم المتحرك الحالي بشكل تدريجي
             if currentTrack and currentTrack.IsPlaying then
@@ -232,7 +229,7 @@ local function ApplyAnimation(animName, animations)
             
             _G.CurrentAnimSetup.lastState = newState
             _G.CurrentAnimSetup.toolEquipped = holdingTool
-        }
+        end
         
         -- مراقبة تغييرات الحركة باستخدام RunService للحصول على دقة أعلى
         local runService = game:GetService("RunService")
@@ -292,7 +289,7 @@ local function ApplyAnimation(animName, animations)
                         toolState = "toolFall"
                     end
                     changeState(toolState)
-                }
+                end
             end
         end
         
@@ -314,7 +311,7 @@ local function ApplyAnimation(animName, animations)
                         normalState = "fall"
                     end
                     changeState(normalState)
-                }
+                end
             end
         end
         
