@@ -24,217 +24,316 @@ local RaritesColor = {
 local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
     local RunService = game:GetService("RunService")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local StarterGui = game:GetService("StarterGui")
     
-    -- إيقاف الإعداد السابق
     if _G.CurrentAnimSetup then
-        for _, conn in ipairs(_G.CurrentAnimSetup.connections or {}) do
-            pcall(function() if conn.Connected then conn:Disconnect() end end)
-        end
-        
-        if _G.CurrentAnimSetup.character then
-            pcall(function()
+        pcall(function()
+            for _, conn in ipairs(_G.CurrentAnimSetup.connections) do
+                if typeof(conn) == "RBXScriptConnection" and conn.Connected then
+                    conn:Disconnect()
+                end
+            end
+            
+            if _G.CurrentAnimSetup.character then
                 local humanoid = _G.CurrentAnimSetup.character:FindFirstChildOfClass("Humanoid")
                 if humanoid then
                     for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-                        track:Stop(0.1)
+                        pcall(function() track:Stop(0.1) end)
                     end
                 end
                 
                 for _, anim in ipairs(_G.CurrentAnimSetup.character:GetChildren()) do
                     if anim:IsA("Animation") and anim.Name:find("CustomAnim_") then
-                        anim:Destroy()
+                        pcall(function() anim:Destroy() end)
                     end
                 end
-            end)
-        end
+            end
+        end)
     end
     
-    -- إنشاء هيكل الإعداد الجديد
     _G.CurrentAnimSetup = {
         name = animName,
         connections = {},
         animTracks = {},
         character = nil,
-        lastState = "idle"
+        lastState = "idle",
+        animationSwitchDebounce = false
     }
     
-    -- دالة موحدة لإعداد الرسوم المتحركة
     local function setupAnimations(character)
         if not character then return end
+        
         _G.CurrentAnimSetup.character = character
         
         local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if not humanoid then return end
+        if not humanoid then
+            local success = pcall(function()
+                task.wait(0.5)
+                humanoid = character:FindFirstChildOfClass("Humanoid")
+            end)
+            if not success or not humanoid then return end
+        end
         
-        -- فحص نوع الهيكل
         if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-            StarterGui:SetCore("SendNotification", {
-                Title = "Animation Error",
-                Text = "This animation package only works with R15 rigs",
-                Duration = 3
-            })
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Animation Error",
+                    Text = "This animation package only works with R15 rigs",
+                    Duration = 3
+                })
+            end)
             return
         end
         
-        -- إيقاف الرسوم المتحركة الحالية
-        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-            track:Stop(0.1)
-        end
+        pcall(function()
+            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                track:Stop(0.1)
+            end
+        end)
         
-        -- تحميل الرسوم المتحركة
         local animTracks = {}
+        
         for animType, animID in pairs(animations) do
             if type(animID) == "number" and animID > 0 then
-                local anim = Instance.new("Animation")
-                anim.Name = "CustomAnim_" .. animType
-                anim.AnimationId = "rbxassetid://" .. animID
-                anim.Parent = character
-                
-                local animTrack = humanoid:LoadAnimation(anim)
-                if animTrack then
-                    animTracks[animType] = animTrack
-                    -- إعداد خصائص الرسم المتحرك
-                    if animType == "idle" or animType == "walk" or animType == "run" then
-                        animTrack.Looped = true
+                pcall(function()
+                    local anim = Instance.new("Animation")
+                    anim.Name = "CustomAnim_" .. animType
+                    anim.AnimationId = "rbxassetid://" .. animID
+                    anim.Parent = character
+                    
+                    local animTrack = humanoid:LoadAnimation(anim)
+                    if animTrack then
+                        animTracks[animType] = animTrack
+                        
+                        if animType == "idle" then
+                            animTrack.Priority = Enum.AnimationPriority.Core
+                            animTrack.Looped = true
+                        elseif animType == "walk" then
+                            animTrack.Priority = Enum.AnimationPriority.Movement
+                            animTrack.Looped = true
+                            animTrack.Weight = 1
+                        elseif animType == "run" then
+                            animTrack.Priority = Enum.AnimationPriority.Movement
+                            animTrack.Looped = true
+                            animTrack.Weight = 1
+                        elseif animType == "jump" or animType == "fall" then
+                            animTrack.Priority = Enum.AnimationPriority.Action
+                            animTrack.Weight = 1
+                        elseif animType == "dance" or animType:find("dance") then
+                            animTrack.Priority = Enum.AnimationPriority.Action
+                            animTrack.Looped = true
+                        elseif animType == "tool" or animType:find("tool") then
+                            animTrack.Priority = Enum.AnimationPriority.Action
+                            animTrack.Looped = true
+                        end
                     end
-                end
+                end)
             end
         end
         
         _G.CurrentAnimSetup.animTracks = animTracks
         
-        -- تشغيل حركة السكون مبدئيًا
-        if animTracks["idle"] then
-            animTracks["idle"]:Play(0.2)
+        pcall(function()
+            if animTracks["idle"] then
+                animTracks["idle"]:Play(0.2)
+                _G.CurrentAnimSetup.lastState = "idle"
+            end
+        end)
+        
+        local function isHoldingTool()
+            return character:FindFirstChildOfClass("Tool") ~= nil
         end
         
-        -- وظيفة مبسطة لتغيير الحالة
-        local function updateAnimation()
-            local state
-            local isMoving = humanoid.MoveDirection.Magnitude > 0.1
-            local currentState = humanoid:GetState()
+        local function changeState(newState)
+            if _G.CurrentAnimSetup.lastState == newState or _G.CurrentAnimSetup.animationSwitchDebounce then return end
             
-            if currentState == Enum.HumanoidStateType.Jumping then
-                state = "jump"
-            elseif currentState == Enum.HumanoidStateType.Freefall then
-                state = "fall"
-            elseif isMoving then
-                local speed = (humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude) or 0
-                state = speed >= 14 and "run" or "walk"
-            else
-                state = "idle"
-            end
+            _G.CurrentAnimSetup.animationSwitchDebounce = true
             
-            if state ~= _G.CurrentAnimSetup.lastState then
-                if _G.CurrentAnimSetup.animTracks[_G.CurrentAnimSetup.lastState] then
-                    _G.CurrentAnimSetup.animTracks[_G.CurrentAnimSetup.lastState]:Stop(0.2)
+            pcall(function()
+                if newState:find("dance") then
+                    for _, track in pairs(animTracks) do
+                        if track.IsPlaying then
+                            track:Stop(0.2)
+                        end
+                    end
+                else
+                    local oldTrack = animTracks[_G.CurrentAnimSetup.lastState]
+                    if oldTrack and oldTrack.IsPlaying then
+                        oldTrack:Stop(0.2)
+                    end
                 end
                 
-                if _G.CurrentAnimSetup.animTracks[state] then
-                    _G.CurrentAnimSetup.animTracks[state]:Play(0.2)
-                    _G.CurrentAnimSetup.lastState = state
+                if animTracks[newState] then
+                    task.wait(0.05)
+                    animTracks[newState]:Play(0.2)
+                    _G.CurrentAnimSetup.lastState = newState
+                elseif newState:find("tool") and animTracks["tool"] then
+                    task.wait(0.05)
+                    animTracks["tool"]:Play(0.2)
+                    _G.CurrentAnimSetup.lastState = "tool"
+                elseif newState:find("dance") and animTracks["dance"] then
+                    task.wait(0.05)
+                    animTracks["dance"]:Play(0.2)
+                    _G.CurrentAnimSetup.lastState = "dance"
                 end
-            end
+            end)
+            
+            task.delay(0.3, function()
+                _G.CurrentAnimSetup.animationSwitchDebounce = false
+            end)
         end
         
-        -- اتصال دورة التحديث
-        local updateConn = RunService.Heartbeat:Connect(function()
-            pcall(updateAnimation)
+        local movementConn = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                if not character:IsDescendantOf(game.Workspace) or not humanoid then
+                    return
+                end
+                
+                if _G.CurrentAnimSetup.lastState:find("dance") then return end
+                
+                if isHoldingTool() and animTracks["tool"] then
+                    if _G.CurrentAnimSetup.lastState ~= "tool" then
+                        changeState("tool")
+                    end
+                    return
+                end
+                
+                local state = humanoid:GetState()
+                
+                if state == Enum.HumanoidStateType.Jumping then
+                    changeState("jump")
+                    return
+                elseif state == Enum.HumanoidStateType.Freefall then
+                    changeState("fall")
+                    return
+                end
+                
+                if humanoid.MoveDirection.Magnitude <= 0.1 then
+                    changeState("idle")
+                else
+                    local speed = (humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude) or 0
+                    
+                    if speed >= 12 then
+                        changeState("run")
+                    else
+                        changeState("walk")
+                    end
+                end
+            end)
         end)
-        table.insert(_G.CurrentAnimSetup.connections, updateConn)
+        
+        table.insert(_G.CurrentAnimSetup.connections, movementConn)
+        
+        local function onChildAdded(child)
+            pcall(function()
+                if child:IsA("Tool") and animTracks["tool"] and not _G.CurrentAnimSetup.lastState:find("dance") then
+                    task.wait(0.1)
+                    changeState("tool")
+                end
+            end)
+        end
+        
+        local function onChildRemoved(child)
+            pcall(function()
+                if child:IsA("Tool") and _G.CurrentAnimSetup.lastState == "tool" then
+                    task.wait(0.1)
+                    changeState("idle")
+                end
+            end)
+        end
+        
+        local childAddedConn = character.ChildAdded:Connect(onChildAdded)
+        table.insert(_G.CurrentAnimSetup.connections, childAddedConn)
+        
+        local childRemovedConn = character.ChildRemoved:Connect(onChildRemoved)
+        table.insert(_G.CurrentAnimSetup.connections, childRemovedConn)
+        
+        local resetConn = humanoid.Running:Connect(function(speed)
+            pcall(function()
+                if _G.CurrentAnimSetup.lastState:find("dance") then return end
+                if isHoldingTool() and animTracks["tool"] then return end
+                
+                if speed < 0.1 and (_G.CurrentAnimSetup.lastState == "walk" or _G.CurrentAnimSetup.lastState == "run") and 
+                   humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and 
+                   humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+                    changeState("idle")
+                end
+            end)
+        end)
+        
+        table.insert(_G.CurrentAnimSetup.connections, resetConn)
+        
+        local stateConn = humanoid.StateChanged:Connect(function(_, newState)
+            pcall(function()
+                if _G.CurrentAnimSetup.lastState:find("dance") then return end
+                if isHoldingTool() and animTracks["tool"] then return end
+                
+                if newState == Enum.HumanoidStateType.Jumping then
+                    changeState("jump")
+                elseif newState == Enum.HumanoidStateType.Freefall then
+                    changeState("fall")
+                elseif newState == Enum.HumanoidStateType.Landed then
+                    if humanoid.MoveDirection.Magnitude > 0.1 then
+                        local speed = (humanoid.RootPart and (humanoid.RootPart.Velocity * Vector3.new(1, 0, 1)).Magnitude) or 0
+                        if speed >= 12 then
+                            changeState("run")
+                        else
+                            changeState("walk")
+                        end
+                    else
+                        changeState("idle")
+                    end
+                end
+            end)
+        end)
+        
+        table.insert(_G.CurrentAnimSetup.connections, stateConn)
+        
+        pcall(function()
+            if isHoldingTool() and animTracks["tool"] then
+                task.wait(0.1)
+                changeState("tool")
+            end
+        end)
     end
     
-    -- تطبيق على الشخصية الحالية
-    if player.Character then
-        setupAnimations(player.Character)
-    end
+    pcall(function()
+        local character = player.Character
+        if character then
+            setupAnimations(character)
+        end
+    end)
     
-    -- مراقبة إنشاء شخصية جديدة
     local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
     table.insert(_G.CurrentAnimSetup.connections, charAddedConn)
     
-    -- إشعار للاعب
-    StarterGui:SetCore("SendNotification", {
-        Title = "Animation Changed",
-        Text = "Now using " .. animName,
-        Duration = 3
-    })
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "Animation Changed",
+            Text = "Now using " .. animName,
+            Duration = 3
+        })
+    end)
+    
+    pcall(function()
+        local AnimEvent = ReplicatedStorage:FindFirstChild("AnimationEvent")
+        
+        if not AnimEvent then
+            AnimEvent = Instance.new("RemoteEvent")
+            AnimEvent.Name = "AnimationEvent"
+            AnimEvent.Parent = ReplicatedStorage
+        end
+        
+        if AnimEvent:IsA("RemoteEvent") then
+            AnimEvent:FireServer({
+                playerName = player.Name,
+                animPack = animName
+            })
+        end
+    end)
     
     return true
-end
-
-local function Notify(Title,Dis)
-    pcall(function()
-        Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
-        local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
-    end)
-end
-
-local function GetTeamOf(Target)
-	local Player
-	if typeof(Target) == "string" then
-		Player = game.Players:FindFirstChild(Target)
-	elseif typeof(Target) == "Instance" then
-		Player = Target
-	end
-    if Player then
-        local Backpack = Player:FindFirstChild("Backpack")
-        if Player.Character and Player.Character:FindFirstChild("Stab",true) then
-            return "Murder"
-        elseif Player.Character and Player.Character:FindFirstChild("IsGun",true) then
-            return "Sheriff"
-        end
-        if Backpack and Backpack:FindFirstChild("Stab",true) then
-            return "Murder"
-        elseif Backpack and Backpack:FindFirstChild("IsGun",true) then
-            return "Sheriff"
-        elseif Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").NameDisplayDistance ~= 0 then
-            return "Died"
-        else
-            return "Innocent"
-        end
-    end
-    return false
-end
-
-local function GetUserPic(UserId)
-    local Data = game:HttpGet("https://thumbnails.roblox.com/v1/users/avatar?userIds="..UserId.."&size=420x420&format=Png&isCircular=false")
-    return Data:match('"imageUrl"%s*:%s*"([^"]+)"')
-end
-
-local function CheckHWID()
-    local jasbddajsdwjs = {"57D3220E-B408-47A3-95B4-4B8063EC7EAD","d5856005-51ea-496b-8e03-74ee7f287942"," "}
-    for _,P in ipairs(jasbddajsdwjs) do 
-        if game:GetService("RbxAnalyticsService"):GetClientId() == P then
-            return {Value = true,ID = P}
-        end
-    end
-    return {Value = false,ID = nil}
-end
-
-local function GetDevice()
-    local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
-    if IsOnMobile then
-        return "Mobile"
-    end
-    return "PC"
-end
-
-local function GetPlayer(UserDisplay)
-	if UserDisplay ~= "" then
-        local Value = UserDisplay:match("^%s*(.-)%s*$")
-        for _, player in ipairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer then
-                local PlayerName = player.Name:lower():match("^%s*(.-)%s*$")
-                local DisplayName = player.DisplayName:lower():match("^%s*(.-)%s*$") 
-                if PlayerName:sub(1, #Value) == Value:lower() or DisplayName:sub(1, #Value) == Value:lower() then
-                    return player
-                end
-            end
-        end
-    end
-    return nil
 end
 
 local function CheckCharacter(Tagert)
