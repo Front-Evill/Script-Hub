@@ -1684,7 +1684,6 @@ AnimationHub4:AddButton({
             jump = 3489174223,
             fall = 3489174223
         }
-        
         ApplyAnimation("Magsa Animation Package", animations)
     end
 })
@@ -1700,7 +1699,6 @@ AnimationHub4:AddButton({
             jump = 5712848865,
             fall = 5712852267
         }
-        
         ApplyAnimation("Robot Animation Pack", animations)
     end
 })
