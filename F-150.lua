@@ -1719,11 +1719,11 @@ AnimationHub4:AddButton({
     Description = "Apply Wicked dance animation (R15)",
     Callback = function()
         local animations = {
-            idle = 3307604295, -- معرف رقصة Wicked
-            walk = 5712850190,
-            run = 5712856902,
-            jump = 5712848865,
-            fall = 5712852267
+            idle = 3307604295, -- معرف سكون Wicked المعروف أنه يعمل
+            walk = 3333432454,
+            run = 3333136415,
+            jump = 3333432454,
+            fall = 3333432454
         }
         ApplyAnimation("Wicked Dance Animation", animations)
     end
@@ -1734,11 +1734,11 @@ AnimationHub4:AddButton({
     Description = "Apply Stylish dance animations (R15)",
     Callback = function()
         local animations = {
-            idle = 3333331310, -- معرف رقصة Stylish
-            walk = 5712850190,
-            run = 5712856902,
-            jump = 5712848865,
-            fall = 5712852267
+            idle = 3333331310,
+            walk = 3338042785,
+            run = 3338097973,
+            jump = 3338118658,
+            fall = 3338009746
         }
         ApplyAnimation("Stylish Animation Pack", animations)
     end
