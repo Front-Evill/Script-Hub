@@ -1713,24 +1713,10 @@ AnimationHub4:AddButton({
     end
 })
 
-AnimationHub4:AddButton({
-    Title = "Magsa Animation Package",
-    Description = "Apply Magsa animations (R15)",
-    Callback = function()
-        local animations = {
-            idle = 3489171152,
-            walk = 3489173414,
-            run = 3489175274,
-            jump = 3489174223,
-            fall = 3489174223
-        }
-        ApplyAnimation("Magsa Animation Package", animations)
-    end
-})
 
 AnimationHub4:AddButton({
-    Title = "Robot Animation Pack",
-    Description = "Apply Robot animations (R15)",
+    Title = "Wicked Dance Animation",
+    Description = "Apply Wicked dance animation (R15)",
     Callback = function()
         local animations = {
             idle = 5712866595,
@@ -1739,7 +1725,22 @@ AnimationHub4:AddButton({
             jump = 5712848865,
             fall = 5712852267
         }
-        ApplyAnimation("Robot Animation Pack", animations)
+        ApplyAnimation("Wicked Dance Animation", animations)
+    end
+})
+
+AnimationHub4:AddButton({
+    Title = "Stylish Animation Pack",
+    Description = "Apply Stylish dance animations (R15)",
+    Callback = function()
+        local animations = {
+            idle = 5712866595,
+            walk = 5712850190,
+            run = 5712856902,
+            jump = 5712848865,
+            fall = 5712852267
+        }
+        ApplyAnimation("Stylish Animation Pack", animations)
     end
 })
 
@@ -1758,6 +1759,8 @@ AnimationHub4:AddButton({
         ApplyAnimation("Levitation Animation Pack", animations)
     end
 })
+
+
 
 
 DanceHub3:AddButton({
@@ -1832,7 +1835,6 @@ DanceHub3:AddButton({
 
 
 
--- MM2 رقصات مع IDs جديدة
 DanceHub3:AddButton({
     Title = "MM2 Zen",
     Description = nil,
@@ -1903,4 +1905,3 @@ DanceHub3:AddButton({
         end)
     end
 })
-
