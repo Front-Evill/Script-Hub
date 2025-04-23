@@ -20,9 +20,6 @@ local RaritesColor = {
     Default = Vector3.new(106, 106, 106)
 }
 --Function
-
-local FlyHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
-
 local function ApplyAnimation(animName, animations)
     local player = game.Players.LocalPlayer
     local connections = {}
@@ -589,18 +586,7 @@ FlyHubMain:AddButton({
     Title = "Fly Script",
     Description =  nil,
     Callback = function(state)
-        FlyHub()
-
-        if FlyHub() = state then
-            print("the scipr is working (fly)")
-        end    
-
-        if not FlyHub() = state then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
-            else
-                Notify("the script is noy working")
-            end
-        end
+     loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
     end
 })
 
