@@ -1625,6 +1625,21 @@ AnimationHub4:AddButton({
     end
 })
 
+AnimationHub4:AddButton({ 
+    Title = "Wicked Popular Dance", 
+    Description = "Apply Wicked Popular dance animation (R15)", 
+    Callback = function() 
+        local animations = { 
+            idle = 3189773368,
+            walk = 3189776546,  
+            run = 3189777709,   
+            jump = 3189779237,  
+            fall = 3189780863   
+        } 
+         
+        ApplyAnimation("Wicked Popular Dance", animations) 
+    end 
+})
 
 AnimationHub4:AddButton({
     Title = "Levitation Animation Pack",
@@ -1786,4 +1801,12 @@ DanceHub3:AddButton({
             end
         end)
     end
+})
+
+
+AnimationHub4:AddButton({
+    Title = "",
+    Description = "Apply Robot animations (R15)",
+    Callback = function()
+        
 })
