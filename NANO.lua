@@ -1464,19 +1464,15 @@ AnimationHub4:AddButton({
     Title = "Wicked Popular Dance", 
     Description = "Apply Wicked Popular dance animation (R15)", 
     Callback = function() 
-        -- Make sure these IDs are correct
         local animations = { 
-            idle = 3189773368,
-            walk = 3189776546,
-            run = 3189777709,
-            jump = 3189779237,
-            fall = 3189780863
+            idle = 4915741026,  -- Wicked Popular dance animation
+            walk = 616146177,   -- Using standard animations for movement
+            run = 616163682, 
+            jump = 616139451, 
+            fall = 616134815 
         } 
          
-        local animController = ApplyAnimation("Wicked Popular Dance", animations)
-        
-        -- Store the controller if you need to stop it later
-        _G.CurrentAnimController = animController
+        ApplyAnimation("Wicked Popular Dance", animations) 
     end 
 })
 
