@@ -1464,15 +1464,39 @@ AnimationHub4:AddButton({
     Title = "Wicked Popular Dance", 
     Description = "Apply Wicked Popular dance animation (R15)", 
     Callback = function() 
-        local animations = { 
-            idle = 4915741026,  -- Wicked Popular dance animation
-            walk = 616146177,   -- Using standard animations for movement
-            run = 616163682, 
-            jump = 616139451, 
-            fall = 616134815 
-        } 
-         
-        ApplyAnimation("Wicked Popular Dance", animations) 
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character and character:FindFirstChild("Humanoid")
+        
+        if not humanoid then
+            print("No humanoid found!")
+            return
+        end
+        
+        if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+            print("This animation requires R15 rig!")
+            return
+        end
+        
+        -- Create and load the animation directly
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://4915741026"
+        
+        local animTrack = humanoid:LoadAnimation(anim)
+        if animTrack then
+            -- Stop other animations
+            for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+                track:Stop()
+            end
+            
+            -- Play the dance animation
+            print("Playing Wicked Popular dance")
+            animTrack:Play()
+            
+            -- Store it globally to prevent garbage collection
+            _G.CurrentDanceTrack = animTrack
+        else
+            print("Failed to load animation!")
+        end
     end 
 })
-
