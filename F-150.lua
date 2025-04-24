@@ -19,9 +19,9 @@ local RaritesColor = {
     Red = Vector3.new(220, 0, 5),
     Default = Vector3.new(106, 106, 106)
 }
---Functions
+--Function
 
-local function Notify(Title,Dis)
+local player = game.Players.LocalPlayer
     pcall(function()
         Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
         local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
@@ -332,6 +332,8 @@ local Tabs = {
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
+    Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
+    Scain = Window:AddTab({ Title = "SCIN", Icon = "user" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -345,10 +347,10 @@ local TrollingMain = Tabs.Main:AddSection("Trolling")
 FlyHubMain:AddButton({
     Title = "Fly Script",
     Description =  nil,
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
+    Callback = function(state)
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
     end
-})
+}) 
 
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
@@ -575,11 +577,11 @@ TrollingMain:AddButton({
     Description = nil,
     Callback = function()
         if GetMurder() then
-            Chat("|Murder: "..GetMurder().Name)
+            Chat("--Murder: "..GetMurder().Name)
         end
         wait()
         if GetSheriff() then
-            Chat("|Sheriff: "..GetSheriff().Name)
+            Chat("--Sheriff: "..GetSheriff().Name)
         end
     end
 })
@@ -609,7 +611,6 @@ TrollingMain:AddButton({
 })
 
 local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
-local OptionsTargetting = Tabs.Targetting:AddSection("Options")
 local OptionsTargetting = Tabs.Targetting:AddSection("Options")
 
 local TargetInput = PlayerNameTargetting:AddInput("Input", {
@@ -1087,7 +1088,6 @@ getgenv().Ready = true
 local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
 local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
 local NoClipPlayer = Tabs.Player:AddSection("No clip")
-local Player = Tabs.Player:AddSection("")
 
 ----------------- Infinite Jump --------------------
 
@@ -1212,43 +1212,468 @@ NoClipPlayer:AddToggle("Noclip", {
 })
 
 
--- زر للانتقال إلى سيرفر جديد
-PlkFarmPlayer:AddButton({
-    Title = "Join New Server",
-    Description = "Teleport to a different server of the same game",
+---------------- Setting -------------------
+
+local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
+local ServerHub3 = Tabs.Setting:AddSection("Server")
+local FarmMoodHub = Tabs.Setting:AddSection("Mood")
+
+-------- FPS ---------
+FarmFpsQuSetting:AddButton({
+    Title = "FPS Boost",
+    Description = "Improves frame rate by reducing graphics",
     Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        local placeId = game.PlaceId
-        
-        -- الحصول على قائمة من السيرفرات المتاحة
-        local servers = {}
-        local page = TeleportService:GetSortedServersInfoForPlaceId(placeId, 100)
-        for _, server in ipairs(page) do
-            if server.playing < server.maxPlayers then
-                table.insert(servers, server)
-            end
+        game.Lighting.GlobalShadows = false
+        settings().Rendering.QualityLevel = 1
+        local skybox = game.Lighting:FindFirstChildOfClass("Sky")
+        if skybox then
+            skybox.StarCount = 0
+            skybox.CelestialBodiesShown = false
         end
-        
-        -- الانتقال إلى سيرفر عشوائي مختلف
-        if #servers > 0 then
-            local randomServer = servers[math.random(1, #servers)]
-            TeleportService:TeleportToPlaceInstance(placeId, randomServer.id, game.Players.LocalPlayer)
-        else
-            -- إذا لم يتم العثور على سيرفرات متاحة
-            TeleportService:Teleport(placeId, game.Players.LocalPlayer)
+        workspace.Terrain.WaterWaveSize = 0
+        workspace.Terrain.WaterWaveSpeed = 0
+        workspace.Terrain.WaterReflectance = 0
+        workspace.Terrain.WaterTransparency = 1
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(game.Players.LocalPlayer.Character) then
+                obj.CastShadow = false
+            end
+            
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 1
+            end
+            
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+                obj.Enabled = false
+            end
+            
+            if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            end
         end
     end
 })
 
--- زر لإعادة الاتصال بنفس السيرفر
-PlkFarmPlayer:AddButton({
-    Title = "Rejoin Same Server",
-    Description = "Reconnect to the current server",
+------------------------ QUALITY --------------------------
+FarmFpsQuSetting:AddButton({
+    Title = "Quality Boost",
+    Description = "Enhances visual quality of the game",
     Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        local placeId = game.PlaceId
-        local jobId = game.JobId
+        game.Lighting.GlobalShadows = true
+        settings().Rendering.QualityLevel = 21
+        local bloom = Instance.new("BloomEffect")
+        bloom.Intensity = 0.25
+        bloom.Size = 20
+        bloom.Threshold = 1
+        bloom.Name = "QualityBloom"
+        bloom.Parent = game.Lighting
         
-        TeleportService:TeleportToPlaceInstance(placeId, jobId, game.Players.LocalPlayer)
+        local colorCorrection = Instance.new("ColorCorrectionEffect")
+        colorCorrection.Brightness = 0.05
+        colorCorrection.Contrast = 0.05
+        colorCorrection.Saturation = 0.1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Name = "QualityColorCorrection"
+        colorCorrection.Parent = game.Lighting
+
+        game.Lighting.Ambient = Color3.fromRGB(25, 25, 25)
+        game.Lighting.Brightness = 2
+        game.Lighting.ClockTime = 14
+        
+        workspace.Terrain.WaterReflectance = 0.5
+        workspace.Terrain.WaterTransparency = 0.65
+        workspace.Terrain.WaterWaveSize = 0.15
+        workspace.Terrain.WaterWaveSpeed = 10
     end
 })
+
+
+
+
+----------------- MOODE ---------------
+
+FarmMoodHub:AddButton({
+    Title = "Night Mode",
+    Description = "Change game time to night",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 0
+        lighting.Brightness = 0.1
+        lighting.Ambient = Color3.fromRGB(20, 20, 30)
+        lighting.OutdoorAmbient = Color3.fromRGB(5, 5, 10)
+        lighting.FogEnd = 275
+        lighting.FogColor = Color3.fromRGB(0, 0, 20)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Day Mode",
+    Description = "Change game time to day",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 12
+        lighting.Brightness = 1.5
+        lighting.Ambient = Color3.fromRGB(150, 150, 150)
+        lighting.OutdoorAmbient = Color3.fromRGB(120, 120, 120)
+        lighting.FogEnd = 1000
+        lighting.FogColor = Color3.fromRGB(255, 255, 255)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Default Mode",
+    Description = "Reset lighting to default",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 14
+        lighting.Brightness = 1
+        lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        lighting.FogEnd = 100000
+        lighting.FogColor = Color3.fromRGB(191, 191, 191)
+    end
+ })
+
+ ----------------- TAB SCIN ---------------
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
+ local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
+
+AnimationHub4:AddButton({
+    Title = "Vampire Anim",
+    Description = nil,
+    Callback = function()
+        VampireAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1083445855"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1083450166"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1083473930"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1083462077"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1083455352"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1083439238"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1083443587"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+AnimationHub4:AddButton({
+    Title = "Hero Anim",
+    Description = nil,
+    Callback = function()
+        HeroAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616111295"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616113536"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616122287"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616117076"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616115533"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616104706"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616108001"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+AnimationHub4:AddButton({
+    Title = "Zombie Classic Anim",
+    Description = nil,
+    Callback = function()
+        ZombieClassicAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616158929"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616160636"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616168032"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616163682"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616161997"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616156119"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616157476"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+        
+})
+
+AnimationHub4:AddButton({
+    Title = "Levitation Anim",
+    Description = nil,
+    Callback = function()
+        LevitationAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616006778"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616008087"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=616013216"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=616010382"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=616008936"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=616003713"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=616005863"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+AnimationHub4:AddButton({
+    Title = "Toy Anim",
+    Description = nil,
+    Callback = function()
+        ToyAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=782841498"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=782845736"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=782843345"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=782842708"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=782847020"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=782843869"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=782846423"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+AnimationHub4:AddButton({
+    Title = "Ninja Anim",
+    Description = nil,
+    Callback = function()
+        NinjaAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=656117400"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=656118341"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=656121766"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=656118852"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=656117878"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=656114359"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=656115606"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+AnimationHub4:AddButton({
+    Title = "Cartoon Anim",
+    Description = nil,
+    Callback = function()
+        CartoonAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=742637544"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=742638445"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=742640026"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=742638842"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=742637942"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=742636889"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=742637151"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+
+AnimationHub4:AddButton({
+    Title = "Princess Anim",
+    Description = nil,
+    Callback = function()
+        PrincessAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=941003647"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=941013098"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=941028902"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=941015281"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=941008832"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=940996062"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=941000007"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
+
+
+DanceHub3:AddButton({
+    Title = "Default Dance",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://5915693819" -- Default Dance محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "Take The L",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4841399916" -- Take The L محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
+
+DanceHub3:AddButton({
+    Title = "MM2 Zen",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4049551434" -- MM2 Zen ID جديد
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
+DanceHub3:AddButton({
+    Title = "Dance Moves",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4555782893" -- Dance Moves ID جديد
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
