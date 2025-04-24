@@ -27,6 +27,12 @@ local function ApplyAnimation(animName, animations)
     local isActive = true
     local currentAnimTracks = {}
     
+    -- Add debug output
+    print("Applying animation pack: " .. animName)
+    for animType, animID in pairs(animations) do
+        print("Animation " .. animType .. ": " .. animID)
+    end
+    
     local function clearConnections()
         for _, connection in pairs(connections) do
             if typeof(connection) == "RBXScriptConnection" and connection.Connected then
@@ -48,11 +54,15 @@ local function ApplyAnimation(animName, animations)
     local function setupAnimations(character)
         if not isActive then return end
         
+        print("Setting up animations for character")
+        
         -- Clean up previous connections and animations
         clearConnections()
         clearAnimTracks()
         
         local humanoid = character:WaitForChild("Humanoid")
+        
+        print("Humanoid RigType: " .. tostring(humanoid.RigType))
         
         if humanoid.RigType ~= Enum.HumanoidRigType.R15 then
             game:GetService("StarterGui"):SetCore("SendNotification", {
@@ -60,6 +70,7 @@ local function ApplyAnimation(animName, animations)
                 Text = "This animation pack works only with R15 rigs",
                 Duration = 3
             })
+            print("Error: Not an R15 rig")
             return
         end
         
@@ -75,67 +86,38 @@ local function ApplyAnimation(animName, animations)
             end
         end
         
-        -- Table for prioritizing animation types
-        local animationPriority = {
-            idle = 1,
-            walk = 2,
-            run = 3,
-            jump = 4,
-            fall = 5
-        }
-        
-        -- Sort animation types by priority
-        local animTypes = {}
-        for animType in pairs(animations) do
-            table.insert(animTypes, animType)
-        end
-        
-        table.sort(animTypes, function(a, b)
-            return (animationPriority[a] or 999) < (animationPriority[b] or 999)
-        end)
-        
-        -- Apply animations in priority order
-        for _, animType in ipairs(animTypes) do
-            local animID = animations[animType]
-            
+        for animType, animID in pairs(animations) do
             if type(animID) == "number" and animID > 0 then
                 local anim = Instance.new("Animation")
                 anim.Name = "CustomAnim_" .. animType
                 anim.AnimationId = "rbxassetid://" .. animID
                 anim.Parent = character
                 
+                print("Loading animation: " .. animType)
+                
                 local success, animTrack = pcall(function()
                     return humanoid:LoadAnimation(anim)
                 end)
                 
                 if success and animTrack then
+                    print("Successfully loaded: " .. animType)
                     -- Store animation track
                     currentAnimTracks[animType] = animTrack
                     
-                    -- Set up animation speed scaling
-                    if animType == "walk" or animType == "run" then
-                        local speedScale = animType == "walk" and 1 or 1.5
-                        animTrack:AdjustSpeed(speedScale)
-                    end
-                    
                     -- Configure animation behavior based on type
                     if animType == "idle" then
+                        print("Playing idle animation")
                         animTrack:Play()
-                        
-                        -- Add fade transition
-                        animTrack:AdjustWeight(0)
-                        animTrack:AdjustWeight(1, 0.3)
                     elseif animType == "walk" then
                         local conn = humanoid.Running:Connect(function(speed)
                             if speed > 0.1 and speed < 10 and not humanoid.Jump then
                                 if not animTrack.IsPlaying then
-                                    animTrack:Play(0.2)
+                                    print("Playing walk animation, speed: " .. speed)
+                                    animTrack:Play()
                                 end
-                                -- Adjust speed based on actual walking speed
-                                animTrack:AdjustSpeed(speed / 10)
                             else
                                 if animTrack.IsPlaying then
-                                    animTrack:Stop(0.2)
+                                    animTrack:Stop()
                                 end
                             end
                         end)
@@ -144,13 +126,12 @@ local function ApplyAnimation(animName, animations)
                         local conn = humanoid.Running:Connect(function(speed)
                             if speed >= 10 and not humanoid.Jump then
                                 if not animTrack.IsPlaying then
-                                    animTrack:Play(0.2)
+                                    print("Playing run animation, speed: " .. speed)
+                                    animTrack:Play()
                                 end
-                                -- Adjust speed based on actual running speed
-                                animTrack:AdjustSpeed(speed / 16)
                             else
                                 if animTrack.IsPlaying then
-                                    animTrack:Stop(0.2)
+                                    animTrack:Stop()
                                 end
                             end
                         end)
@@ -164,9 +145,10 @@ local function ApplyAnimation(animName, animations)
                             -- Modern Roblox uses the Jumping event
                             local conn = humanoid.Jumping:Connect(function(jumping)
                                 if jumping then
-                                    animTrack:Play(0.1)
+                                    print("Playing jump animation")
+                                    animTrack:Play()
                                 else
-                                    animTrack:Stop(0.1)
+                                    animTrack:Stop()
                                 end
                             end)
                             table.insert(connections, conn)
@@ -174,9 +156,10 @@ local function ApplyAnimation(animName, animations)
                             -- Fallback for platforms without Jumping event
                             local conn = humanoid.StateChanged:Connect(function(oldState, newState)
                                 if newState == Enum.HumanoidStateType.Jumping then
-                                    animTrack:Play(0.1)
+                                    print("Playing jump animation (state changed)")
+                                    animTrack:Play()
                                 elseif newState ~= Enum.HumanoidStateType.Jumping and animTrack.IsPlaying then
-                                    animTrack:Stop(0.1)
+                                    animTrack:Stop()
                                 end
                             end)
                             table.insert(connections, conn)
@@ -184,46 +167,35 @@ local function ApplyAnimation(animName, animations)
                     elseif animType == "fall" then
                         local conn = humanoid.StateChanged:Connect(function(oldState, newState)
                             if newState == Enum.HumanoidStateType.Freefall then
-                                animTrack:Play(0.2)
+                                print("Playing fall animation")
+                                animTrack:Play()
                             elseif newState ~= Enum.HumanoidStateType.Freefall and animTrack.IsPlaying then
-                                animTrack:Stop(0.2)
+                                animTrack:Stop()
                             end
                         end)
                         table.insert(connections, conn)
                     end
-                    
-                    -- Set up animation fading for smooth transitions
-                    animTrack.Stopped:Connect(function()
-                        if animType == "idle" and isActive then
-                            task.wait(0.1)
-                            if isActive then
-                                animTrack:Play(0.2)
-                            end
-                        end
-                    end)
+                else
+                    print("Failed to load animation: " .. animType)
                 end
             end
         end
-        
-        -- Detect humanoid death to clean up
-        local deathConn = humanoid.Died:Connect(function()
-            clearAnimTracks()
-        end)
-        table.insert(connections, deathConn)
     end
     
     -- Initialize with current character
     local character = player.Character
     if character then
         setupAnimations(character)
+    else
+        print("No character found")
     end
     
     -- Handle respawns
-    local charAddedConn = player.CharacterAdded:Connect(setupAnimations)
+    local charAddedConn = player.CharacterAdded:Connect(function(newChar)
+        print("Character added, setting up animations")
+        setupAnimations(newChar)
+    end)
     table.insert(connections, charAddedConn)
-    
-    -- Save this animation set name for reference
-    player:SetAttribute("CurrentAnimSet", animName)
     
     -- Return controller with useful methods
     return {
@@ -231,31 +203,6 @@ local function ApplyAnimation(animName, animations)
             isActive = false
             clearConnections()
             clearAnimTracks()
-            player:SetAttribute("CurrentAnimSet", nil)
-        end,
-        
-        pause = function()
-            for _, track in pairs(currentAnimTracks) do
-                if track and track.IsPlaying then
-                    track:Pause()
-                end
-            end
-        end,
-        
-        resume = function()
-            for animType, track in pairs(currentAnimTracks) do
-                if track and not track.IsPlaying and animType == "idle" then
-                    track:Play()
-                end
-            end
-        end,
-        
-        isActive = function()
-            return isActive
-        end,
-        
-        getAnimations = function()
-            return animations
         end
     }
 end
@@ -1506,39 +1453,30 @@ AnimationHub4:AddButton({
             fall = 5319839762
         }
         
-        ApplyAnimation("Oldschool Animation Pack", animations)
-    end
-})
-
-AnimationHub4:AddButton({
-    Title = "Robot Animation Package",
-    Description = "Apply Robot animations (R15)",
-    Callback = function()
-        local animations = {
-            idle = 616088211,
-            walk = 616146177,
-            run = 616163682,
-            jump = 616139451,
-            fall = 616134815
-        }
+        local animController = ApplyAnimation("Wicked Popular Dance", animations)
         
-        ApplyAnimation("Robot Animation Package", animations)
+        -- Store the controller if you need to stop it later
+        _G.CurrentAnimController = animController
     end
 })
 
-
-AnimationHub4:AddButton({
-    Title = "Levitation Animation Pack",
-    Description = "Apply Levitation animations (R15)",
-    Callback = function()
-        local animations = {
-            idle = 616006778,
-            walk = 616013216,
-            run = 616010382,
-            jump = 616008087,
-            fall = 616005863
-        }
+AnimationHub4:AddButton({ 
+    Title = "Wicked Popular Dance", 
+    Description = "Apply Wicked Popular dance animation (R15)", 
+    Callback = function() 
+        -- Make sure these IDs are correct
+        local animations = { 
+            idle = 3189773368,
+            walk = 3189776546,
+            run = 3189777709,
+            jump = 3189779237,
+            fall = 3189780863
+        } 
+         
+        local animController = ApplyAnimation("Wicked Popular Dance", animations)
         
-        ApplyAnimation("Levitation Animation Pack", animations)
-    end
+        -- Store the controller if you need to stop it later
+        _G.CurrentAnimController = animController
+    end 
 })
+
