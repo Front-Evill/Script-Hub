@@ -1194,3 +1194,118 @@ NoClipPlayer:AddToggle("Noclip", {
 })
 
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
+local FarmMoodHub = Tabs.Setting:AddSection("Mood")
+
+-------- FPS ---------
+FarmFpsQuSetting:AddButton({
+    Title = "FPS Boost",
+    Description = "Improves frame rate by reducing graphics",
+    Callback = function()
+        game.Lighting.GlobalShadows = false
+        settings().Rendering.QualityLevel = 1
+        local skybox = game.Lighting:FindFirstChildOfClass("Sky")
+        if skybox then
+            skybox.StarCount = 0
+            skybox.CelestialBodiesShown = false
+        end
+        workspace.Terrain.WaterWaveSize = 0
+        workspace.Terrain.WaterWaveSpeed = 0
+        workspace.Terrain.WaterReflectance = 0
+        workspace.Terrain.WaterTransparency = 1
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(game.Players.LocalPlayer.Character) then
+                obj.CastShadow = false
+            end
+            
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 1
+            end
+            
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+                obj.Enabled = false
+            end
+            
+            if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            end
+        end
+    end
+})
+
+------------------------ QUALITY --------------------------
+FarmFpsQuSetting:AddButton({
+    Title = "Quality Boost",
+    Description = "Enhances visual quality of the game",
+    Callback = function()
+        game.Lighting.GlobalShadows = true
+        settings().Rendering.QualityLevel = 21
+        local bloom = Instance.new("BloomEffect")
+        bloom.Intensity = 0.25
+        bloom.Size = 20
+        bloom.Threshold = 1
+        bloom.Name = "QualityBloom"
+        bloom.Parent = game.Lighting
+        
+        local colorCorrection = Instance.new("ColorCorrectionEffect")
+        colorCorrection.Brightness = 0.05
+        colorCorrection.Contrast = 0.05
+        colorCorrection.Saturation = 0.1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Name = "QualityColorCorrection"
+        colorCorrection.Parent = game.Lighting
+
+        game.Lighting.Ambient = Color3.fromRGB(25, 25, 25)
+        game.Lighting.Brightness = 2
+        game.Lighting.ClockTime = 14
+        
+        workspace.Terrain.WaterReflectance = 0.5
+        workspace.Terrain.WaterTransparency = 0.65
+        workspace.Terrain.WaterWaveSize = 0.15
+        workspace.Terrain.WaterWaveSpeed = 10
+    end
+})
+
+--------------------------------------------------------------
+
+
+FarmMoodHub:AddButton({
+    Title = "Night Mode",
+    Description = "Change game time to night",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 0
+        lighting.Brightness = 0.1
+        lighting.Ambient = Color3.fromRGB(20, 20, 30)
+        lighting.OutdoorAmbient = Color3.fromRGB(5, 5, 10)
+        lighting.FogEnd = 275
+        lighting.FogColor = Color3.fromRGB(0, 0, 20)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Day Mode",
+    Description = "Change game time to day",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 12
+        lighting.Brightness = 1.5
+        lighting.Ambient = Color3.fromRGB(150, 150, 150)
+        lighting.OutdoorAmbient = Color3.fromRGB(120, 120, 120)
+        lighting.FogEnd = 1000
+        lighting.FogColor = Color3.fromRGB(255, 255, 255)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Default Mode",
+    Description = "Reset lighting to default",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 14
+        lighting.Brightness = 1
+        lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        lighting.FogEnd = 100000
+        lighting.FogColor = Color3.fromRGB(191, 191, 191)
+    end
+ })
