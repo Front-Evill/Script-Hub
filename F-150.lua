@@ -332,7 +332,7 @@ local Tabs = {
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
-    Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
+    -- Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
     Scain = Window:AddTab({ Title = "SCIN", Icon = "user" }),
 }
 local Options = Fluent.Options
@@ -1085,13 +1085,13 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-local PlkFarmPlayer = Tabs.Player:AddSection("For Player")
+local PlayerNanoHub = Tabs.Player:AddSection("For Player")
 local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
 local NoClipPlayer = Tabs.Player:AddSection("No clip")
 
 ----------------- Infinite Jump --------------------
 
-PlkFarmPlayer:AddToggle("InfiniteJump", {
+PlayerNanoHub:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
     Description = nil,
     Default = false,
@@ -1099,7 +1099,7 @@ PlkFarmPlayer:AddToggle("InfiniteJump", {
         infiniteJumpEnabled = state
         if state then
             Notify("The script has been turned on")
-        else
+         else
             Notify("The script has been turned off")
         end
     end
@@ -1123,7 +1123,7 @@ SpeedJumpPlayer:AddToggle("HighJump", {
     Callback = function(state)
         if state then
             game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
-        else
+         else
             game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
         end
     end
@@ -1151,6 +1151,14 @@ NoClipPlayer:AddToggle("Noclip", {
     Description = "Walk through walls and obstacles",
     Default = false,
     Callback = function(state)
+        -- ارسال الاشعار ابلع ابلع --
+        --[[
+        if state then 
+            Notify("the code is workink")
+         else
+            Notify("the script is not working")
+        end --]]
+
         _G.Noclip = state
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
@@ -1214,8 +1222,8 @@ NoClipPlayer:AddToggle("Noclip", {
 
 ---------------- Setting -------------------
 
+--[[
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local ServerHub3 = Tabs.Setting:AddSection("Server")
 local FarmMoodHub = Tabs.Setting:AddSection("Mood")
 
 -------- FPS ---------
@@ -1288,8 +1296,6 @@ FarmFpsQuSetting:AddButton({
 })
 
 
-
-
 ----------------- MOODE ---------------
 
 FarmMoodHub:AddButton({
@@ -1333,12 +1339,12 @@ FarmMoodHub:AddButton({
         lighting.FogColor = Color3.fromRGB(191, 191, 191)
     end
  })
-
+--]]
  ----------------- TAB SCIN ---------------
  local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
 
- --[[
+ 
 AnimationHub4:AddButton({
     Title = "Vampire Anim",
     Description = nil,
@@ -1532,8 +1538,8 @@ AnimationHub4:AddButton({
             Animate.Disabled = false
         end)
 })
---]]
 
+---------------------- dance hub -----------------------
 DanceHub3:AddButton({
     Title = "Default Dance",
     Description = nil,
