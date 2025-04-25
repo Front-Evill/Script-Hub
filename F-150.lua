@@ -1072,7 +1072,7 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-local AnimationHub4 = Tabs.ScainNano:AddSection("Animation Free")
+local AnimationHub4 = Tabs.ScinsNano:AddSection("Animation Free")
 
 AnimationHub4:AddButton({
     Title = "Vampire Anim",
