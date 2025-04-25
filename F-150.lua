@@ -19,7 +19,8 @@ local RaritesColor = {
     Red = Vector3.new(220, 0, 5),
     Default = Vector3.new(106, 106, 106)
 }
---Functions
+--Function
+
 local function Notify(Title,Dis)
     pcall(function()
         Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
@@ -317,7 +318,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By Front / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -330,15 +331,27 @@ local Tabs = {
     Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    ScinsNano = Window:AddTab({ Title = "Scins", Icon = "user"}),
-    
+    Player = Window:AddTab({ Title = "Player", Icon = "user" }),
+    -- Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
+    Scain = Window:AddTab({ Title = "SCIN", Icon = "user" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
 
+local FlyHubMain = Tabs.Main:AddSection("Fly")
 local AutofarmMain = Tabs.Main:AddSection("Auto Farms")
 local AutoMurderMain = Tabs.Main:AddSection("Auto Murder")
 local TrollingMain = Tabs.Main:AddSection("Trolling")
+
+
+FlyHubMain:AddButton({
+    Title = "Fly Script",
+    Description =  nil,
+    Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
+    end
+}) 
+
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
     Title = "AutoCoins", 
@@ -564,11 +577,11 @@ TrollingMain:AddButton({
     Description = nil,
     Callback = function()
         if GetMurder() then
-            Chat("|Murder: "..GetMurder().Name)
+            Chat("--Murder: "..GetMurder().Name)
         end
         wait()
         if GetSheriff() then
-            Chat("|Sheriff: "..GetSheriff().Name)
+            Chat("--Sheriff: "..GetSheriff().Name)
         end
     end
 })
@@ -1072,4 +1085,406 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-local AnimationHub4 = Tabs.ScinsNano:AddSection("Anim")
+local PlayerNanoHub = Tabs.Player:AddSection("For Player")
+local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
+local NoClipPlayer = Tabs.Player:AddSection("No clip")
+
+----------------- Infinite Jump --------------------
+
+PlayerNanoHub:AddToggle("InfiniteJump", {
+    Title = "Infinite Jump",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        infiniteJumpEnabled = state
+        if state then
+            Notify("The script has been turned on")
+         else
+            Notify("The script has been turned off")
+        end
+    end
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+----------------- speed & jump --------------------
+
+SpeedJumpPlayer:AddToggle("HighJump", {
+    Title = "High Jump",
+    Description = "Enables higher jumping ability",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
+         else
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+    end
+})
+
+
+SpeedJumpPlayer:AddToggle("SpeedBoost", {
+    Title = "Speed Boost",
+    Description = "Increases movement speed",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+        else
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+})
+
+----------------- No clip --------------------
+
+
+NoClipPlayer:AddToggle("Noclip", {
+    Title = "Noclip",
+    Description = "Walk through walls and obstacles",
+    Default = false,
+    Callback = function(state)
+        -- ارسال الاشعار ابلع ابلع --
+        --[[
+        if state then 
+            Notify("the code is workink")
+         else
+            Notify("the script is not working")
+        end --]]
+
+        _G.Noclip = state
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        local noclipConnection
+        if state then
+            noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                if not _G.Noclip then 
+                    if noclipConnection then
+                        noclipConnection:Disconnect()
+                    end
+                    return
+                end
+                
+                if character and character:FindFirstChild("Humanoid") then
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if noclipConnection then
+                noclipConnection:Disconnect()
+            end
+            
+            if character then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+        player.CharacterAdded:Connect(function(newCharacter)
+            character = newCharacter
+            wait(1)
+            if _G.Noclip then
+                noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                    if not _G.Noclip then 
+                        if noclipConnection then
+                            noclipConnection:Disconnect()
+                        end
+                        return
+                    end
+                    
+                    if character and character:FindFirstChild("Humanoid") then
+                        for _, part in pairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+    end
+})
+
+
+---------------- Setting -------------------
+
+
+local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
+local FarmMoodHub = Tabs.Setting:AddSection("Mood")
+
+-------- FPS ---------
+FarmFpsQuSetting:AddButton({
+    Title = "FPS Boost",
+    Description = "Improves frame rate by reducing graphics",
+    Callback = function()
+        game.Lighting.GlobalShadows = false
+        settings().Rendering.QualityLevel = 1
+        local skybox = game.Lighting:FindFirstChildOfClass("Sky")
+        if skybox then
+            skybox.StarCount = 0
+            skybox.CelestialBodiesShown = false
+        end
+        workspace.Terrain.WaterWaveSize = 0
+        workspace.Terrain.WaterWaveSpeed = 0
+        workspace.Terrain.WaterReflectance = 0
+        workspace.Terrain.WaterTransparency = 1
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(game.Players.LocalPlayer.Character) then
+                obj.CastShadow = false
+            end
+            
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 1
+            end
+            
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+                obj.Enabled = false
+            end
+            
+            if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            end
+        end
+    end
+})
+
+------------------------ QUALITY --------------------------
+FarmFpsQuSetting:AddButton({
+    Title = "Quality Boost",
+    Description = "Enhances visual quality of the game",
+    Callback = function()
+        game.Lighting.GlobalShadows = true
+        settings().Rendering.QualityLevel = 21
+        local bloom = Instance.new("BloomEffect")
+        bloom.Intensity = 0.25
+        bloom.Size = 20
+        bloom.Threshold = 1
+        bloom.Name = "QualityBloom"
+        bloom.Parent = game.Lighting
+        
+        local colorCorrection = Instance.new("ColorCorrectionEffect")
+        colorCorrection.Brightness = 0.05
+        colorCorrection.Contrast = 0.05
+        colorCorrection.Saturation = 0.1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Name = "QualityColorCorrection"
+        colorCorrection.Parent = game.Lighting
+
+        game.Lighting.Ambient = Color3.fromRGB(25, 25, 25)
+        game.Lighting.Brightness = 2
+        game.Lighting.ClockTime = 14
+        
+        workspace.Terrain.WaterReflectance = 0.5
+        workspace.Terrain.WaterTransparency = 0.65
+        workspace.Terrain.WaterWaveSize = 0.15
+        workspace.Terrain.WaterWaveSpeed = 10
+    end
+})
+
+
+----------------- MOODE ---------------
+
+FarmMoodHub:AddButton({
+    Title = "Night Mode",
+    Description = "Change game time to night",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 0
+        lighting.Brightness = 0.1
+        lighting.Ambient = Color3.fromRGB(20, 20, 30)
+        lighting.OutdoorAmbient = Color3.fromRGB(5, 5, 10)
+        lighting.FogEnd = 275
+        lighting.FogColor = Color3.fromRGB(0, 0, 20)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Day Mode",
+    Description = "Change game time to day",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 12
+        lighting.Brightness = 1.5
+        lighting.Ambient = Color3.fromRGB(150, 150, 150)
+        lighting.OutdoorAmbient = Color3.fromRGB(120, 120, 120)
+        lighting.FogEnd = 1000
+        lighting.FogColor = Color3.fromRGB(255, 255, 255)
+    end
+ })
+ 
+ FarmMoodHub:AddButton({
+    Title = "Default Mode",
+    Description = "Reset lighting to default",
+    Callback = function()
+        local lighting = game:GetService("Lighting")
+        lighting.ClockTime = 14
+        lighting.Brightness = 1
+        lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        lighting.FogEnd = 100000
+        lighting.FogColor = Color3.fromRGB(191, 191, 191)
+    end
+ })
+
+ ----------------- TAB SCIN ---------------
+ local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
+
+
+ DanceHub3:AddButton({
+    Title = "Default Dance",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://5915693819" -- Default Dance محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+DanceHub3:AddButton({
+    Title = "Take The L",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4841399916" -- Take The L محدث
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
+
+DanceHub3:AddButton({
+    Title = "MM2 Zen",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4049551434" -- MM2 Zen ID جديد
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
+DanceHub3:AddButton({
+    Title = "Dance Moves",
+    Description = nil,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://4555782893" -- Dance Moves ID جديد
+        
+        local animTrack = humanoid:LoadAnimation(animation)
+        animTrack:Play()
+        
+        local connection
+        connection = humanoid.Running:Connect(function(speed)
+            if speed > 0 then
+                animTrack:Stop()
+                connection:Disconnect()
+            end
+        end)
+        
+        local jumpConnection
+        jumpConnection = humanoid.StateChanged:Connect(function(oldState, newState)
+            if newState == Enum.HumanoidStateType.Jumping then
+                animTrack:Stop()
+                jumpConnection:Disconnect()
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+})
+
+
