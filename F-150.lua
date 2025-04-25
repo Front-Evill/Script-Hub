@@ -317,7 +317,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By 7sone",
+    SubTitle = "By FRONT - 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -731,7 +731,7 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddToggle("ViewTargetToggle", {
-    Title = "انظر ممن بعيد", 
+    Title = "انظر من بعيد", 
     Description = nil,
     Default = false,
     Callback = function(Value)
@@ -1046,7 +1046,7 @@ PlayersTeleport:AddButton({
 })
 
 PlacesTeleport:AddButton({
-    Title = "تنقل ل مكان الئيسي",
+    Title = "تنقل ل مكان الرئيسي",
     Description = nil,
     Callback = function()
 		for _, P in ipairs(game.Workspace:GetDescendants()) do
