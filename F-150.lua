@@ -326,12 +326,13 @@ local Window = Fluent:CreateWindow({
 })
 
 local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "shield-alert" }),
-    Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
-    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
-    Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    Player = Window:AddTab({ Title = "Player", Icon = "user" }),
-    Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
+    Main = Window:AddTab({ Title = "رئيسي", Icon = "shield-alert" }),
+    Targetting = Window:AddTab({ Title = "تحكم", Icon = "target" }),
+    Visuals = Window:AddTab({ Title = "كشف", Icon = "eye" }),
+    Teleport = Window:AddTab({ Title = "تنقل", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
+    Player = Window:AddTab({ Title = "الاعب", Icon = "user" }),
+    Setting = Window:AddTab({ Title = "اعدادات", Icon = "settings" }),
+    Scain = Window:AddTab({ Title = "سكنات", Icon = "user" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
@@ -1309,3 +1310,29 @@ FarmMoodHub:AddButton({
         lighting.FogColor = Color3.fromRGB(191, 191, 191)
     end
  })
+
+ local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
+
+ AnimationHub4:AddButton({
+    Title = "VampireAnim",
+    Description = nil,
+    Callback = function()
+        VampireAnim_Button.MouseButton1Click:Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
+                Notify("System FRONT","يجب ان تكون R15")
+                return
+            end
+            local Animate = plr.Character.Animate
+            Animate.Disabled = true
+            StopAnim()
+            Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=1083445855"
+            Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=1083450166"
+            Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=1083473930"
+            Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1083462077"
+            Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1083455352"
+            Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1083439238"
+            Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1083443587"
+            plr.Character.Humanoid:ChangeState(3)
+            Animate.Disabled = false
+        end)
+})
