@@ -21,7 +21,7 @@ local RaritesColor = {
 }
 --Function
 
-local player = game.Players.LocalPlayer
+local function Notify(Title,Dis)
     pcall(function()
         Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
         local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
