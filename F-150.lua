@@ -332,8 +332,6 @@ local Tabs = {
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
-    Setting = Window:AddTab({ Title = "setting", Icon = "settings" }),
-    Scain = Window:AddTab({ Title = "SCIN", Icon = "user" }),
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
