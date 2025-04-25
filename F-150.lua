@@ -1338,6 +1338,7 @@ FarmMoodHub:AddButton({
  local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
  local AnimationHub4 = Tabs.Scain:AddSection("Animation Free")
 
+ --[[
 AnimationHub4:AddButton({
     Title = "Vampire Anim",
     Description = nil,
@@ -1531,7 +1532,7 @@ AnimationHub4:AddButton({
             Animate.Disabled = false
         end)
 })
-
+--]]
 
 DanceHub3:AddButton({
     Title = "Default Dance",
