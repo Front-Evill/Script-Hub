@@ -337,12 +337,12 @@ local Tabs = {
 local Options = Fluent.Options
 Window:SelectTab(1)
 
-local AutofarmMain = Tabs.Main:AddSection("Auto Farms")
-local AutoMurderMain = Tabs.Main:AddSection("Auto Murder")
-local TrollingMain = Tabs.Main:AddSection("Trolling")
+local AutofarmMain = Tabs.Main:AddSection("اوتو فارم")
+local AutoMurderMain = Tabs.Main:AddSection("اوتو قاتل")
+local TrollingMain = Tabs.Main:AddSection("تصيد")
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
-    Title = "AutoCoins", 
+    Title = "جمع العمل", 
     Description = nil,
     Default = false,
     Callback = function(state)
@@ -366,8 +366,8 @@ AutofarmMain:AddToggle("AutoCoinsToggle",{
 })
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
-    Title = "AutoFling", 
-    Description = nil,
+    Title = "فوز السالم - فوز الشيرف", 
+    Description = "يقوم ب قتل لاعب الذي لديه دور القاتل",
     Default = false,
     Callback = function(state)
         getgenv().AutoFarms.Wins = state
@@ -493,7 +493,7 @@ AutofarmMain:AddToggle("AutoCoinsToggle",{
 })
 
 AutofarmMain:AddToggle("AutoCoinsToggle",{
-    Title = "AutoGun", 
+    Title = "ننقل ل مسدس", 
     Description = "Immediately take gun when dropped.",
     Default = false,
     Callback = function(state)
@@ -521,7 +521,7 @@ AutofarmMain:AddToggle("AutoCoinsToggle",{
 })
 
 AutoMurderMain:AddButton({
-    Title = "Kill All",
+    Title = "قتل الجميع",
     Description = nil,
     Callback = function()
         if GetTeamOf(game.Players.LocalPlayer) == "Murder" then
@@ -541,7 +541,7 @@ AutoMurderMain:AddButton({
 })
 
 AutoMurderMain:AddButton({
-    Title = "Kill Sheriff",
+    Title = "قتل الشيرف",
     Description = nil,
     Callback = function()
         if GetTeamOf(game.Players.LocalPlayer) == "Murder" then
@@ -561,8 +561,8 @@ AutoMurderMain:AddButton({
 })
 
 TrollingMain:AddButton({
-    Title = "Say Sheriff & Killer",
-    Description = nil,
+    Title = "قول - منو قاتل / منو الشيرف",
+    Description = "يقوم هاذه الزر ب  قول في الشات منو قاتل و منو الشيرف",
     Callback = function()
         if GetMurder() then
             Chat("|Murder: "..GetMurder().Name)
@@ -575,7 +575,7 @@ TrollingMain:AddButton({
 })
 
 TrollingMain:AddButton({
-    Title = "Fling all",
+    Title = "طير الجميع",
     Description = nil,
     Callback = function()
         Window:Dialog({
@@ -598,8 +598,8 @@ TrollingMain:AddButton({
     end
 })
 
-local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
-local OptionsTargetting = Tabs.Targetting:AddSection("Options")
+local PlayerNameTargetting = Tabs.Targetting:AddSection("الهدف")
+local OptionsTargetting = Tabs.Targetting:AddSection("خيارات")
 
 local TargetInput = PlayerNameTargetting:AddInput("Input", {
     Title = "Player Name",
@@ -633,7 +633,7 @@ game.Players.PlayerRemoving:Connect(function(Player)
 end)
 
 PlayerNameTargetting:AddButton({
-    Title = "Choose Player Tool",
+    Title = "قم ب اخذ اداة اختيار الاعبين",
     Description = "Click on a player to select him",
     Callback = function()
 		for _,P in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
@@ -667,7 +667,7 @@ PlayerNameTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
-    Title = "Get Information",
+    Title = "احصل علئ معلومات الاعب",
     Description = nil,
     Callback = function()
 		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
@@ -680,7 +680,7 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
-    Title = "Say Team",
+    Title = "قول دور الاعب في شات",
     Description = nil,
     Callback = function()
 		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
@@ -693,7 +693,7 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
-    Title = "Teleport To",
+    Title = "تنقل ل لاعب",
     Description = nil,
     Callback = function()
 		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
@@ -706,7 +706,7 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
-    Title = "Kill",
+    Title = "قتل لاعب",
     Description = nil,
     Callback = function()
 		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
@@ -731,7 +731,7 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddToggle("ViewTargetToggle", {
-    Title = "View", 
+    Title = "انظر ممن بعيد", 
     Description = nil,
     Default = false,
     Callback = function(Value)
@@ -753,7 +753,7 @@ OptionsTargetting:AddToggle("ViewTargetToggle", {
 })
 
 OptionsTargetting:AddToggle("FlingTargetToggle", {
-    Title = "Fling", 
+    Title = "اجعله يطير", 
     Description = nil,
     Default = false,
     Callback = function(Value)
@@ -861,11 +861,11 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
     end 
 })
 
-local PlayersEspVisuals = Tabs.Visuals:AddSection("Players Esp")
+local PlayersEspVisuals = Tabs.Visuals:AddSection("كشف لاعبين")
 local EntitiesEspVisuals = Tabs.Visuals:AddSection("Entities Esp")
 
 PlayersEspVisuals:AddToggle("AllPlayersEspToggle", {
-    Title = "All Players Esp", 
+    Title = "اكشف  الجميع", 
     Description = nil,
     Default = false,
     Callback = function(state)
@@ -894,7 +894,7 @@ PlayersEspVisuals:AddToggle("AllPlayersEspToggle", {
 })
 
 PlayersEspVisuals:AddToggle("MurderEspToggle", {
-    Title = "Murder Esp", 
+    Title = "كشف القاتل فقط", 
     Description = nil,
     Default = false,
     Callback = function(state)
@@ -924,7 +924,7 @@ PlayersEspVisuals:AddToggle("MurderEspToggle", {
 })
 
 PlayersEspVisuals:AddToggle("SheriffEspToggle", {
-    Title = "Sheriff Esp", 
+    Title = "كشف الشيرف فقط", 
     Description = nil,
     Default = false,
     Callback = function(state)
@@ -954,7 +954,7 @@ PlayersEspVisuals:AddToggle("SheriffEspToggle", {
 })
 
 EntitiesEspVisuals:AddToggle("GunEspToggle", {
-    Title = "Gun Esp", 
+    Title = "كشف مكان السلاح", 
     Description = nil,
     Default = false,
     Callback = function(state)
@@ -999,7 +999,7 @@ EntitiesEspVisuals:AddToggle("GunEspToggle", {
     end 
 })
 
-local PlayersTeleport = Tabs.Teleport:AddSection("Players")
+local PlayersTeleport = Tabs.Teleport:AddSection("تنقل ل لاعب")
 local PlacesTeleport = Tabs.Teleport:AddSection("Places")
 
 PlayersTeleport:AddInput("Input", {
@@ -1022,7 +1022,7 @@ PlayersTeleport:AddInput("Input", {
 })
 
 PlayersTeleport:AddButton({
-    Title = "Murder",
+    Title = "تنقل ل قاتل",
     Description = nil,
     Callback = function()
 		if GetMurder() and CheckCharacter(GetMurder()) and GetMurder() ~= game.Players.LocalPlayer then
@@ -1034,7 +1034,7 @@ PlayersTeleport:AddButton({
 })
 
 PlayersTeleport:AddButton({
-    Title = "Sheriff",
+    Title = "تنقل ل شيرف",
     Description = nil,
     Callback = function()
 		if GetSheriff() and CheckCharacter(GetSheriff()) and GetSheriff() ~= game.Players.LocalPlayer then
@@ -1046,7 +1046,7 @@ PlayersTeleport:AddButton({
 })
 
 PlacesTeleport:AddButton({
-    Title = "Lobby",
+    Title = "تنقل ل مكان الئيسي",
     Description = nil,
     Callback = function()
 		for _, P in ipairs(game.Workspace:GetDescendants()) do
@@ -1059,7 +1059,7 @@ PlacesTeleport:AddButton({
 })
 
 PlacesTeleport:AddButton({
-    Title = "Map",
+    Title = "تنقل ل ماب",
     Description = nil,
     Callback = function()
 		for _, P in ipairs(game.Workspace:GetDescendants()) do
@@ -1074,9 +1074,9 @@ PlacesTeleport:AddButton({
 getgenv().Ready = true
 
 
-local PlkFarmPlayer = Tabs.Player:AddSection("Infinti Jump")
-local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
-local NoClipPlayer = Tabs.Player:AddSection("No clip")
+local PlkFarmPlayer = Tabs.Player:AddSection("قفز لا نهائي")
+local SpeedJumpPlayer = Tabs.Player:AddSection("سرعه & قفز")
+local NoClipPlayer = Tabs.Player:AddSection("اختراق جدران")
 
 PlkFarmPlayer:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
@@ -1194,8 +1194,8 @@ NoClipPlayer:AddToggle("Noclip", {
     end
 })
 
-local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quality")
-local FarmMoodHub = Tabs.Setting:AddSection("Mood")
+local FarmFpsQuSetting = Tabs.Setting:AddSection("فريمات & الجودة")
+local FarmMoodHub = Tabs.Setting:AddSection("المود")
 
 -------- FPS ---------
 FarmFpsQuSetting:AddButton({
@@ -1270,7 +1270,7 @@ FarmFpsQuSetting:AddButton({
 
 
 FarmMoodHub:AddButton({
-    Title = "Night Mode",
+    Title = "وضع ليل",
     Description = "Change game time to night",
     Callback = function()
         local lighting = game:GetService("Lighting")
@@ -1284,7 +1284,7 @@ FarmMoodHub:AddButton({
  })
  
  FarmMoodHub:AddButton({
-    Title = "Day Mode",
+    Title = "وضع صباح",
     Description = "Change game time to day",
     Callback = function()
         local lighting = game:GetService("Lighting")
@@ -1298,7 +1298,7 @@ FarmMoodHub:AddButton({
  })
  
  FarmMoodHub:AddButton({
-    Title = "Default Mode",
+    Title = "الرجوع ل وضع الاساسي",
     Description = "Reset lighting to default",
     Callback = function()
         local lighting = game:GetService("Lighting")
@@ -1311,7 +1311,7 @@ FarmMoodHub:AddButton({
     end
  })
 
-local DanceHub3 = Tabs.Scain:AddSection("DANCE FREE")
+ local DanceHub3 = Tabs.Scain:AddSection("رقصات مجانيه")
 
 DanceHub3:AddButton({
     Title = "Default Dance",
