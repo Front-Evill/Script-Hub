@@ -1072,7 +1072,7 @@ PlacesTeleport:AddButton({
 })
 getgenv().Ready = true
 
-local AnimationHub4 = Tabs.ScinsNano:AddSection("Animation Free")
+local AnimationHub4 = Tabs.ScainsNano:AddSection("Animation Free")
 
 AnimationHub4:AddButton({
     Title = "Vampire Anim",
@@ -1080,7 +1080,7 @@ AnimationHub4:AddButton({
     Callback = function()
         VampireAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15",7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1104,7 +1104,7 @@ AnimationHub4:AddButton({
     Callback = function()
         HeroAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" ,7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1128,7 +1128,7 @@ AnimationHub4:AddButton({
     Callback = function()
         ZombieClassicAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15",7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1153,7 +1153,7 @@ AnimationHub4:AddButton({
     Callback = function()
         LevitationAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" ,7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1177,7 +1177,7 @@ AnimationHub4:AddButton({
     Callback = function()
         ToyAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" , 7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1201,7 +1201,7 @@ AnimationHub4:AddButton({
     Callback = function()
         NinjaAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" , 7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1225,7 +1225,7 @@ AnimationHub4:AddButton({
     Callback = function()
         CartoonAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" ,7)
                 return
             end
             local Animate = plr.Character.Animate
@@ -1250,7 +1250,7 @@ AnimationHub4:AddButton({
     Callback = function()
         PrincessAnim_Button.MouseButton1Click:Connect(function()
             if game.Players.LocalPlayer.Character.Humanoid.RigType ~= Enum.HumanoidRigType.R15 then
-                Notify("System FRONT","يجب ان تكون R15")
+                Notify("System FRONT","يجب ان تكون R15" ,7)
                 return
             end
             local Animate = plr.Character.Animate
