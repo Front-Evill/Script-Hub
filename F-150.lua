@@ -330,7 +330,8 @@ local Tabs = {
     Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
-    ScinsNano = Window:AddTab({ Title = "Scins", Icon = "user"})
+    ScinsNano = Window:AddTab({ Title = "Scins", Icon = "user"}),
+    
 }
 local Options = Fluent.Options
 Window:SelectTab(1)
