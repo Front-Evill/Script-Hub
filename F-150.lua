@@ -1071,3 +1071,5 @@ PlacesTeleport:AddButton({
     end
 })
 getgenv().Ready = true
+
+local TrollingMain = Tabs.ScinsNano:AddSection("Trolling")
