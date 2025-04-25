@@ -1071,3 +1071,5 @@ PlacesTeleport:AddButton({
     end
 })
 getgenv().Ready = true
+
+local AnimationHub4 = Tabs.ScinsNano:AddSection("Animation Free")
