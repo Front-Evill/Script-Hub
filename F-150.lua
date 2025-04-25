@@ -1073,6 +1073,7 @@ getgenv().Ready = true
 
 
 local PlkFarmPlayer = Tabs.Player:AddSection("Infinti Jump")
+local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & Jump")
 
 PlkFarmPlayer:AddToggle("InfiniteJump", {
     Title = "Infinite Jump",
@@ -1096,3 +1097,30 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
         end
     end
 end)
+
+SpeedJumpPlayer:AddToggle("HighJump", {
+    Title = "High Jump",
+    Description = "Enables higher jumping ability",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
+        else
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+    end
+})
+
+
+SpeedJumpPlayer:AddToggle("SpeedBoost", {
+    Title = "Speed Boost",
+    Description = "Increases movement speed",
+    Default = false,
+    Callback = function(state)
+        if state then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+        else
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+})
