@@ -1,144 +1,143 @@
 -- سكربت لإرسال معلومات اللاعب إلى Discord Webhook
-
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local webhookUrl = "https://discord.com/api/webhooks/1366289471204491305/1ptaRoAxMAKUu4wRMmPIogL_c5wXPdSd6NwIXtO7wFS-HHoLr2-9RH0Zbo_8qRWiY0KD"
-
--- الحصول على معلومات التاريخ والوقت
-local function getDateTime()
-    local dateTime = os.date("*t")
-    local gregorianDate = os.date("%Y-%m-%d %H:%M:%S")
-    
-    -- تحويل التاريخ الميلادي إلى هجري (تقريبي)
-    local hijriYear = math.floor((dateTime.year - 622) * (33/32))
-    local hijriMonth = dateTime.month
-    local hijriDay = dateTime.day
-    
-    local hijriDate = hijriYear .. "-" .. hijriMonth .. "-" .. hijriDay
-    
-    return gregorianDate, hijriDate
-end
-
--- دالة للحصول على رابط صورة اللاعب
-local function getPlayerAvatar(userId)
-    local success, result = pcall(function()
-        return Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size420x420)
-    end)
-    
-    if success then
-        return result
-    else
-        return "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
-    end
-end
+local webhookUrl = "https://discord.com/api/webhooks/1366289453743738890/gXGICSQf4Gzcs3y8FJZhqupo_Y0yHfaVWxMwGCUEfKCD1FrUzau3TDpjtyCYqB-sgXEd"
 
 -- دالة لإرسال المعلومات إلى الويب هوك
-local function sendWebhook(player)
-    local gregorianDateTime, hijriDateTime = getDateTime()
-    local playerName = player.Name
-    local playerDisplayName = player.DisplayName
-    local playerUserId = player.UserId
+local function sendWebhook()
+    local player = Players.LocalPlayer
+    if not player then return end
     
-    -- الحصول على صورة السكن (الأفاتار)
-    local avatarUrl = getPlayerAvatar(playerUserId)
+    -- الحصول على معلومات الوقت
+    local currentTime = os.date("%Y-%m-%d %H:%M:%S")
     
-    -- إنشاء بيانات الرسالة
+    -- إنشاء رابط صورة اللاعب
+    local avatarUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=420&height=420&format=png"
+    
+    -- إنشاء البيانات للإرسال
     local data = {
+        username = "MM2 Script Logger",
+        content = "تم تفعيل السكربت",
         embeds = {
             {
-                title = "تم تشغيل السكربت",
-                color = 65280, -- لون أخضر
+                title = "معلومات اللاعب",
+                color = 7419530,
                 fields = {
                     {
                         name = "اسم اللاعب",
-                        value = playerName,
+                        value = player.Name,
                         inline = true
                     },
                     {
                         name = "الاسم المعروض",
-                        value = playerDisplayName,
+                        value = player.DisplayName,
                         inline = true
                     },
                     {
                         name = "معرف المستخدم",
-                        value = tostring(playerUserId),
+                        value = tostring(player.UserId),
                         inline = true
                     },
                     {
-                        name = "التاريخ الميلادي",
-                        value = gregorianDateTime,
-                        inline = true
-                    },
-                    {
-                        name = "التاريخ الهجري",
-                        value = hijriDateTime,
-                        inline = true
-                    },
-                    {
-                        name = "وقت التشغيل",
-                        value = os.date("%H:%M:%S"),
-                        inline = true
+                        name = "وقت التفعيل",
+                        value = currentTime,
+                        inline = false
                     }
                 },
                 thumbnail = {
                     url = avatarUrl
-                },
-                image = {
-                    url = avatarUrl
-                },
-                timestamp = os.date("!%Y-%m-%dT%H:%M:%S") .. "Z"
+                }
             }
         }
     }
     
-    -- إرسال البيانات إلى الويب هوك
-    local success, response = pcall(function()
-        return HttpService:PostAsync(webhookUrl, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+    -- تحويل البيانات إلى JSON
+    local jsonData
+    local success, result = pcall(function()
+        return HttpService:JSONEncode(data)
     end)
     
-    if success then
-        print("تم إرسال المعلومات بنجاح!")
+    if not success then
+        warn("فشل تحويل البيانات إلى JSON")
+        return
+    end
+    
+    jsonData = result
+    
+    -- إرسال البيانات
+    local success, response = pcall(function()
+        return syn and syn.request or http and http.request or request or HttpPost
+    end)
+    
+    if not success or not response then
+        -- استخدام HttpService إذا لم تكن الدوال السابقة متوفرة
+        success, response = pcall(function()
+            return HttpService:RequestAsync({
+                Url = webhookUrl,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = jsonData
+            })
+        end)
+        
+        if success then
+            if response.Success then
+                print("تم إرسال المعلومات بنجاح!")
+            else
+                warn("فشل الإرسال: " .. (response.StatusMessage or "خطأ غير معروف"))
+            end
+        else
+            warn("حدث خطأ أثناء الإرسال: " .. tostring(response))
+        end
     else
-        warn("فشل إرسال المعلومات: " .. tostring(response))
+        -- استخدام دالة الطلب المتوفرة (لمحركات سكربت مختلفة)
+        local requestFunc = response
+        local res = requestFunc({
+            Url = webhookUrl,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = jsonData
+        })
+        
+        if res.Success or res.StatusCode == 200 or res.StatusCode == 204 then
+            print("تم إرسال المعلومات بنجاح!")
+        else
+            warn("فشل الإرسال: " .. (res.StatusMessage or "خطأ غير معروف"))
+        end
     end
 end
 
--- تشغيل الدالة عند تشغيل السكربت
-local localPlayer = Players.LocalPlayer
-if localPlayer then
-    sendWebhook(localPlayer)
+-- ننتظر تحميل اللاعب ثم نرسل البيانات
+if Players.LocalPlayer then
+    task.wait(1) -- انتظار ثانية واحدة للتأكد من تحميل كامل البيانات
+    sendWebhook()
 else
-    -- انتظار حتى يتم تحميل اللاعب
     Players.PlayerAdded:Connect(function(player)
         if player == Players.LocalPlayer then
-            sendWebhook(player)
+            task.wait(1)
+            sendWebhook()
         end
     end)
 end
 
--- code
-
+-- كود الواجهة منفصل عن كود الإرسال
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = "data" .. Fluent.Version,
+    Title = "MM2 Script",
     SubTitle = "by FRONT",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
-    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Acrylic = true,
     Theme = "Darker",
-    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- Fluent provides Lucide Icons, they are optional
 local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "user" }),
+    Main = Window:AddTab({ Title = "Main", Icon = "home" }),
 }
 
-local MainHub = Tabs.Main:AddSection("Main data")
-
-MainHub:AddButton({
-    Title = "Data",
-    Description = "Very important button",
-    Callback = function()
-    end
-})
+local MainSection = Tabs.Main:AddSection("MM2 Script Controls")
