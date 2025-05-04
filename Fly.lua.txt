@@ -1,3 +1,474 @@
--- what are you doing 🤔 go away man , discord : discord.com/users/1319184361635188827
- 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v101,v102) local v103={};for v109=1, #v101 do v6(v103,v0(v4(v1(v2(v101,v109,v109 + 1 )),v1(v2(v102,1 + (v109% #v102) ,1 + (v109% #v102) + 1 )))%256 ));end return v5(v103);end local v8=Instance.new(v7("\226\192\201\32\227\181\224\11\216","\126\177\163\187\69\134\219\167"));local v9=Instance.new(v7("\5\223\43\200\249","\156\67\173\74\165"));local v10=Instance.new(v7("\0\178\81\2\158\51\82\32\184\71","\38\84\215\41\118\220\70"));local v11=Instance.new(v7("\100\19\58\6\220\69\2\54\29\240","\158\48\118\66\114"));local v12=Instance.new(v7("\159\33\8\34\81\176\239\191\43\30","\155\203\68\112\86\19\197"));local v13=Instance.new(v7("\114\216\46\232\108\121\231\253\74","\152\38\189\86\156\32\24\133"));local v14=Instance.new(v7("\200\82\191\82\222\66\179\82\243\89","\38\156\55\199"));local v15=Instance.new(v7("\156\120\100\60\63\117\248\70\164","\35\200\29\28\72\115\20\154"));local v16=Instance.new(v7("\45\186\201\203\175\57\32\13\176\223","\84\121\223\177\191\237\76"));v8.Name=v7("\182\87\192\174","\161\219\54\169\192\90\48\80");v8.Parent=game.Players.LocalPlayer:WaitForChild(v7("\121\78\1\60\76\80\39\48\64","\69\41\34\96"));v8.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;v9.Parent=v8;v9.BackgroundColor3=Color3.fromRGB(24 + 139 ,815 -(306 + 254) ,461 -324 );v9.BorderColor3=Color3.fromRGB(103,953 -(16 + 716) ,14 + 199 );v9.Position=UDim2.new(0.100320168 -0 ,1467 -(899 + 568) ,0.379746825 -0 ,0 + 0 );v9.Size=UDim2.new(0 -0 ,479 -289 ,603 -(268 + 335) ,347 -(60 + 230) );v10.Name=v7("\169\211","\75\220\163\183\106\98");v10.Parent=v9;v10.BackgroundColor3=Color3.fromRGB(1875 -(503 + 1293) ,827 -(426 + 146) ,19 + 133 );v10.Size=UDim2.new(1456 -(282 + 1174) ,1105 -(810 + 251) ,0 + 0 ,839 -(569 + 242) );v10.Font=Enum.Font.SourceSans;v10.Text=v7("\55\138","\185\98\218\235\87");v10.TextColor3=Color3.fromRGB(0 -0 ,0 + 0 ,1024 -(706 + 318) );v10.TextSize=14;v11.Name=v7("\207\51\48\232","\202\171\92\71\134\190");v11.Parent=v9;v11.BackgroundColor3=Color3.fromRGB(1466 -(721 + 530) ,1526 -(945 + 326) ,302 -181 );v11.Position=UDim2.new(0 + 0 ,0 + 0 ,700.491228074 -(271 + 429) ,0 + 0 );v11.Size=UDim2.new(1500 -(1408 + 92) ,3 + 41 ,1086 -(461 + 625) ,1316 -(993 + 295) );v11.Font=Enum.Font.SourceSans;v11.Text=v7("\13\238\27\166","\232\73\161\76");v11.TextColor3=Color3.fromRGB(0 + 0 ,0 + 0 ,0 + 0 );v11.TextSize=1185 -(418 + 753) ;v12.Name=v7("\180\215\77\91","\126\219\185\34\61");v12.Parent=v9;v12.BackgroundColor3=Color3.fromRGB(98 + 157 ,26 + 223 ,22 + 52 );v12.Position=UDim2.new(0.702823281,0 + 0 ,529.491228074 -(406 + 123) ,1769 -(1749 + 20) );v12.Size=UDim2.new(0 + 0 ,21 + 35 ,337 -(10 + 327) ,7 + 21 );v12.Font=Enum.Font.SourceSans;v12.Text=v7("\10\194\71","\135\108\174\62\18\30\23\147");v12.TextColor3=Color3.fromRGB(338 -(118 + 220) ,1322 -(1249 + 73) ,0 + 0 );v12.TextSize=463 -(108 + 341) ;v13.Parent=v9;v13.BackgroundColor3=Color3.fromRGB(242,1205 -(466 + 679) ,613 -358 );v13.Position=UDim2.new(0.469327301 -0 ,1493 -(711 + 782) ,0 -0 ,0);v13.Size=UDim2.new(1900 -(106 + 1794) ,33 + 67 ,1819 -(580 + 1239) ,9 + 19 );v13.Font=Enum.Font.SourceSans;v13.Text=v7("\177\252\35\139\26\183\115\225\132\198\4\255\88\137\6\238\251\220\3","\167\214\137\74\171\120\206\83");v13.TextColor3=Color3.fromRGB(0 + 0 ,0 -0 ,0 -0 );v13.TextScaled=true;v13.TextSize=37 -23 ;v13.TextWrapped=true;v14.Name=v7("\155\252\39\78","\199\235\144\82\61\152");v14.Parent=v9;v14.BackgroundColor3=Color3.fromRGB(247 -(4 + 110) ,729 -(57 + 527) ,112 + 143 );v14.Position=UDim2.new(0.231578946,1427 -(41 + 1386) ,103 -(17 + 86) ,0 + 0 );v14.Size=UDim2.new(0 + 0 ,45,0 -0 ,1818 -(1010 + 780) );v14.Font=Enum.Font.SourceSans;v14.Text="+";v14.TextColor3=Color3.fromRGB(0 -0 ,166 -(122 + 44) ,0 -0 );v14.TextScaled=true;v14.TextSize=46 -32 ;v14.TextWrapped=true;v15.Name=v7("\20\6\188\46\3","\75\103\118\217");v15.Parent=v9;v15.BackgroundColor3=Color3.fromRGB(255,70 + 15 ,1836 -(1045 + 791) );v15.Position=UDim2.new(0.468421042 + 0 ,0 -0 ,65.491228074 -(30 + 35) ,0 + 0 );v15.Size=UDim2.new(1257 -(1043 + 214) ,166 -122 ,1212 -(323 + 889) ,75 -47 );v15.Font=Enum.Font.SourceSans;v15.Text="1";v15.TextColor3=Color3.fromRGB(580 -(361 + 219) ,320 -(53 + 267) ,0 + 0 );v15.TextScaled=true;v15.TextSize=14;v15.TextWrapped=true;v16.Name=v7("\202\93\126\17","\126\167\52\16\116\217");v16.Parent=v9;v16.BackgroundColor3=Color3.fromRGB(536 -(15 + 398) ,1237 -(18 + 964) ,929 -682 );v16.Position=UDim2.new(0.231578946 + 0 ,0 + 0 ,850.491228074 -(20 + 830) ,0 + 0 );v16.Size=UDim2.new(0 + 0 ,171 -(116 + 10) ,0 + 0 ,16 + 13 );v16.Font=Enum.Font.SourceSans;v16.Text="-";v16.TextColor3=Color3.fromRGB(738 -(542 + 196) ,0 -0 ,0 + 0 );v16.TextScaled=true;v16.TextSize=8 + 6 ;v16.TextWrapped=true;speeds=1 + 0 ;local v96=game:GetService(v7("\248\34\33\153\177\11\239","\156\168\78\64\224\212\121")).LocalPlayer;local v97=game.Players.LocalPlayer.Character;local v98=v97 and v97:FindFirstChildWhichIsA(v7("\47\251\168\207\9\225\172\202","\174\103\142\197")) ;nowe=false;game:GetService(v7("\101\60\94\42\49\91\234\113\61\86","\152\54\72\63\88\69\62")):SetCore(v7("\231\193\224\88\250\203\250\85\210\205\237\93\192\205\225\82","\60\180\164\142"),{[v7("\108\87\17\37\34","\114\56\62\101\73\71\141")]=v7("\159\198\155\247\141\203\155\240\151\169\243\237\149","\164\216\137\187"),[v7("\230\227\41\166","\107\178\134\81\210\198\158")]=v7("\62\2\155\134\171\54\10\194\193\191\49\78\128\223\234\60\7\145\197\165\42\10\216\134\172\42\1\140\210\149\97","\202\88\110\226\166")});Duration=41 -25 ;v9.Active=true;v9.Draggable=true;v12.MouseButton1Down:connect(function() if (nowe==true) then local v110=0 -0 ;while true do if ((1552 -(1126 + 425))==v110) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp,true);v110=1786 -(214 + 1570) ;end if (v110==(407 -(118 + 287))) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics,true);v110=11 -8 ;end if (v110==(1125 -(118 + 1003))) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,true);v110=3 + 2 ;end if ((5 + 0)==v110) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,true);v96.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics);break;end if ((0 -0)==v110) then nowe=false;v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true);v110=378 -(142 + 235) ;end if (v110==(13 -10)) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll,true);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Running,true);v110=1 + 3 ;end end else local v111=0;local v112;local v113;while true do if (v111==(632 -(512 + 114))) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,false);v111=984 -(553 + 424) ;end if (v111==(13 -6)) then v96.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Swimming);break;end if (v111==(3 + 0)) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,false);v111=4 + 0 ;end if (v111==(1 + 0)) then local v160=0 + 0 ;local v161;while true do if (v160==(0 + 0)) then v161=0 + 0 ;while true do if (v161==1) then for v192,v193 in next,v113:GetPlayingAnimationTracks() do v193:AdjustSpeed(0);end v111=2 + 0 ;break;end if (v161==(0 -0)) then v112=game.Players.LocalPlayer.Character;v113=v112:FindFirstChildOfClass(v7("\169\57\192\19\233\142\37\201","\135\225\76\173\114")) or v112:FindFirstChildOfClass(v7("\59\227\177\189\173\169\174\21\227\155\191\162\169\181\21\225\180\181\190","\199\122\141\216\208\204\221")) ;v161=2 -1 ;end end break;end end end if (v111==(0 -0)) then nowe=true;for v167=1 + 0 ,speeds do spawn(function() local v170=game:GetService(v7("\241\26\140\196\207\209\25\139\244\207","\170\163\111\226\151")).Heartbeat;tpwalking=true;local v171=game.Players.LocalPlayer.Character;local v172=v171 and v171:FindFirstChildWhichIsA(v7("\57\37\191\57\64\56\32\21","\73\113\80\210\88\46\87")) ;while tpwalking and v170:Wait() and v171 and v172 and v172.Parent  do if (v172.MoveDirection.Magnitude>(0 -0)) then v171:TranslateBy(v172.MoveDirection);end end end);end game.Players.LocalPlayer.Character.Animate.Disabled=true;v111=754 -(239 + 514) ;end if ((1474 -(1269 + 200))==v111) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Running,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics,false);v111=3 + 3 ;end if (v111==(817 -(98 + 717))) then local v163=1329 -(797 + 532) ;while true do if (v163==1) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying,false);v111=3 + 0 ;break;end if ((0 + 0)==v163) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,false);v163=2 -1 ;end end end if (v111==(830 -(802 + 24))) then local v164=0 -0 ;while true do if (v164==(1202 -(373 + 829))) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed,false);v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics,false);v164=732 -(476 + 255) ;end if ((1131 -(369 + 761))==v164) then v96.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding,false);v111=3 + 2 ;break;end end end end end if (game:GetService(v7("\157\209\17\233\125\228\190","\150\205\189\112\144\24")).LocalPlayer.Character:FindFirstChildOfClass(v7("\13\145\178\77\10\135\24\20","\112\69\228\223\44\100\232\113")).RigType==Enum.HumanoidRigType.R6) then local v114=game.Players.LocalPlayer;local v115=v114.Character.Torso;local v116=true;local v117=true;local v118={f=0 + 0 ,b=0 + 0 ,l=0 -0 ,r=0 -0 };local v119={f=0 -0 ,b=238 -(64 + 174) ,l=0 + 0 ,r=0 -0 };local v120=386 -(144 + 192) ;local v121=216 -(42 + 174) ;local v122=Instance.new(v7("\246\16\3\202\145\101\148\219","\230\180\127\103\179\214\28"),v115);v122.P=67612 + 22388 ;v122.maxTorque=Vector3.new(9000001188 -(684 + 504) ,9000001504 -(363 + 1141) ,9000001619 -(1427 + 192) );v122.cframe=v115.CFrame;local v127=Instance.new(v7("\174\10\91\95\210\68\236\131\6\86\82\253","\128\236\101\63\38\132\33"),v115);v127.velocity=Vector3.new(0,0.1,0 + 0 );v127.maxForce=Vector3.new(9000001580 -(1183 + 397) ,10414535622 -1414535622 ,9000000897 -(229 + 668) );if (nowe==true) then v114.Character.Humanoid.PlatformStand=true;end while (nowe==true) or (game:GetService(v7("\156\165\16\93\179\249\220","\175\204\201\113\36\214\139")).LocalPlayer.Character.Humanoid.Health==(1975 -(1913 + 62)))  do local v154=0;while true do if (v154==0) then game:GetService(v7("\117\217\59\239\1\85\218\60\223\1","\100\39\172\85\188")).RenderStepped:Wait();if (((v118.l + v118.r)~=(0 + 0)) or ((v118.f + v118.b)~=(0 -0))) then v121=v121 + (1933.5 -(565 + 1368)) + (v121/v120) ;if (v121>v120) then v121=v120;end elseif ( not (((v118.l + v118.r)~=(0 -0)) or ((v118.f + v118.b)~=(1661 -(1477 + 184)))) and (v121~=(0 -0))) then local v185=0 + 0 ;while true do if (v185==(856 -(564 + 292))) then v121=v121-(1 -0) ;if (v121<(1806 -(1202 + 604))) then v121=0 -0 ;end break;end end end v154=305 -(244 + 60) ;end if (v154==(1 + 0)) then if (((v118.l + v118.r)~=(476 -(41 + 435))) or ((v118.f + v118.b)~=(0 -0))) then v127.velocity=((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (v118.f + v118.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(v118.l + v118.r ,(v118.f + v118.b) * (1001.2 -(938 + 63)) ,0 + 0 ).p) -game.Workspace.CurrentCamera.CoordinateFrame.p)) * v121 ;v119={f=v118.f,b=v118.b,l=v118.l,r=v118.r};elseif (((v118.l + v118.r)==(1125 -(936 + 189))) and ((v118.f + v118.b)==(0 + 0)) and (v121~=(1613 -(1565 + 48)))) then v127.velocity=((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (v119.f + v119.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(v119.l + v119.r ,(v119.f + v119.b) * (0.2 + 0) ,0 + 0 ).p) -game.Workspace.CurrentCamera.CoordinateFrame.p)) * v121 ;else v127.velocity=Vector3.new(0 + 0 ,0,1138 -(782 + 356) );end v122.cframe=game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles( -math.rad(((v118.f + v118.b) * (92 -42) * v121)/v120 ),1911 -(340 + 1571) ,0) ;break;end end end v118={f=0 + 0 ,b=267 -(176 + 91) ,l=0 -0 ,r=1034 -(125 + 909) };v119={f=0 -0 ,b=1092 -(975 + 117) ,l=1875 -(157 + 1718) ,r=0};v121=0 + 0 ;v122:Destroy();v127:Destroy();v114.Character.Humanoid.PlatformStand=false;game.Players.LocalPlayer.Character.Animate.Disabled=false;tpwalking=false;else local v132=game.Players.LocalPlayer;local v133=v132.Character.UpperTorso;local v134=true;local v135=true;local v136={f=0 + 0 ,b=0 -0 ,l=0 -0 ,r=0 -0 };local v137={f=1018 -(697 + 321) ,b=512 -(409 + 103) ,l=0 -0 ,r=95 -(51 + 44) };local v138=15 + 35 ;local v139=1317 -(1114 + 203) ;local v140=Instance.new(v7("\143\119\189\153\20\180\106\182","\83\205\24\217\224"),v133);v140.P=190675 -100675 ;v140.maxTorque=Vector3.new(9000000000,9000000000 -0 ,9000000000 -0 );v140.cframe=v133.CFrame;local v145=Instance.new(v7("\196\202\201\36\208\192\193\50\229\204\217\36","\93\134\165\173"),v133);v145.velocity=Vector3.new(0 -0 ,1227.1 -(322 + 905) ,611 -(602 + 9) );v145.maxForce=Vector3.new(9000001189 -(449 + 740) ,9000000872 -(826 + 46) ,9000000947 -(245 + 702) );if (nowe==true) then v132.Character.Humanoid.PlatformStand=true;end while (nowe==true) or (game:GetService(v7("\142\254\192\219\63\220\161","\30\222\146\161\162\90\174\210")).LocalPlayer.Character.Humanoid.Health==(0 -0))  do wait();if (((v136.l + v136.r)~=(0 + 0)) or ((v136.f + v136.b)~=(1898 -(260 + 1638)))) then v139=v139 + (440.5 -(382 + 58)) + (v139/v138) ;if (v139>v138) then v139=v138;end elseif ( not (((v136.l + v136.r)~=(0 -0)) or ((v136.f + v136.b)~=(0 -0))) and (v139~=(0 + 0))) then local v173=0 -0 ;while true do if (v173==(0 -0)) then v139=v139-(2 -1) ;if (v139<(0 + 0)) then v139=0 -0 ;end break;end end end if (((v136.l + v136.r)~=(0 -0)) or ((v136.f + v136.b)~=(1205 -(902 + 303)))) then local v165=0;while true do if (v165==(0 -0)) then v145.velocity=((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (v136.f + v136.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(v136.l + v136.r ,(v136.f + v136.b) * 0.2 ,0 -0 ).p) -game.Workspace.CurrentCamera.CoordinateFrame.p)) * v139 ;v137={f=v136.f,b=v136.b,l=v136.l,r=v136.r};break;end end elseif (((v136.l + v136.r)==(0 -0)) and ((v136.f + v136.b)==(0 + 0)) and (v139~=(0 -0))) then v145.velocity=((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (v137.f + v137.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(v137.l + v137.r ,(v137.f + v137.b) * (1690.2 -(1121 + 569)) ,214 -(22 + 192) ).p) -game.Workspace.CurrentCamera.CoordinateFrame.p)) * v139 ;else v145.velocity=Vector3.new(683 -(483 + 200) ,0 -0 ,1463 -(1404 + 59) );end v140.cframe=game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles( -math.rad(((v136.f + v136.b) * 50 * v139)/v138 ),0 -0 ,0 -0 ) ;end v136={f=0 -0 ,b=0 -0 ,l=765 -(468 + 297) ,r=562 -(334 + 228) };v137={f=0,b=0,l=0 -0 ,r=0 -0 };v139=0 -0 ;v140:Destroy();v145:Destroy();v132.Character.Humanoid.PlatformStand=false;game.Players.LocalPlayer.Character.Animate.Disabled=false;tpwalking=false;end end);v10.MouseButton1Down:connect(function() game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,1 + 1 ,236 -(141 + 95) ) ;end);v11.MouseButton1Down:connect(function() game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0 + 0 , -(4 -2),0 -0 ) ;end);game:GetService(v7("\213\66\113\19\224\92\99","\106\133\46\16")).LocalPlayer.CharacterAdded:Connect(function(v106) local v107=0;while true do if (v107==(1 + 0)) then game.Players.LocalPlayer.Character.Animate.Disabled=false;break;end if ((0 + 0)==v107) then wait(0.7 -0 );game.Players.LocalPlayer.Character.Humanoid.PlatformStand=false;v107=1 -0 ;end end end);v14.MouseButton1Down:connect(function() speeds=speeds + 1 + 0 ;v15.Text=speeds;if (nowe==true) then local v150=0 + 0 ;while true do if ((0 -0)==v150) then tpwalking=false;for v169=1,speeds do spawn(function() local v176=0 + 0 ;local v177;local v178;local v179;while true do if (v176==(165 -(92 + 71))) then while tpwalking and v177:Wait() and v178 and v179 and v179.Parent  do if (v179.MoveDirection.Magnitude>(0 + 0)) then v178:TranslateBy(v179.MoveDirection);end end break;end if (v176==(1 -0)) then v178=game.Players.LocalPlayer.Character;v179=v178 and v178:FindFirstChildWhichIsA(v7("\114\221\232\87\84\253\137\94","\224\58\168\133\54\58\146")) ;v176=2 -0 ;end if (v176==(765 -(574 + 191))) then v177=game:GetService(v7("\106\53\125\207\95\82\78\41\112\249","\32\56\64\19\156\58")).Heartbeat;tpwalking=true;v176=1 + 0 ;end end end);end break;end end end end);v16.MouseButton1Down:connect(function() if (speeds==(2 -1)) then local v151=0 + 0 ;local v152;while true do if (v151==(849 -(254 + 595))) then v152=126 -(55 + 71) ;while true do if (v152==(1 -0)) then v15.Text=speeds;break;end if (v152==(0 + 0)) then v15.Text=v7("\90\87\69\189\123\137\147\75\91\83\11\241\112\149\148\75\77\94\74\243\53\215","\107\57\54\43\157\21\230\231");wait(1791 -(573 + 1217) );v152=1 + 0 ;end end break;end end else local v153=0 -0 ;while true do if ((0 + 0)==v153) then speeds=speeds-(1097 -(709 + 387)) ;v15.Text=speeds;v153=1859 -(673 + 1185) ;end if (v153==(1 -0)) then if (nowe==true) then local v180=939 -(714 + 225) ;while true do if (v180==(0 -0)) then tpwalking=false;for v191=1,speeds do spawn(function() local v194=0 -0 ;local v195;local v196;local v197;while true do if (v194==(2 + 0)) then while tpwalking and v195:Wait() and v196 and v197 and v197.Parent  do if (v197.MoveDirection.Magnitude>(0 -0)) then v196:TranslateBy(v197.MoveDirection);end end break;end if (v194==(0 + 0)) then v195=game:GetService(v7("\233\158\31\198\188\206\217\210\136\20","\175\187\235\113\149\217\188")).Heartbeat;tpwalking=true;v194=1 -0 ;end if (v194==(1 -0)) then local v199=0;while true do if (v199==(807 -(118 + 688))) then v194=2;break;end if (v199==(48 -(25 + 23))) then v196=game.Players.LocalPlayer.Character;v197=v196 and v196:FindFirstChildWhichIsA(v7("\20\186\140\77\237\118\113\56","\24\92\207\225\44\131\25")) ;v199=1 + 0 ;end end end end end);end break;end end end break;end end end end);
+local main = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local up = Instance.new("TextButton")
+local down = Instance.new("TextButton")
+local onof = Instance.new("TextButton")
+local TextLabel = Instance.new("TextLabel")
+local plus = Instance.new("TextButton")
+local speed = Instance.new("TextLabel")
+local mine = Instance.new("TextButton")
+local closebutton = Instance.new("TextButton")
+local mini = Instance.new("TextButton")
+local mini2 = Instance.new("TextButton") 
+
+main.Name = "main"
+main.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+main.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+main.ResetOnSpawn = false 
+
+Frame.Parent = main
+Frame.BackgroundColor3 = Color3.fromRGB(163, 255, 137)
+Frame.BorderColor3 = Color3.fromRGB(103, 221, 213)
+Frame.Position = UDim2.new(0.100320168, 0, 0.379746825, 0)
+Frame.Size = UDim2.new(0, 190, 0, 57) 
+
+up.Name = "up"
+up.Parent = Frame
+up.BackgroundColor3 = Color3.fromRGB(79, 255, 152)
+up.Size = UDim2.new(0, 44, 0, 28)
+up.Font = Enum.Font.SourceSans
+up.Text = "UP"
+up.TextColor3 = Color3.fromRGB(0, 0, 0)
+up.TextSize = 14.000 
+
+down.Name = "down"
+down.Parent = Frame
+down.BackgroundColor3 = Color3.fromRGB(215, 255, 121)
+down.Position = UDim2.new(0, 0, 0.491228074, 0)
+down.Size = UDim2.new(0, 44, 0, 28)
+down.Font = Enum.Font.SourceSans
+down.Text = "DOWN"
+down.TextColor3 = Color3.fromRGB(0, 0, 0)
+down.TextSize = 14.000 
+
+onof.Name = "onof"
+onof.Parent = Frame
+onof.BackgroundColor3 = Color3.fromRGB(255, 249, 74)
+onof.Position = UDim2.new(0.702823281, 0, 0.491228074, 0)
+onof.Size = UDim2.new(0, 56, 0, 28)
+onof.Font = Enum.Font.SourceSans
+onof.Text = "fly"
+onof.TextColor3 = Color3.fromRGB(0, 0, 0)
+onof.TextSize = 14.000 
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(242, 60, 255)
+TextLabel.Position = UDim2.new(0.469327301, 0, 0, 0)
+TextLabel.Size = UDim2.new(0, 100, 0, 28)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Fly GUI V3"
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true 
+
+plus.Name = "plus"
+plus.Parent = Frame
+plus.BackgroundColor3 = Color3.fromRGB(133, 145, 255)
+plus.Position = UDim2.new(0.231578946, 0, 0, 0)
+plus.Size = UDim2.new(0, 45, 0, 28)
+plus.Font = Enum.Font.SourceSans
+plus.Text = "+"
+plus.TextColor3 = Color3.fromRGB(0, 0, 0)
+plus.TextScaled = true
+plus.TextSize = 14.000
+plus.TextWrapped = true 
+
+speed.Name = "speed"
+speed.Parent = Frame
+speed.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+speed.Position = UDim2.new(0.468421042, 0, 0.491228074, 0)
+speed.Size = UDim2.new(0, 44, 0, 28)
+speed.Font = Enum.Font.SourceSans
+speed.Text = "1"
+speed.TextColor3 = Color3.fromRGB(0, 0, 0)
+speed.TextScaled = true
+speed.TextSize = 14.000
+speed.TextWrapped = true 
+
+mine.Name = "mine"
+mine.Parent = Frame
+mine.BackgroundColor3 = Color3.fromRGB(123, 255, 247)
+mine.Position = UDim2.new(0.231578946, 0, 0.491228074, 0)
+mine.Size = UDim2.new(0, 45, 0, 29)
+mine.Font = Enum.Font.SourceSans
+mine.Text = "-"
+mine.TextColor3 = Color3.fromRGB(0, 0, 0)
+mine.TextScaled = true
+mine.TextSize = 14.000
+mine.TextWrapped = true 
+
+closebutton.Name = "Close"
+closebutton.Parent = main.Frame
+closebutton.BackgroundColor3 = Color3.fromRGB(225, 25, 0)
+closebutton.Font = "SourceSans"
+closebutton.Size = UDim2.new(0, 45, 0, 28)
+closebutton.Text = "X"
+closebutton.TextSize = 30
+closebutton.Position = UDim2.new(0, 0, -1, 27) 
+
+mini.Name = "minimize"
+mini.Parent = main.Frame
+mini.BackgroundColor3 = Color3.fromRGB(192, 150, 230)
+mini.Font = "SourceSans"
+mini.Size = UDim2.new(0, 45, 0, 28)
+mini.Text = "-"
+mini.TextSize = 40
+mini.Position = UDim2.new(0, 44, -1, 27) 
+
+mini2.Name = "minimize2"
+mini2.Parent = main.Frame
+mini2.BackgroundColor3 = Color3.fromRGB(192, 150, 230)
+mini2.Font = "SourceSans"
+mini2.Size = UDim2.new(0, 45, 0, 28)
+mini2.Text = "+"
+mini2.TextSize = 40
+mini2.Position = UDim2.new(0, 44, -1, 57)
+mini2.Visible = false 
+
+speeds = 1 
+
+local speaker = game:GetService("Players").LocalPlayer 
+
+local chr = game.Players.LocalPlayer.Character
+local hum = chr and chr:FindFirstChildWhichIsA("Humanoid") 
+
+nowe = false 
+
+game:GetService("StarterGui"):SetCore("SendNotification", { 
+Title = "Fly GUI V3";
+Text = "By me_ozone and Quandale The Dinglish XII#3550";
+Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150"})
+Duration = 5; 
+
+Frame.Active = true -- main = gui
+Frame.Draggable = true 
+
+onof.MouseButton1Down:connect(function() 
+
+if nowe == true then
+nowe = false 
+
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Running,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,true)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,true)
+speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+else 
+nowe = true
+
+
+
+for i = 1, speeds do
+spawn(function() 
+
+local hb = game:GetService("RunService").Heartbeat
+
+
+tpwalking = true
+local chr = game.Players.LocalPlayer.Character
+local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+if hum.MoveDirection.Magnitude > 0 then
+chr:TranslateBy(hum.MoveDirection)
+end
+end 
+
+end)
+end
+game.Players.LocalPlayer.Character.Animate.Disabled = true
+local Char = game.Players.LocalPlayer.Character
+local Hum = Char:FindFirstChildOfClass("Humanoid") or Char:FindFirstChildOfClass("AnimationController") 
+
+for i,v in next, Hum:GetPlayingAnimationTracks() do
+v:AdjustSpeed(0)
+end
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Flying,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Landed,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Running,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics,false)
+speaker.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming,false)
+speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+end
+
+
+
+
+if game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").RigType == Enum.HumanoidRigType.R6 then
+
+
+
+local plr = game.Players.LocalPlayer
+local torso = plr.Character.Torso
+local flying = true
+local deb = true
+local ctrl = {f = 0, b = 0, l = 0, r = 0}
+local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+local maxspeed = 50
+local speed = 0
+
+
+local bg = Instance.new("BodyGyro", torso)
+bg.P = 9e4
+bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+bg.cframe = torso.CFrame
+local bv = Instance.new("BodyVelocity", torso)
+bv.velocity = Vector3.new(0,0.1,0)
+bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+if nowe == true then
+plr.Character.Humanoid.PlatformStand = true
+end
+while nowe == true or game:GetService("Players").LocalPlayer.Character.Humanoid.Health == 0 do
+game:GetService("RunService").RenderStepped:Wait() 
+
+if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+speed = speed+.5+(speed/maxspeed)
+if speed > maxspeed then
+speed = maxspeed
+end
+elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+speed = speed-1
+if speed < 0 then
+speed = 0
+end
+end
+if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+else
+bv.velocity = Vector3.new(0,0,0)
+end
+--game.Players.LocalPlayer.Character.Animate.Disabled = true
+bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
+end
+ctrl = {f = 0, b = 0, l = 0, r = 0}
+lastctrl = {f = 0, b = 0, l = 0, r = 0}
+speed = 0
+bg:Destroy()
+bv:Destroy()
+plr.Character.Humanoid.PlatformStand = false
+game.Players.LocalPlayer.Character.Animate.Disabled = false
+tpwalking = false
+
+
+
+
+else
+local plr = game.Players.LocalPlayer
+local UpperTorso = plr.Character.UpperTorso
+local flying = true
+local deb = true
+local ctrl = {f = 0, b = 0, l = 0, r = 0}
+local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+local maxspeed = 50
+local speed = 0
+
+
+local bg = Instance.new("BodyGyro", UpperTorso)
+bg.P = 9e4
+bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+bg.cframe = UpperTorso.CFrame
+local bv = Instance.new("BodyVelocity", UpperTorso)
+bv.velocity = Vector3.new(0,0.1,0)
+bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+if nowe == true then
+plr.Character.Humanoid.PlatformStand = true
+end
+while nowe == true or game:GetService("Players").LocalPlayer.Character.Humanoid.Health == 0 do
+wait() 
+
+if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+speed = speed+.5+(speed/maxspeed)
+if speed > maxspeed then
+speed = maxspeed
+end
+elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+speed = speed-1
+if speed < 0 then
+speed = 0
+end
+end
+if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+else
+bv.velocity = Vector3.new(0,0,0)
+end 
+
+bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
+end
+ctrl = {f = 0, b = 0, l = 0, r = 0}
+lastctrl = {f = 0, b = 0, l = 0, r = 0}
+speed = 0
+bg:Destroy()
+bv:Destroy()
+plr.Character.Humanoid.PlatformStand = false
+game.Players.LocalPlayer.Character.Animate.Disabled = false
+tpwalking = false
+
+
+
+end
+
+
+
+
+
+end) 
+
+local tis 
+
+up.MouseButton1Down:connect(function()
+tis = up.MouseEnter:connect(function()
+while tis do
+wait()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,1,0)
+end
+end)
+end) 
+
+up.MouseLeave:connect(function()
+if tis then
+tis:Disconnect()
+tis = nil
+end
+end) 
+
+local dis 
+
+down.MouseButton1Down:connect(function()
+dis = down.MouseEnter:connect(function()
+while dis do
+wait()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,0)
+end
+end)
+end) 
+
+down.MouseLeave:connect(function()
+if dis then
+dis:Disconnect()
+dis = nil
+end
+end)
+
+
+game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function(char)
+wait(0.7)
+game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+game.Players.LocalPlayer.Character.Animate.Disabled = false 
+
+end)
+
+
+plus.MouseButton1Down:connect(function()
+speeds = speeds + 1
+speed.Text = speeds
+if nowe == true then
+
+
+tpwalking = false
+for i = 1, speeds do
+spawn(function() 
+
+local hb = game:GetService("RunService").Heartbeat
+
+
+tpwalking = true
+local chr = game.Players.LocalPlayer.Character
+local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+if hum.MoveDirection.Magnitude > 0 then
+chr:TranslateBy(hum.MoveDirection)
+end
+end 
+
+end)
+end
+end
+end)
+mine.MouseButton1Down:connect(function()
+if speeds == 1 then
+speed.Text = 'cannot be less than 1'
+wait(1)
+speed.Text = speeds
+else
+speeds = speeds - 1
+speed.Text = speeds
+if nowe == true then
+tpwalking = false
+for i = 1, speeds do
+spawn(function() 
+
+local hb = game:GetService("RunService").Heartbeat
+
+
+tpwalking = true
+local chr = game.Players.LocalPlayer.Character
+local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+if hum.MoveDirection.Magnitude > 0 then
+chr:TranslateBy(hum.MoveDirection)
+end
+end 
+
+end)
+end
+end
+end
+end) 
+
+closebutton.MouseButton1Click:Connect(function()
+main:Destroy()
+end) 
+
+mini.MouseButton1Click:Connect(function()
+up.Visible = false
+down.Visible = false
+onof.Visible = false
+plus.Visible = false
+speed.Visible = false
+mine.Visible = false
+mini.Visible = false
+mini2.Visible = true
+main.Frame.BackgroundTransparency = 1
+closebutton.Position = UDim2.new(0, 0, -1, 57)
+end) 
+
+mini2.MouseButton1Click:Connect(function()
+up.Visible = true
+down.Visible = true
+onof.Visible = true
+plus.Visible = true
+speed.Visible = true
+mine.Visible = true
+mini.Visible = true
+mini2.Visible = false
+main.Frame.BackgroundTransparency = 0 
+closebutton.Position = UDim2.new(0, 0, -1, 27)
+end)
