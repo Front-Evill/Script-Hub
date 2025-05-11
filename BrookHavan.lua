@@ -53,6 +53,15 @@ for _,O in ipairs(game:GetService("CoreGui"):GetChildren()) do
     end
 end
 
+local function Notify(Title,Dis)
+    pcall(function()
+        Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
+        local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
+    end)
+end
+
+
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
@@ -348,8 +357,8 @@ tool.Activated:Connect(onActivated)
     end
 })
 --------- o ---------- 
-
 getgenv().Ready = true
+
 
 local PlkFarmPlayer = Tabs.Player:AddSection("InfiniteJump")
 local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & jump ")
