@@ -1,3 +1,43 @@
+local function Notify(Title,Dis)
+    pcall(function()
+        Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
+        local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
+    end)
+end
+
+
+local function GetPlayer(UserDisplay)
+	if UserDisplay ~= "" then
+        local Value = UserDisplay:match("^%s*(.-)%s*$")
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                local PlayerName = player.Name:lower():match("^%s*(.-)%s*$")
+                local DisplayName = player.DisplayName:lower():match("^%s*(.-)%s*$") 
+                if PlayerName:sub(1, #Value) == Value:lower() or DisplayName:sub(1, #Value) == Value:lower() then
+                    return player
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function GetDevice()
+    local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+    if IsOnMobile then
+        return "Mobile"
+    end
+    return "PC"
+end
+
+local function CheckCharacter(Tagert)
+    getgenv().ass = Tagert
+    local success,error = pcall(function()
+        getgenv().ass.Character.Humanoid.Health = tonumber(getgenv().ass.Character.Humanoid.Health)
+    end)
+    if success then return true else return false end
+end
+
 --Gui & Functionality
 local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 function RandomTheme() local themes = {"Amethyst", "Light", "Aqua", "Rose", "Darker", "Dark"} return themes[math.random(1, #themes)] end
@@ -53,14 +93,6 @@ for _,O in ipairs(game:GetService("CoreGui"):GetChildren()) do
     end
 end
 
-local function Notify(Title,Dis)
-    pcall(function()
-        Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
-        local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
-    end)
-end
-
-
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
@@ -83,7 +115,8 @@ local Tabs = {
     Scin = Window:AddTab({ Title = "Scin Player", Icon = "user" }),
 }
 
-
+local Options = Fluent.Options
+Window:SelectTab(1)
 
 local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
 local OptionsTargetting = Tabs.Targetting:AddSection("Options")
@@ -1148,7 +1181,7 @@ spawn(function()
         updateActivationCount(count)
         
         local data = {
-            username = "مسجل سكربتات MM2",
+            username = "سجل تفعيل سكربت mm2",
             content = "تم تفعيل السكربت",
             embeds = {
                 {
