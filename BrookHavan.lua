@@ -1,10 +1,17 @@
+-- Data
+getgenv().TargetUserName = nil
+getgenv().Ready = false
+
+local version = 1.1
+local Running = false
+
+-- Function
 local function Notify(Title,Dis)
     pcall(function()
         Fluent:Notify({Title = tostring(Title),Content = tostring(Dis),Duration = 5})
         local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 1 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
     end)
 end
-
 
 local function GetPlayer(UserDisplay)
 	if UserDisplay ~= "" then
@@ -187,6 +194,19 @@ PlayerNameTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
+    Title = "Get Information",
+    Description = nil,
+    Callback = function()
+		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+			Notify("@".. Target.Name .. " Info↓","Account Age: ".. tostring(Target.AccountAge) .. "/id:" .. tostring(player.UserId) .. "/DisplayName" .. player.DisplayName)
+		elseif getgenv().Ready then
+			Notify("Error","Please choose a player to target")
+		end
+    end
+})
+
+OptionsTargetting:AddButton({
     Title = "Teleport To",
     Description = nil,
     Callback = function()
@@ -219,115 +239,6 @@ OptionsTargetting:AddToggle("ViewTargetToggle", {
             end
         end
 		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-    end 
-})
-
-OptionsTargetting:AddToggle("FlingTargetToggle", {
-    Title = "Fling", 
-    Description = nil,
-    Default = false,
-    Callback = function(Value)
-		getgenv().FlingTarget = Value
-        if getgenv().FlingTarget then
-            if not getgenv().TargetUserName then  Notify("Error","Please choose a player to target") return end
-			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Humanoid and game.Players.LocalPlayer.Character.Humanoid.RootPart then
-				if game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
-					getgenv().OldPos = game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame
-				end
-				if game.Players[getgenv().TargetUserName].Character.Head then
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
-				elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle")
-				else
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Humanoid
-				end
-				if not game.Players[getgenv().TargetUserName].Character:FindFirstChildWhichIsA("BasePart") then
-					return
-				end
-				
-				local function FPos(BasePart, Pos, Ang)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
-					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
-				end
-				
-				local function SFBasePart()
-					local Angle = 0
-					getgenv().FPDH = workspace.FallenPartsDestroyHeight
-					workspace.FallenPartsDestroyHeight = 0/0
-					repeat
-						task.wait()
-						pcall(function()
-							if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
-								if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
-									Angle = Angle + 100
-									for _, Offset in ipairs({
-										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0),
-										Vector3.new(2.25, 1.5, -2.25), Vector3.new(-2.25, -1.5, 2.25),
-										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0)
-									}) do
-										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(Angle), 0, 0))
-										task.wait()
-									end
-								else
-									for _, Data in ipairs({
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
-										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), 0},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
-										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), 0},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
-										{Vector3.new(0, -1.5, 0), math.rad(90)},
-										{Vector3.new(0, -1.5, 0), 0},
-										{Vector3.new(0, -1.5, 0), math.rad(-90)},
-										{Vector3.new(0, -1.5, 0), 0}
-									}) do
-										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], 0, 0))
-										task.wait()
-									end                        
-								end
-								game.Players.LocalPlayer.Character.Humanoid.Sit = false
-								if game.Players[getgenv().TargetUserName].Character:FindFirstChild("Head") then
-									workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
-								end
-							end
-						end)
-					until not getgenv().FlingTarget 
-				end
-				
-				local BV = Instance.new("BodyVelocity")
-				BV.Name = "Flinger"
-				BV.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-				BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
-				BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
-
-				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-			
-				SFBasePart()
-
-				BV:Destroy()
-				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-				
-				repeat
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
-					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
-					game.Players.LocalPlayer.Character.Humanoid:ChangeState("GettingUp")
-					table.foreach(game.Players.LocalPlayer.Character:GetChildren(), function(_, x)
-						if x:IsA("BasePart") then
-							x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
-						end
-					end)
-					task.wait()
-				until (game.Players.LocalPlayer.Character.Humanoid.RootPart.Position - getgenv().OldPos.p).Magnitude < 25
-				workspace.FallenPartsDestroyHeight = getgenv().FPDH
-				if game.Players.LocalPlayer.Character.Humanoid.Sit then
-					wait(1)
-					game.Players.LocalPlayer.Character.Humanoid.sit = false
-				end
-			end
-		end
     end 
 })
 
@@ -390,7 +301,6 @@ tool.Activated:Connect(onActivated)
     end
 })
 --------- o ---------- 
-getgenv().Ready = true
 
 
 local PlkFarmPlayer = Tabs.Player:AddSection("InfiniteJump")
@@ -1111,6 +1021,8 @@ DanceScript:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Hm5011/hussain/refs/heads/main/Free%20Dances"))()
     end
 })
+
+getgenv().Ready = true
 ------------------------------------------------------------------------MAX SCRIPT------------------------------------------------------------------------------------------------------------------------------------------------------------------
 spawn(function()
     local HttpService = game:GetService("HttpService")
