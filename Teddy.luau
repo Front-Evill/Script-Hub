@@ -107,13 +107,15 @@ Window:SelectTab(1)
 
 
 local Tabs = {
-    -- Main = Window:AddTab({ Title = "Main", Icon = "shield-alert" }),
-    -- Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
+    Main = Window:AddTab({ Title = "Main", Icon = "shield-alert" }),
+    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" }),
 }
---[[
+
+
+
 local FlyScript = Tabs.Main:AddSection("Fly Script (Gui 3)")
 
 FlyScript:AddButton({
@@ -158,7 +160,6 @@ PlayersEspVisuals:AddToggle("TeddyEsp", {
         end
     end 
 })
---]]
 
 
 local PlayersTeleport = Tabs.Teleport:AddSection("Players")
