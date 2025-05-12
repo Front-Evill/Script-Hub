@@ -11,9 +11,16 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/F-150.lua"))()
 ```
-# BrookHavan
+## Script Brook Havan
+
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/BrookHavan.lua"))()
+-- soon
+```
+
+## Scrpt Teddy 
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Teddy.luau"))()
 ```
 # Gui
 
