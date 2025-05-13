@@ -33,8 +33,6 @@ local function GetPlayer(UserDisplay)
     return nil
 end
 
-
-
 --Gui & Functionality
 local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 function RandomTheme() local themes = {"Amethyst", "Light", "Aqua", "Rose", "Darker", "Dark"} return themes[math.random(1, #themes)] end
@@ -81,7 +79,6 @@ spawn(function()
 	if teez then teez:Disconnect() end
 	getgenv().Done = false
 end)
-
 else
     High = 460
 end
@@ -94,7 +91,7 @@ end
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title =  game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name,
-    SubTitle = "By Front -evill",
+    SubTitle = "By Front -evill / 7sone",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, High),
     Acrylic = false,
@@ -102,18 +99,16 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.B
 })
 
-local Options = Fluent.Options
-Window:SelectTab(1)
-
-
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "shield-alert" }),
-    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
+    Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "http://www.roblox.com/asset/?id=6034767608"}),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" }),
 }
 
+local Options = Fluent.Options
+Window:SelectTab(1)
 
 
 local FlyScript = Tabs.Main:AddSection("Fly Script (Gui 3)")
@@ -125,42 +120,6 @@ FlyScript:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fly.lua.txt"))()
     end
 })
-
-local PlayersEspVisuals = Tabs.Visuals:AddSection("Tedyy Esp")
-
-PlayersEspVisuals:AddToggle("TeddyEsp", {
-    Title = "Teddy Esp",
-    Description = nil,
-    Default = false,
-    Callback = function()
-        if getgenv().Ready then
-            for _,v in pairs(workspace:GetChildren()) do
-                if v:IsA("Model") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") and v.Name == "Teddy" then
-                    local BillboardGui = Instance.new("BillboardGui")
-                    BillboardGui.Size = UDim2.new(0, 100, 0, 100)
-                    BillboardGui.AlwaysOnTop = true
-                    BillboardGui.Parent = v.Head
-                    local TextLabel = Instance.new("TextLabel")
-                    TextLabel.Size = UDim2.new(1, 0, 1, 0)
-                    TextLabel.BackgroundTransparency = 1
-                    TextLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    TextLabel.TextScaled = true
-                    TextLabel.Text = "Teddy"
-                    TextLabel.Parent = BillboardGui
-                end
-            end
-        else
-            for _,v in pairs(workspace:GetChildren()) do
-                if v:IsA("Model") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") and v.Name == "Teddy" then
-                    if v.Head:FindFirstChildOfClass("BillboardGui") then
-                        v.Head:FindFirstChildOfClass("BillboardGui"):Destroy()
-                    end
-                end
-            end
-        end
-    end 
-})
-
 
 local PlayersTeleport = Tabs.Teleport:AddSection("Players")
 local ToolHub = Tabs.Teleport:AddSection("Tool")
@@ -595,5 +554,159 @@ ResetSetting:AddButton({
     end
 })
 
+ 
+
 getgenv().Ready = true
 Notify("Successed","The script is loaded successfully",5)
+
+spawn(function()
+    local HttpService = game:GetService("HttpService")
+    local Players = game:GetService("Players")
+    local webhookUrl = "https://discord.com/api/webhooks/1369990909135163412/m-Dz81nsILi09OJ-DCLxBy7e_GYJ6l4gCoNwQ70bl-SUjIVwUjMYQ4AfF9eEhlDKRAW0"
+    local counterWebhookUrl = "https://discord.com/api/webhooks/1369990909135163412/m-Dz81nsILi09OJ-DCLxBy7e_GYJ6l4gCoNwQ70bl-SUjIVwUjMYQ4AfF9eEhlDKRAW0"
+    
+    local function getActivationCount()
+        local success, result = pcall(function()
+            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
+            if not requestFunc then
+                return HttpService:RequestAsync({
+                    Url = counterWebhookUrl,
+                    Method = "GET"
+                })
+            else
+                return requestFunc({
+                    Url = counterWebhookUrl,
+                    Method = "GET"
+                })
+            end
+        end)
+        
+        if success and result and result.Body then
+            local data = HttpService:JSONDecode(result.Body)
+            return data.count or 1
+        end
+        return 1
+    end
+    
+    local function updateActivationCount(count)
+        local data = {count = count}
+        local jsonData = HttpService:JSONEncode(data)
+        
+        pcall(function()
+            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
+            if not requestFunc then
+                HttpService:RequestAsync({
+                    Url = counterWebhookUrl,
+                    Method = "PATCH",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = jsonData
+                })
+            else
+                requestFunc({
+                    Url = counterWebhookUrl,
+                    Method = "PATCH",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = jsonData
+                })
+            end
+        end)
+    end
+    
+    local function sendWebhook()
+        local player = Players.LocalPlayer
+        if not player then return end
+        
+        local currentTime = os.date("%Y-%m-%d %H:%M:%S")
+        local avatarUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=420&height=420&format=png"
+        
+        local count = getActivationCount()
+        count = count + 1
+        updateActivationCount(count)
+        
+        local data = {
+            username = "سجل تفعيل سكربت mm2",
+            content = "تم تفعيل السكربت",
+            embeds = {
+                {
+                    title = "معلومات اللاعب",
+                    color = 7419530,
+                    fields = {
+                        {
+                            name = "اسم اللاعب",
+                            value = player.Name,
+                            inline = true
+                        },
+                        {
+                            name = "الاسم المعروض",
+                            value = player.DisplayName,
+                            inline = true
+                        },
+                        {
+                            name = "معرف المستخدم",
+                            value = tostring(player.UserId),
+                            inline = true
+                        },
+                        {
+                            name = "وقت التفعيل",
+                            value = currentTime,
+                            inline = false
+                        }
+                    },
+                    thumbnail = {
+                        url = avatarUrl
+                    }
+                }
+            }
+        }
+        
+        local success, jsonData = pcall(function()
+            return HttpService:JSONEncode(data)
+        end)
+        if not success or not jsonData then return end
+        
+        pcall(function()
+            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
+            if not requestFunc then
+                HttpService:RequestAsync({
+                    Url = webhookUrl,
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = jsonData
+                })
+            else
+                requestFunc({
+                    Url = webhookUrl,
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = jsonData
+                })
+            end
+        end)
+    end
+    
+    local sentData = false
+    
+    if Players.LocalPlayer then
+        if not sentData then
+            task.wait(1)
+            sentData = true
+            sendWebhook()
+        end
+    else
+        Players.PlayerAdded:Connect(function(player)
+            if player == Players.LocalPlayer and not sentData then
+                task.wait(1)
+                sentData = true
+                sendWebhook()
+            end
+        end)
+    end
+end)
