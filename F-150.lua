@@ -2150,7 +2150,7 @@ TabHu:AddButton({
 
 local currentSound = nil
 
-local SoundInput = TabHu:AddInput("Sound ID", {
+local SoundInput = AudioHub:AddInput("Sound ID", {
     Title = "Music Player",
     Description = nil,
     Default = "",
@@ -2178,7 +2178,7 @@ local SoundInput = TabHu:AddInput("Sound ID", {
     end
 })
 
-local StopSoundButton = TabHu:AddButton({
+AudioHub:AddButton({
     Title = "Stop Sound",
     Description = nil,
     Callback = function()
