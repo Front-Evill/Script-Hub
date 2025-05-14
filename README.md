@@ -22,6 +22,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Teddy.luau"))()
 ```
+
+## Script fps
+```lus
+
+```
 # Gui
 
 ```lua
