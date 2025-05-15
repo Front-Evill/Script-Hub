@@ -64,7 +64,8 @@ local function typeWriter()
     fadeOut:Play()
     textFade:Play()
     
-    spawn(function()
+    -- تصحيح الخطأ - استخدام task.spawn بدلاً من spawn لأنه أكثر استقرارًا
+    task.spawn(function()
         wait(1.2)
         WelcomeFrame.Visible = false
         showMainGUI()
@@ -287,7 +288,7 @@ local function showMainGUI()
         showTween:Play()
         
         -- إخفاء الإشعار بعد فترة
-        spawn(function()
+        task.spawn(function()
             wait(3)
             local hideTween = TweenService:Create(Notification, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
                 Position = UDim2.new(0.5, 0, -0.1, 0)
@@ -339,13 +340,15 @@ local function showMainGUI()
         showNotification("جاري تشغيل السكربت باللغة العربية...", Color3.fromRGB(50, 180, 100))
         
         -- تنفيذ السكربت وإغلاق الواجهة
-        spawn(function()
+        task.spawn(function()
             wait(1)
             closeGUI()
             wait(1)
             
             -- تنفيذ السكربت العربي
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Arabic.lua"))()
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Arabic.lua"))()
+            end)
         end)
     end)
     
@@ -370,13 +373,15 @@ local function showMainGUI()
         showNotification("Loading English script...", Color3.fromRGB(50, 180, 100))
         
         -- تنفيذ السكربت وإغلاق الواجهة
-        spawn(function()
+        task.spawn(function()
             wait(1)
             closeGUI()
             wait(1)
             
             -- تنفيذ السكربت الإنجليزي
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/F-150.lua"))()
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/F-150.lua"))()
+            end)
         end)
     end)
     
@@ -400,4 +405,4 @@ local function showMainGUI()
 end
 
 -- بدء تشغيل الواجهة مع انيميشن الكتابة
-spawn(typeWriter)
+task.spawn(typeWriter)
