@@ -12,9 +12,10 @@ else
     screenGui.Parent = player.PlayerGui
 end
 
-local scriptIcon = "rbxassetid://109597213480889"
-local arabicIcon = "rbxassetid://138970075695810"
-local englishIcon = "rbxassetid://75037768883082"
+
+local scriptIcon = "rbxassetid://130714468148923"
+local arabicIcon = "rbxassetid://130410651871177"
+local englishIcon = "rbxassetid://113626041682134"
 
 local function createNotification(text, duration)
     duration = duration or 3
