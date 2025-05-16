@@ -14,7 +14,7 @@ end
 
 
 local scriptIcon = "rbxassetid://130714468148923"
-local arabicIcon = "rbxassetid://130410651871177"
+local arabicIcon = "rbxassetid://109597213480889"
 local englishIcon = "rbxassetid://113626041682134"
 
 local function createNotification(text, duration)
