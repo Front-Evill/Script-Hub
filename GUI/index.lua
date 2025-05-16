@@ -12,7 +12,7 @@ else
     screenGui.Parent = player.PlayerGui
 end
 
-local scriptIcon = "rbxassetid://130410651871177"
+local scriptIcon = "rbxassetid://109597213480889"
 local arabicIcon = "rbxassetid://138970075695810"
 local englishIcon = "rbxassetid://75037768883082"
 
