@@ -18,6 +18,12 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/fps.lua"))()
 ```
+
+## Script Fling
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Fling.evill.lua"))()
+```
+
 # Gui
 
 ```lua
