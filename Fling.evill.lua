@@ -5,75 +5,227 @@ getgenv().FallenPartsHeight = workspace.FallenPartsDestroyHeight
 
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
+local TopBar = Instance.new("Frame")
+local UICorner_TopBar = Instance.new("UICorner")
 local Title = Instance.new("TextLabel")
+local CloseButton = Instance.new("TextButton")
+local UICorner_Close = Instance.new("UICorner")
+local MainUICorner = Instance.new("UICorner")
+local Shadow = Instance.new("ImageLabel")
+local LogoImage = Instance.new("ImageLabel")
 local ToggleButton = Instance.new("TextButton")
+local UICorner_Toggle = Instance.new("UICorner")
+local UIGradient_Toggle = Instance.new("UIGradient")
 local TargetInput = Instance.new("TextBox")
+local UICorner_Input = Instance.new("UICorner")
 local StatusLabel = Instance.new("TextLabel")
+local CreditLabel = Instance.new("TextLabel")
+local ScriptByLabel = Instance.new("TextLabel")
+
+local TweenService = game:GetService("TweenService")
 
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Name = "FlingGUI_FrontEvill"
+ScreenGui.ResetOnSpawn = false
+
+Shadow.Name = "Shadow"
+Shadow.Parent = ScreenGui
+Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+Shadow.BackgroundTransparency = 1
+Shadow.Position = UDim2.new(0.5, 5, 0.5, 5)
+Shadow.Size = UDim2.new(0, 310, 0, 250)
+Shadow.Image = "rbxassetid://6014261993"
+Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.ImageTransparency = 0.5
+Shadow.ScaleType = Enum.ScaleType.Slice
+Shadow.SliceCenter = Rect.new(49, 49, 450, 450)
 
 MainFrame.Name = "FlingGUI"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-MainFrame.Position = UDim2.new(0.75, 0, 0.2, 0)
-MainFrame.Size = UDim2.new(0, 200, 0, 170)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -120)
+MainFrame.Size = UDim2.new(0, 300, 0, 240)
+MainFrame.ClipsDescendants = true
+MainFrame.ZIndex = 2
 MainFrame.Draggable = true
 MainFrame.Active = true
 
-UICorner.Parent = MainFrame
-UICorner.CornerRadius = UDim.new(0, 10)
+MainUICorner.Parent = MainFrame
+MainUICorner.CornerRadius = UDim.new(0, 10)
+
+TopBar.Name = "TopBar"
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.ZIndex = 3
+
+UICorner_TopBar.Parent = TopBar
+UICorner_TopBar.CornerRadius = UDim.new(0, 10)
 
 Title.Name = "Title"
-Title.Parent = MainFrame
+Title.Parent = TopBar
 Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0, 0, 0, 10)
-Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Size = UDim2.new(0.7, 0, 1, 0)
 Title.Font = Enum.Font.GothamBold
-Title.Text = "Player Flinger"
+Title.Text = "Player Flinger Pro"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 18
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.ZIndex = 3
+
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = TopBar
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.Position = UDim2.new(1, -35, 0.5, -12)
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 14
+CloseButton.ZIndex = 3
+
+UICorner_Close.Parent = CloseButton
+UICorner_Close.CornerRadius = UDim.new(0, 8)
+
+LogoImage.Name = "LogoImage"
+LogoImage.Parent = MainFrame
+LogoImage.BackgroundTransparency = 1
+LogoImage.Position = UDim2.new(0.5, -40, 0, 50)
+LogoImage.Size = UDim2.new(0, 80, 0, 80)
+LogoImage.Image = "rbxassetid://130714468148923"
+LogoImage.ImageColor3 = Color3.fromRGB(255, 255, 255)
+LogoImage.ZIndex = 2
 
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = MainFrame
-ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-ToggleButton.Position = UDim2.new(0.5, -60, 0, 50)
-ToggleButton.Size = UDim2.new(0, 120, 0, 35)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 180, 45)
+ToggleButton.Position = UDim2.new(0.5, -75, 0, 145)
+ToggleButton.Size = UDim2.new(0, 150, 0, 35)
 ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "Enable Fling"
+ToggleButton.Text = "ENABLE FLING"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 14
+ToggleButton.TextSize = 16
+ToggleButton.ZIndex = 2
 
-local ButtonUICorner = Instance.new("UICorner")
-ButtonUICorner.Parent = ToggleButton
-ButtonUICorner.CornerRadius = UDim.new(0, 8)
+UICorner_Toggle.Parent = ToggleButton
+UICorner_Toggle.CornerRadius = UDim.new(0, 8)
+
+UIGradient_Toggle.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 180, 45)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 140, 35))
+}
+UIGradient_Toggle.Parent = ToggleButton
+UIGradient_Toggle.Rotation = 90
 
 TargetInput.Name = "TargetInput"
 TargetInput.Parent = MainFrame
-TargetInput.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-TargetInput.Position = UDim2.new(0.5, -80, 0, 100)
-TargetInput.Size = UDim2.new(0, 160, 0, 30)
+TargetInput.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+TargetInput.Position = UDim2.new(0.5, -100, 0, 190)
+TargetInput.Size = UDim2.new(0, 200, 0, 30)
 TargetInput.Font = Enum.Font.Gotham
 TargetInput.PlaceholderText = "Target player name (leave empty for all)"
 TargetInput.Text = ""
 TargetInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 TargetInput.TextSize = 12
 TargetInput.ClearTextOnFocus = false
+TargetInput.ZIndex = 2
 
-local InputUICorner = Instance.new("UICorner")
-InputUICorner.Parent = TargetInput
-InputUICorner.CornerRadius = UDim.new(0, 8)
+UICorner_Input.Parent = TargetInput
+UICorner_Input.CornerRadius = UDim.new(0, 8)
 
 StatusLabel.Name = "StatusLabel"
 StatusLabel.Parent = MainFrame
 StatusLabel.BackgroundTransparency = 1
-StatusLabel.Position = UDim2.new(0, 0, 0, 140)
-StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0, 10, 1, -25)
+StatusLabel.Size = UDim2.new(0, 150, 0, 20)
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.Text = "Status: Ready"
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-StatusLabel.TextSize = 12
+StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+StatusLabel.TextSize = 14
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.ZIndex = 2
+
+CreditLabel.Name = "CreditLabel"
+CreditLabel.Parent = MainFrame
+CreditLabel.BackgroundTransparency = 1
+CreditLabel.Position = UDim2.new(1, -160, 1, -25)
+CreditLabel.Size = UDim2.new(0, 150, 0, 20)
+CreditLabel.Font = Enum.Font.GothamBold
+CreditLabel.Text = "GUI BY: FRONT EVILL"
+CreditLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
+CreditLabel.TextSize = 12
+CreditLabel.TextXAlignment = Enum.TextXAlignment.Right
+CreditLabel.ZIndex = 2
+
+ScriptByLabel.Name = "ScriptByLabel"
+ScriptByLabel.Parent = MainFrame
+ScriptByLabel.BackgroundTransparency = 1
+ScriptByLabel.Position = UDim2.new(0.5, -75, 0, 130)
+ScriptByLabel.Size = UDim2.new(0, 150, 0, 15)
+ScriptByLabel.Font = Enum.Font.Gotham
+ScriptByLabel.Text = "SCRIPT BY: FRONT EVILL"
+ScriptByLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
+ScriptByLabel.TextSize = 11
+ScriptByLabel.ZIndex = 2
+
+local function CreateRipple(parent)
+    local ripple = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    
+    ripple.Name = "Ripple"
+    ripple.Parent = parent
+    ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ripple.BackgroundTransparency = 0.8
+    ripple.ZIndex = parent.ZIndex + 1
+    ripple.AnchorPoint = Vector2.new(0.5, 0.5)
+    ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
+    ripple.Size = UDim2.new(0, 0, 0, 0)
+    
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = ripple
+    
+    local targetSize = UDim2.new(2, 0, 2, 0)
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    
+    local tween = TweenService:Create(ripple, tweenInfo, {
+        Size = targetSize,
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    
+    tween.Completed:Connect(function()
+        ripple:Destroy()
+    end)
+end
+
+ToggleButton.MouseButton1Down:Connect(function()
+    CreateRipple(ToggleButton)
+end)
+
+CloseButton.MouseButton1Down:Connect(function()
+    CreateRipple(CloseButton)
+end)
+
+MainFrame.Size = UDim2.new(0, 0, 0, 0)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Shadow.Size = UDim2.new(0, 0, 0, 0)
+Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+local openTween = TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 300, 0, 240),
+    Position = UDim2.new(0.5, -150, 0.5, -120)
+})
+
+local shadowTween = TweenService:Create(Shadow, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 310, 0, 250),
+    Position = UDim2.new(0.5, -145, 0.5, -115)
+})
+
+openTween:Play()
+shadowTween:Play()
 
 local function IsPlayerValid(player)
     return player and player.Parent == game.Players and player.Character and 
@@ -173,6 +325,7 @@ end
 local function FlingPlayers()
     while getgenv().FlingingEnabled do
         StatusLabel.Text = "Status: Flinging"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 150, 0)
         
         local targetName = TargetInput.Text
         if targetName ~= "" then
@@ -181,6 +334,7 @@ local function FlingPlayers()
                 ApplyFlingToPlayer(targetPlayer)
             else
                 StatusLabel.Text = "Status: Player Not Found"
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
                 task.wait(1)
             end
         else
@@ -197,6 +351,7 @@ local function FlingPlayers()
     end
     
     StatusLabel.Text = "Status: Stopped"
+    StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
     workspace.FallenPartsDestroyHeight = getgenv().FallenPartsHeight
 end
 
@@ -204,39 +359,138 @@ ToggleButton.MouseButton1Click:Connect(function()
     getgenv().FlingingEnabled = not getgenv().FlingingEnabled
     
     if getgenv().FlingingEnabled then
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        ToggleButton.Text = "Stop Flinging"
+        UIGradient_Toggle.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 45, 45)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(140, 35, 35))
+        }
+        ToggleButton.Text = "STOP FLINGING"
         task.spawn(FlingPlayers)
     else
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-        ToggleButton.Text = "Enable Flinging"
+        UIGradient_Toggle.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 180, 45)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 140, 35))
+        }
+        ToggleButton.Text = "ENABLE FLINGING"
     end
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    local closeTween = TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    
+    local shadowCloseTween = TweenService:Create(Shadow, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    
+    closeTween:Play()
+    shadowCloseTween:Play()
+    
+    closeTween.Completed:Connect(function()
+        getgenv().FlingingEnabled = false
+        workspace.FallenPartsDestroyHeight = getgenv().FallenPartsHeight
+        ScreenGui:Destroy()
+    end)
 end)
 
 local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 if IsOnMobile then
     local MobileButton = Instance.new("TextButton")
     local MobileUICorner = Instance.new("UICorner")
+    local UIGradient = Instance.new("UIGradient")
     
     MobileButton.Name = "MobileButton"
     MobileButton.Parent = ScreenGui
     MobileButton.Size = UDim2.new(0, 80, 0, 40)
     MobileButton.Position = UDim2.new(0, 10, 0.5, -20)
-    MobileButton.BackgroundTransparency = 0.5
-    MobileButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    MobileButton.BackgroundTransparency = 0.2
+    MobileButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
     MobileButton.Font = Enum.Font.GothamBold
     MobileButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    MobileButton.Text = "Toggle GUI"
-    MobileButton.TextScaled = true
+    MobileButton.Text = "GUI"
+    MobileButton.TextSize = 18
     MobileButton.Draggable = true
+    MobileButton.Active = true
     MobileButton.AutoButtonColor = false
+    MobileButton.ZIndex = 10
     
     MobileUICorner.Parent = MobileButton
     MobileUICorner.CornerRadius = UDim.new(0, 8)
     
+    UIGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 70)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 50))
+    }
+    UIGradient.Rotation = 90
+    UIGradient.Parent = MobileButton
+    
+    MobileButton.MouseButton1Down:Connect(function()
+        CreateRipple(MobileButton)
+    end)
+    
     MobileButton.MouseButton1Click:Connect(function()
         MainFrame.Visible = not MainFrame.Visible
+        Shadow.Visible = MainFrame.Visible
     end)
 end
 
-StatusLabel.Text = "Status: Ready to use"
+task.spawn(function()
+    while wait(0.1) do
+        if not LogoImage or not LogoImage.Parent then break end
+        
+        local floatTween = TweenService:Create(LogoImage, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            Position = UDim2.new(0.5, -40, 0, 55)
+        })
+        floatTween:Play()
+        wait(1.5)
+        
+        if not LogoImage or not LogoImage.Parent then break end
+        local floatTween2 = TweenService:Create(LogoImage, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            Position = UDim2.new(0.5, -40, 0, 50)
+        })
+        floatTween2:Play()
+        wait(1.5)
+    end
+end)
+
+task.spawn(function()
+    while wait(3) do
+        if not TargetInput or not TargetInput.Parent then break end
+        
+        local glowTween = TweenService:Create(TargetInput, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+        })
+        glowTween:Play()
+        wait(1)
+        
+        if not TargetInput or not TargetInput.Parent then break end
+        local glowTween2 = TweenService:Create(TargetInput, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        })
+        glowTween2:Play()
+        wait(1)
+    end
+end)
+
+task.spawn(function()
+    while wait(1) do
+        if not StatusLabel or not StatusLabel.Parent then break end
+        
+        local pulseTween = TweenService:Create(StatusLabel, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            TextTransparency = 0.3
+        })
+        pulseTween:Play()
+        wait(1)
+        
+        if not StatusLabel or not StatusLabel.Parent then break end
+        local pulseTween2 = TweenService:Create(StatusLabel, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            TextTransparency = 0
+        })
+        pulseTween2:Play()
+        wait(1)
+    end
+end)
+
+StatusLabel.Text = "Status: Ready to Fling"
