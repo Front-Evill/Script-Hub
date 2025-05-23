@@ -2,8 +2,8 @@
 getgenv().Ready = false
 getgenv().savedPosition = nil
 getgenv().TargetUserName = nil
-getgenv().SendMessageLoop = false
-getgenv().SendRandomLoop = false
+getgenv().SendMessageLoop = state
+getgenv().SendRandomLoop = state
 --FUNICTON
 local function Notify(Title,Dis)
     pcall(function()
@@ -147,7 +147,7 @@ local Tabs = {
 	Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
     Player = Window:AddTab({ Title = "Player", Icon = "user" }),
 	Setting = Window:AddTab({ Title = "Setting", Icon = "settings" }),
-    Scin = Window:AddTab({ Title = "Scin Player", Icon = "user" })
+    Scin = Window:AddTab({ Title = "Scin Player", Icon = "user" }),
     Humando = Window:AddTab({ Title = "Admin", Icon = "hammer" }),
 }
 
@@ -530,7 +530,7 @@ ChatTargetting:AddToggle("randomToggle", {
 })
 
 
-ChatTargetting:AddToggle("randomToggle", {
+ChatTargetting:AddToggle("spamToggle", {
     Title = "Spam Okay",
     Description = nil,
     Default = false,
