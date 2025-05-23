@@ -1,7 +1,9 @@
 --DATA
 getgenv().Ready = false
 getgenv().savedPosition = nil
-
+getgenv().TargetUserName = nil
+getgenv().SendMessageLoop = false
+getgenv().SendRandomLoop = false
 --FUNICTON
 local function Notify(Title,Dis)
     pcall(function()
@@ -31,6 +33,35 @@ local function setupDeathHandler()
         newHumanoid.Died:Connect(function()
         end)
     end)
+end
+
+
+
+local function Chat(text)
+isLegacyChat = game:GetService("TextChatService").ChatVersion == Enum.ChatVersion.LegacyChatService
+    if not isLegacyChat then
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(tostring(text))
+    else
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(tostring(text), "All")
+    end
+end
+
+
+
+local function GetPlayer(UserDisplay)
+	if UserDisplay ~= "" then
+        local Value = UserDisplay:match("^%s*(.-)%s*$")
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                local PlayerName = player.Name:lower():match("^%s*(.-)%s*$")
+                local DisplayName = player.DisplayName:lower():match("^%s*(.-)%s*$") 
+                if PlayerName:sub(1, #Value) == Value:lower() or DisplayName:sub(1, #Value) == Value:lower() then
+                    return player
+                end
+            end
+        end
+    end
+    return nil
 end
 
 
@@ -1013,6 +1044,343 @@ DanceScript:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Hm5011/hussain/refs/heads/main/Free%20Dances"))()
     end
 })
+
+local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
+local OptionsTargetting = Tabs.Targetting:AddSection("Options")
+local ChatTargetting = Tabs.Targetting:AddSection("Chat Player")
+
+local TargetInput = PlayerNameTargetting:AddInput("Input", {
+    Title = "Player Name",
+    Description = nil,
+    Default = nil,
+    Placeholder = "Name Here",
+    Numeric = false,
+    Finished = true,
+    Callback = function(Value)
+		if getgenv().Ready then 
+			local TargetName = GetPlayer(Value)
+			if TargetName then
+				Notify("Successed","The Player @"..TargetName.Name.." has been chosen!")
+				getgenv().TargetUserName = TargetName.Name
+			else
+				Notify("Error","Unknown Player")
+				getgenv().TargetUserName = nil
+			end
+		end
+    end
+})
+
+game.Players.PlayerRemoving:Connect(function(Player)
+	pcall(function()
+		if Player.Name == getgenv().TargetUserName then
+			getgenv().TargetUserName = nil
+            Options.FlingTargetToggle:SetValue(false)
+			Notify("Error","Target left or rejoined")
+		end
+	end)
+end)
+
+PlayerNameTargetting:AddButton({
+    Title = "Choose Player Tool",
+    Description = "Click on a player to select him",
+    Callback = function()
+		for _,P in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
+		for _,P in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
+		local GetTargetTool = Instance.new("Tool")
+		GetTargetTool.Name = "ClickTarget"
+		GetTargetTool.RequiresHandle = false
+		GetTargetTool.TextureId = "rbxassetid://13769558274"
+		GetTargetTool.ToolTip = "Choose Player"
+
+		local function ActivateTool()
+			local Hit = game.Players.LocalPlayer:GetMouse().Target
+			local Person = nil
+			if Hit and Hit.Parent then
+				if Hit.Parent:IsA("Model") then
+					Person = game.Players:GetPlayerFromCharacter(Hit.Parent)
+				elseif Hit.Parent:IsA("Accessory") then
+					Person = game.Players:GetPlayerFromCharacter(Hit.Parent.Parent)
+				end
+				if Person then
+					TargetInput:SetValue(Person.Name)
+				end
+			end
+		end
+
+		GetTargetTool.Activated:Connect(function()
+			ActivateTool()
+		end)
+		GetTargetTool.Parent = game.Players.LocalPlayer.Backpack
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "Get Information",
+    Description = nil,
+    Callback = function()
+		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+			Notify("@".. Target.Name .. " Infoâ†“","Account Age: ".. tostring(Target.AccountAge) .."\nLevel: ".. tostring(game.Players.LocalPlayer:GetAttribute("Level")) .."\nTeam: ".. tostring(GetTeamOf(Target)))
+		elseif getgenv().Ready then
+			Notify("Error","Please choose a player to target")
+		end
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "Teleport To",
+    Description = nil,
+    Callback = function()
+		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-2) * CFrame.Angles(0,math.rad(180),0)
+		elseif getgenv().Ready then
+			Notify("Error","Please choose a player to target")
+		end
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "Kill",
+    Description = nil,
+    Callback = function()
+		if getgenv().Ready then
+			
+		end	
+    end
+})
+
+OptionsTargetting:AddToggle("ViewTargetToggle", {
+    Title = "View", 
+    Description = nil,
+    Default = false,
+    Callback = function(Value)
+		getgenv().View = Value
+        while getgenv().View and task.wait() do
+            if getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+				pcall(function()
+					local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+					workspace.CurrentCamera.CameraSubject = Target.Character.Head 
+				end)
+            elseif getgenv().Ready then
+				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+                Notify("Error","Please choose a player to target")
+                break
+            end
+        end
+		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+    end 
+})
+
+OptionsTargetting:AddToggle("FlingTargetToggle", {
+    Title = "Fling", 
+    Description = nil,
+    Default = false,
+    Callback = function(Value)
+		getgenv().FlingTarget = Value
+        if getgenv().FlingTarget then
+            if not getgenv().TargetUserName then  Notify("Error","Please choose a player to target") return end
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Humanoid and game.Players.LocalPlayer.Character.Humanoid.RootPart then
+				if game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
+					getgenv().OldPos = game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame
+				end
+				if game.Players[getgenv().TargetUserName].Character.Head then
+					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
+				elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
+					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle")
+				else
+					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Humanoid
+				end
+				if not game.Players[getgenv().TargetUserName].Character:FindFirstChildWhichIsA("BasePart") then
+					return
+				end
+				
+				local function FPos(BasePart, Pos, Ang)
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+				end
+				
+				local function SFBasePart()
+					local Angle = 0
+					getgenv().FPDH = workspace.FallenPartsDestroyHeight
+					workspace.FallenPartsDestroyHeight = 0/0
+					repeat
+						task.wait()
+						pcall(function()
+							if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
+								if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
+									Angle = Angle + 100
+									for _, Offset in ipairs({
+										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0),
+										Vector3.new(2.25, 1.5, -2.25), Vector3.new(-2.25, -1.5, 2.25),
+										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0)
+									}) do
+										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(Angle), 0, 0))
+										task.wait()
+									end
+								else
+									for _, Data in ipairs({
+										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
+										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), 0},
+										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
+										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
+										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), 0},
+										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
+										{Vector3.new(0, -1.5, 0), math.rad(90)},
+										{Vector3.new(0, -1.5, 0), 0},
+										{Vector3.new(0, -1.5, 0), math.rad(-90)},
+										{Vector3.new(0, -1.5, 0), 0}
+									}) do
+										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], 0, 0))
+										task.wait()
+									end                        
+								end
+								game.Players.LocalPlayer.Character.Humanoid.Sit = false
+								if game.Players[getgenv().TargetUserName].Character:FindFirstChild("Head") then
+									workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
+								end
+							end
+						end)
+					until not getgenv().FlingTarget 
+				end
+				
+				local BV = Instance.new("BodyVelocity")
+				BV.Name = "Flinger"
+				BV.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
+				BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+				BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+
+				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+			
+				SFBasePart()
+
+				BV:Destroy()
+				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+				
+				repeat
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+					game.Players.LocalPlayer.Character.Humanoid:ChangeState("GettingUp")
+					table.foreach(game.Players.LocalPlayer.Character:GetChildren(), function(_, x)
+						if x:IsA("BasePart") then
+							x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+						end
+					end)
+					task.wait()
+				until (game.Players.LocalPlayer.Character.Humanoid.RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+				workspace.FallenPartsDestroyHeight = getgenv().FPDH
+				if game.Players.LocalPlayer.Character.Humanoid.Sit then
+					wait(1)
+					game.Players.LocalPlayer.Character.Humanoid.sit = false
+				end
+			end
+		end
+    end 
+})
+
+
+ChatTargetting:AddInput("Input", {
+    Title = "Text Chat",
+    Description = nil,
+    Default = nil,
+    Placeholder = "Enter here text",
+    Numeric = false,
+    Finished = true,
+    Callback = function(Value)
+        if getgenv().Ready then
+            getgenv().ChatMessage = Value
+        end
+    end
+})
+
+ChatTargetting:AddToggle("seendToggle", {
+    Title = "seend",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendMessageLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendMessageLoop and getgenv().Ready do
+                        if getgenv().ChatMessage and getgenv().ChatMessage ~= "" then
+                            Chat(getgenv().ChatMessage)
+                        end
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
+ChatTargetting:AddToggle("randomToggle", {
+    Title = "random",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendRandomLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendRandomLoop and getgenv().Ready do
+                        local randomMessages = {
+                            "FRONT-EVILL ON TOP",
+                            "NOOBS BEWARE",
+                            "FRONT-EVILL RULES",
+                            "JTALKM ON TOP"
+                        }
+                        local randomIndex = math.random(1, #randomMessages)
+                        Chat(randomMessages[randomIndex])
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
+
+ChatTargetting:AddToggle("randomToggle", {
+    Title = "Spam Okay",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendRandomLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendRandomLoop and getgenv().Ready do
+                        local randomMessages = {
+                            [[
+           .                 
+   .                         
+  .                          
+ .          .                 
+..
+..
+..
+  ...                         .
+     .
+     ..
+     .                       .]]
+                        }
+                        local randomIndex = math.random(1, #randomMessages)
+                        Chat(randomMessages[randomIndex])
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
 
 
 -----------------------------------------------------------------------------------------------------
