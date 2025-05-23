@@ -1,6 +1,4 @@
 --DATA
-getgenv().ESPEnabled = true
-getgenv().ESPObjects = {}
 getgenv().Ready = false
 getgenv().savedPosition = nil
 getgenv().TargetUserName = nil
@@ -257,42 +255,38 @@ FlyScriptMain:AddButton({
     end
 })
 
-local ToggleEsp = EspPlyaerMain:AddToggle("ESPToggle", {
+local Toggle = EspPlyaerMain:AddToggle("ESPToggle", {
    Title = "Player ESP", 
    Description = "Show all players with white outline and info",
    Default = false,
    Callback = function(state)
        if state then
+           getgenv().ESPEnabled = true
+           getgenv().ESPObjects = {}
+           
            local function createESP(player)
                if player == game.Players.LocalPlayer then return end
-               
-               local espFolder = Instance.new("Folder")
-               espFolder.Name = "ESP_" .. player.Name
-               espFolder.Parent = workspace
-               
-               getgenv().ESPObjects[player] = espFolder
                
                local function updateESP()
                    if not getgenv().ESPEnabled or not player.Character then return end
                    
-                   for _, obj in pairs(espFolder:GetChildren()) do
-                       obj:Destroy()
+                   if getgenv().ESPObjects[player] then
+                       getgenv().ESPObjects[player]:Destroy()
                    end
                    
                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                       for _, part in pairs(player.Character:GetChildren()) do
-                           if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                               local highlight = Instance.new("BoxHandleAdornment")
-                               highlight.Size = part.Size
-                               highlight.CFrame = part.CFrame
-                               highlight.Color3 = Color3.fromRGB(255, 255, 255)
-                               highlight.Transparency = 0.7
-                               highlight.AlwaysOnTop = true
-                               highlight.ZIndex = 10
-                               highlight.Adornee = part
-                               highlight.Parent = espFolder
-                           end
-                       end
+                       local espFolder = Instance.new("Folder")
+                       espFolder.Name = "ESP_" .. player.Name
+                       espFolder.Parent = game.CoreGui
+                       getgenv().ESPObjects[player] = espFolder
+                       
+                       local highlight = Instance.new("Highlight")
+                       highlight.Parent = espFolder
+                       highlight.Adornee = player.Character
+                       highlight.FillColor = Color3.fromRGB(255, 255, 255)
+                       highlight.FillTransparency = 0.8
+                       highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                       highlight.OutlineTransparency = 0
                        
                        local gui = Instance.new("BillboardGui")
                        gui.Size = UDim2.new(0, 200, 0, 50)
@@ -325,9 +319,9 @@ local ToggleEsp = EspPlyaerMain:AddToggle("ESPToggle", {
                        distanceLabel.Parent = gui
                        
                        spawn(function()
-                           while getgenv().ESPEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") do
+                           while getgenv().ESPEnabled and player.Character and gui.Parent do
                                local localPlayer = game.Players.LocalPlayer
-                               if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                               if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("HumanoidRootPart") then
                                    local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).Magnitude
                                    distanceLabel.Text = math.floor(distance) .. " studs"
                                end
@@ -337,21 +331,17 @@ local ToggleEsp = EspPlyaerMain:AddToggle("ESPToggle", {
                    end
                end
                
-               local connection
-               connection = game:GetService("RunService").Heartbeat:Connect(function()
-                   if not getgenv().ESPEnabled then
-                       connection:Disconnect()
-                       return
-                   end
-                   updateESP()
-               end)
+               updateESP()
                
-               player.CharacterAdded:Connect(function()
+               local connection
+               connection = player.CharacterAdded:Connect(function()
                    wait(1)
                    if getgenv().ESPEnabled then
                        updateESP()
                    end
                end)
+               
+               getgenv().ESPObjects[player .. "_Connection"] = connection
            end
            
            for _, player in pairs(game.Players:GetPlayers()) do
@@ -369,15 +359,23 @@ local ToggleEsp = EspPlyaerMain:AddToggle("ESPToggle", {
                    getgenv().ESPObjects[player]:Destroy()
                    getgenv().ESPObjects[player] = nil
                end
+               if getgenv().ESPObjects[player .. "_Connection"] then
+                   getgenv().ESPObjects[player .. "_Connection"]:Disconnect()
+                   getgenv().ESPObjects[player .. "_Connection"] = nil
+               end
            end)
            
        else
            getgenv().ESPEnabled = false
            
            if getgenv().ESPObjects then
-               for _, espFolder in pairs(getgenv().ESPObjects) do
-                   if espFolder then
-                       espFolder:Destroy()
+               for key, obj in pairs(getgenv().ESPObjects) do
+                   if obj then
+                       if typeof(obj) == "RBXScriptConnection" then
+                           obj:Disconnect()
+                       else
+                           obj:Destroy()
+                       end
                    end
                end
                getgenv().ESPObjects = {}
@@ -395,7 +393,6 @@ local ToggleEsp = EspPlyaerMain:AddToggle("ESPToggle", {
        end
    end 
 })
-
 
 local AntiFlingToggle = ShildePlayerMain:AddToggle("AntiFlingToggle", {
    Title = "Anti Fling Protection", 
