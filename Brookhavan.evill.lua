@@ -4,6 +4,15 @@ getgenv().savedPosition = nil
 getgenv().TargetUserName = nil
 getgenv().SendMessageLoop = state
 getgenv().SendRandomLoop = state
+
+
+local fireEffect = nil
+local smokeEffect = nil
+local rainbowEffect = nil
+local fireConnection = nil
+local rainbowConnection = nil
+
+
 --FUNICTON
 local function Notify(Title,Dis)
     pcall(function()
@@ -62,6 +71,51 @@ local function GetPlayer(UserDisplay)
         end
     end
     return nil
+end
+
+
+
+
+local function createFireEffect()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local fire = Instance.new("Fire")
+        fire.Size = 10
+        fire.Heat = 15
+        fire.Color = Color3.fromRGB(255, 140, 0)
+        fire.SecondaryColor = Color3.fromRGB(255, 69, 0)
+        fire.Parent = player.Character.HumanoidRootPart
+        return fire
+    end
+end
+
+
+
+local function createSmokeEffect()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local smoke = Instance.new("Smoke")
+        smoke.Size = 8
+        smoke.Opacity = 0.5
+        smoke.RiseVelocity = 5
+        smoke.Color = Color3.fromRGB(100, 100, 100)
+        smoke.Parent = player.Character.HumanoidRootPart
+        return smoke
+    end
+end
+
+
+
+local function createRainbowEffect()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local part = Instance.new("Part")
+        part.Name = "RainbowEffect"
+        part.Size = Vector3.new(8, 8, 0.1)
+        part.Anchored = true
+        part.CanCollide = false
+        part.Material = Enum.Material.Neon
+        part.Shape = Enum.PartType.Block
+        part.Parent = workspace
+        return part
+    end
 end
 
 
@@ -345,7 +399,7 @@ OptionsTargetting:AddToggle("ViewTargetToggle", {
     end 
 })
 
-improv.OptionsTargetting:AddToggle("FlingTargetToggle", {
+OptionsTargetting:AddToggle("FlingTargetToggle", {
     Title = "Fling", 
     Description = nil,
     Default = false,
@@ -391,7 +445,7 @@ improv.OptionsTargetting:AddToggle("FlingTargetToggle", {
                         pcall(function()
                             if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
                                 if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 80 then
-                                    Angle = Angle + 75
+                                    Angle = Angle + 170
                                     for _, Offset in ipairs({
                                         Vector3.new(0, 2.5, 0), Vector3.new(0, -2.5, 0),
                                         Vector3.new(3.5, 2.5, -3.5), Vector3.new(-3.5, -2.5, 3.5),
@@ -433,13 +487,13 @@ improv.OptionsTargetting:AddToggle("FlingTargetToggle", {
                 local BV1 = Instance.new("BodyVelocity")
                 BV1.Name = "Flinger1"
                 BV1.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV1.Velocity = Vector3.new(9e9 * 2, 9e9 * 2, 9e9 * 2)
+                BV1.Velocity = Vector3.new(9e9 * 7, 9e9 * 7, 9e9 * 7)
                 BV1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 
                 local BV2 = Instance.new("BodyAngularVelocity")
                 BV2.Name = "Spinner"
                 BV2.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV2.AngularVelocity = Vector3.new(9e9 * 3, 9e9 * 3, 9e9 * 3)
+                BV2.AngularVelocity = Vector3.new(9e9 * 8, 9e8 * 8, 9e9 * 8)
                 BV2.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
@@ -1025,6 +1079,7 @@ local Animation2 = Tabs.Scin:AddSection("Animation 2")
 local Animation3 = Tabs.Scin:AddSection("Boy Animation")
 local GoodAnimation = Tabs.Scin:AddSection("Good Animation")
 local AnimationGirl = Tabs.Scin:AddSection("Girl Animation")
+local EfictScinPlayer = Tabs.Scin:AddSection("Efict")
 local DanceScript = Tabs.Scin:AddSection("Dance Script")
 
 local plr = game.Players.LocalPlayer
@@ -1515,6 +1570,85 @@ AnimationGirl:AddButton({
     end
 })
 
+
+local FireToggle = EfictScinPlayer:AddToggle("FireToggle", {
+    Title = "Fire Effect", 
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local player = Players.LocalPlayer
+        if state then
+            fireEffect = createFireEffect()
+        else
+            if fireEffect then
+                fireEffect:Destroy()
+                fireEffect = nil
+            end
+        end
+    end 
+})
+
+
+local SmokeToggle = EfictScinPlayer:AddToggle("SmokeToggle", {
+    Title = "Smoke Effect", 
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local player = Players.LocalPlayer
+        if state then
+            smokeEffect = createSmokeEffect()
+        else
+            if smokeEffect then
+                smokeEffect:Destroy()
+                smokeEffect = nil
+            end
+        end
+    end 
+})
+
+
+local RainbowToggle = EfictScinPlayer:AddToggle("RainbowToggle", {
+    Title = "Rainbow Effect", 
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local player = Players.LocalPlayer
+        if state then
+            rainbowEffect = createRainbowEffect()
+            if rainbowEffect then
+                rainbowConnection = RunService.Heartbeat:Connect(function()
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and rainbowEffect then
+                        local rootPart = player.Character.HumanoidRootPart
+                        rainbowEffect.CFrame = rootPart.CFrame * CFrame.new(0, 0, 3)
+                        
+                        local time = tick() * 2
+                        local r = math.sin(time) * 0.5 + 0.5
+                        local g = math.sin(time + 2) * 0.5 + 0.5
+                        local b = math.sin(time + 4) * 0.5 + 0.5
+                        rainbowEffect.Color = Color3.new(r, g, b)
+                    end
+                end)
+            end
+        else
+            if rainbowConnection then
+                rainbowConnection:Disconnect()
+                rainbowConnection = nil
+            end
+            if rainbowEffect then
+                rainbowEffect:Destroy()
+                rainbowEffect = nil
+            end
+        end
+    end 
+})
+
+
 DanceScript:AddButton({
     Title = "Script Dance (WAIT)",
     Description = nil,
@@ -1522,7 +1656,6 @@ DanceScript:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Hm5011/hussain/refs/heads/main/Free%20Dances"))()
     end
 })
-
 
 local AudioHub = Tabs.Humando:AddSection("Audio")
 
@@ -1573,5 +1706,10 @@ AudioHub:AddButton({
 
 
 -----------------------------------------------------------------------------------------------------
-
+player.CharacterRemoving:Connect(function()
+    if fireEffect then fireEffect:Destroy() end
+    if smokeEffect then smokeEffect:Destroy() end
+    if rainbowEffect then rainbowEffect:Destroy() end
+    if rainbowConnection then rainbowConnection:Disconnect() end
+end)
 getgenv().Ready = true
