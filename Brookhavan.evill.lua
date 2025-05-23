@@ -258,8 +258,8 @@ OptionsTargetting:AddButton({
 })
 
 OptionsTargetting:AddButton({
-    Title = "kill",
-    Description = nil,
+    Title = "School Bus Teleport",
+    Description = "Teleport player using school bus",
     Callback = function()
         if getgenv().Ready and getgenv().TargetUserName then
             local Players = game:GetService("Players")
@@ -267,7 +267,6 @@ OptionsTargetting:AddButton({
             local TargetPlayer = Players:FindFirstChild(getgenv().TargetUserName)
             
             if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                local OriginalPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
                 local SchoolBus = Instance.new("Part")
                 SchoolBus.Name = "SchoolBus"
                 SchoolBus.Size = Vector3.new(10, 5, 20)
@@ -279,30 +278,42 @@ OptionsTargetting:AddButton({
                 SchoolBus.Anchored = true
                 SchoolBus.CanCollide = true
                 SchoolBus.Parent = workspace
-                SchoolBus.CFrame = OriginalPosition + Vector3.new(15, 0, 0)
+                
+                local TargetPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
+                SchoolBus.CFrame = TargetPosition + Vector3.new(15, 0, 0)
+                
                 wait(0.5)
+                
                 TargetPlayer.Character.HumanoidRootPart.CFrame = SchoolBus.CFrame + Vector3.new(0, 3, 0)
+                
                 local WeldConstraint = Instance.new("WeldConstraint")
                 WeldConstraint.Part0 = SchoolBus
                 WeldConstraint.Part1 = TargetPlayer.Character.HumanoidRootPart
                 WeldConstraint.Parent = SchoolBus
+                
                 wait(1)
-                local FarPosition = Vector3.new(math.random(-10000, 10000), 5000, math.random(-10000, 10000))
+                
+                local FarPosition = Vector3.new(math.random(-10000, 10000), 5000, math.random(-10000, 10000)) 
                 SchoolBus.CFrame = CFrame.new(FarPosition)
-                wait(3)
+                
+                wait(2)
+                
                 if WeldConstraint then
                     WeldConstraint:Destroy()
                 end
+                
                 wait(0.5)
+                
                 if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    TargetPlayer.Character.HumanoidRootPart.CFrame = OriginalPosition
+                    TargetPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(FarPosition + Vector3.new(0, -10, 0))
                 end
+                
                 wait(1)
+                
                 if SchoolBus then
                     SchoolBus:Destroy()
                 end
-                
-                Notify("Success", "School bus teleport completed for " .. getgenv().TargetUserName)
+                Notify("Success", "Player " .. getgenv().TargetUserName .. " has been left in a far location!")
             else
                 Notify("Error", "Target player not found or invalid")
             end
@@ -334,7 +345,7 @@ OptionsTargetting:AddToggle("ViewTargetToggle", {
     end 
 })
 
-OptionsTargetting:AddToggle("FlingTargetToggle", {
+improv.OptionsTargetting:AddToggle("FlingTargetToggle", {
     Title = "Fling", 
     Description = nil,
     Default = false,
@@ -351,36 +362,36 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                     getgenv().OldPos = game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame
                 end
                 
-                if game.Players[getgenv().TargetUserName].Character.Head then
+                if game.Players[getgenv().TargetUserName].Character:FindFirstChild("Head") then
                     workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
-                elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
+                elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory") and game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
                     workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle")
                 else
                     workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Humanoid
                 end
-                
+
                 if not game.Players[getgenv().TargetUserName].Character:FindFirstChildWhichIsA("BasePart") then
                     return
                 end
-                
+
                 local function FPos(BasePart, Pos, Ang)
                     game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
                     game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
-                    game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e9, 9e9 * 15, 9e9)
-                    game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e9 * 2, 9e9 * 30, 9e9 * 2)
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e9 * 2, 9e9 * 2, 9e9 * 2)
                 end
-                
+
                 local function SFBasePart()
                     local Angle = 0
                     getgenv().FPDH = workspace.FallenPartsDestroyHeight
-                    workspace.FallenPartsDestroyHeight = 0/0
+                    workspace.FallenPartsDestroyHeight = -math.huge
                     
                     repeat
                         task.wait()
                         pcall(function()
                             if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
                                 if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 80 then
-                                    Angle = Angle + 150
+                                    Angle = Angle + 75
                                     for _, Offset in ipairs({
                                         Vector3.new(0, 2.5, 0), Vector3.new(0, -2.5, 0),
                                         Vector3.new(3.5, 2.5, -3.5), Vector3.new(-3.5, -2.5, 3.5),
@@ -389,24 +400,24 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                                         Vector3.new(5, 0, 0), Vector3.new(-5, 0, 0)
                                     }) do
                                         FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, 
-                                             CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), 
+                                             CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 4), 
                                              CFrame.Angles(math.rad(Angle), math.rad(Angle/2), math.rad(Angle/3)))
                                         task.wait()
                                     end
                                 else
                                     for _, Data in ipairs({
-                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(120)},
-                                        {Vector3.new(0, -3, -game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(-120)},
-                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(120)},
-                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(120)},
-                                        {Vector3.new(0, -3, -game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(-120)},
-                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(120)},
-                                        {Vector3.new(5, -3, 0), math.rad(150)},
-                                        {Vector3.new(-5, -3, 0), math.rad(-150)},
-                                        {Vector3.new(0, -5, 0), math.rad(180)},
-                                        {Vector3.new(0, 5, 0), math.rad(-180)}
+                                        {Vector3.new(0, 10, 1000), math.rad(180)},
+                                        {Vector3.new(0, -10, -1000), math.rad(-180)},
+                                        {Vector3.new(0, 10, 1000), math.rad(180)},
+                                        {Vector3.new(0, 10, 1000), math.rad(180)},
+                                        {Vector3.new(0, -10, -1000), math.rad(-180)},
+                                        {Vector3.new(0, 10, 1000), math.rad(180)},
+                                        {Vector3.new(10, -10, 0), math.rad(270)},
+                                        {Vector3.new(-10, -10, 0), math.rad(-270)},
+                                        {Vector3.new(0, -15, 0), math.rad(360)},
+                                        {Vector3.new(0, 15, 0), math.rad(-360)}
                                     }) do
-                                        FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], math.rad(Angle), 0))
+                                        FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], math.rad(Angle * 2), 0))
                                         task.wait()
                                     end                        
                                 end
@@ -418,31 +429,31 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                         end)
                     until not getgenv().FlingTarget 
                 end
-                
+
                 local BV1 = Instance.new("BodyVelocity")
                 BV1.Name = "Flinger1"
                 BV1.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV1.Velocity = Vector3.new(9e9, 9e9, 9e9)
+                BV1.Velocity = Vector3.new(9e9 * 2, 9e9 * 2, 9e9 * 2)
                 BV1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 
                 local BV2 = Instance.new("BodyAngularVelocity")
                 BV2.Name = "Spinner"
                 BV2.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV2.AngularVelocity = Vector3.new(9e9, 9e9, 9e9)
+                BV2.AngularVelocity = Vector3.new(9e9 * 3, 9e9 * 3, 9e9 * 3)
                 BV2.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
-            
+
                 SFBasePart()
 
                 if BV1 then BV1:Destroy() end
                 if BV2 then BV2:Destroy() end
-                
+
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
                 workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-                
+
                 repeat
                     game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
                     game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
@@ -454,11 +465,11 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                     end)
                     task.wait()
                 until (game.Players.LocalPlayer.Character.Humanoid.RootPart.Position - getgenv().OldPos.p).Magnitude < 25
-                
+
                 workspace.FallenPartsDestroyHeight = getgenv().FPDH
                 if game.Players.LocalPlayer.Character.Humanoid.Sit then
                     wait(1)
-                    game.Players.LocalPlayer.Character.Humanoid.sit = false
+                    game.Players.LocalPlayer.Character.Humanoid.Sit = false
                 end
             end
         end
