@@ -145,14 +145,431 @@ local Window = Fluent:CreateWindow({
  
 local Tabs = {
 	Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
-    Player = Window:AddTab({ Title = "PLayer", Icon = "user" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "user" }),
 	Setting = Window:AddTab({ Title = "Setting", Icon = "settings" }),
     Scin = Window:AddTab({ Title = "Scin Player", Icon = "user" })
+    Humando = Window:AddTab({ Title = "Admin", Icon = "hammer" }),
 }
 
+local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
+local OptionsTargetting = Tabs.Targetting:AddSection("Options")
+local ChatTargetting = Tabs.Targetting:AddSection("Chat Player")
+
+local TargetInput = PlayerNameTargetting:AddInput("Input", {
+    Title = "Player Name",
+    Description = nil,
+    Default = nil,
+    Placeholder = "Name Here",
+    Numeric = false,
+    Finished = true,
+    Callback = function(Value)
+		if getgenv().Ready then 
+			local TargetName = GetPlayer(Value)
+			if TargetName then
+				Notify("Successed","The Player @"..TargetName.Name.." has been chosen!")
+				getgenv().TargetUserName = TargetName.Name
+			else
+				Notify("Error","Unknown Player")
+				getgenv().TargetUserName = nil
+			end
+		end
+    end
+})
+
+game.Players.PlayerRemoving:Connect(function(Player)
+	pcall(function()
+		if Player.Name == getgenv().TargetUserName then
+			getgenv().TargetUserName = nil
+            Options.FlingTargetToggle:SetValue(false)
+			Notify("Error","Target left or rejoined")
+		end
+	end)
+end)
+
+PlayerNameTargetting:AddButton({
+    Title = "Choose Player Tool",
+    Description = "Click on a player to select him",
+    Callback = function()
+		for _,P in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
+		for _,P in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
+		local GetTargetTool = Instance.new("Tool")
+		GetTargetTool.Name = "ClickTarget"
+		GetTargetTool.RequiresHandle = false
+		GetTargetTool.TextureId = "rbxassetid://13769558274"
+		GetTargetTool.ToolTip = "Choose Player"
+
+		local function ActivateTool()
+			local Hit = game.Players.LocalPlayer:GetMouse().Target
+			local Person = nil
+			if Hit and Hit.Parent then
+				if Hit.Parent:IsA("Model") then
+					Person = game.Players:GetPlayerFromCharacter(Hit.Parent)
+				elseif Hit.Parent:IsA("Accessory") then
+					Person = game.Players:GetPlayerFromCharacter(Hit.Parent.Parent)
+				end
+				if Person then
+					TargetInput:SetValue(Person.Name)
+				end
+			end
+		end
+
+		GetTargetTool.Activated:Connect(function()
+			ActivateTool()
+		end)
+		GetTargetTool.Parent = game.Players.LocalPlayer.Backpack
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "Get Information",
+    Description = nil,
+    Callback = function()
+        if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+            local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+            
+            local PlayerName = Target.Name
+            local PlayerDisplayName = Target.DisplayName
+            local PlayerUserID = Target.UserId
+            local AccountAge = Target.AccountAge
+            
+            Notify("@" .. PlayerName .. " Info ↓", 
+                "Display Name: " .. PlayerDisplayName .. 
+                "\nUsername: " .. PlayerName .. 
+                "\nUser ID: " .. tostring(PlayerUserID) .. 
+                "\nAccount Age: " .. tostring(AccountAge) .. " days"
+            )
+        elseif getgenv().Ready then
+            Notify("Error", "Please choose a player to target")
+        end
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "Teleport To",
+    Description = nil,
+    Callback = function()
+		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-2) * CFrame.Angles(0,math.rad(180),0)
+		elseif getgenv().Ready then
+			Notify("Error","Please choose a player to target")
+		end
+    end
+})
+
+OptionsTargetting:AddButton({
+    Title = "kill",
+    Description = nil,
+    Callback = function()
+        if getgenv().Ready and getgenv().TargetUserName then
+            local Players = game:GetService("Players")
+            local LocalPlayer = Players.LocalPlayer
+            local TargetPlayer = Players:FindFirstChild(getgenv().TargetUserName)
+            
+            if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local OriginalPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
+                local SchoolBus = Instance.new("Part")
+                SchoolBus.Name = "SchoolBus"
+                SchoolBus.Size = Vector3.new(10, 5, 20)
+                SchoolBus.Material = Enum.Material.SmoothPlastic
+                SchoolBus.BrickColor = BrickColor.new("Bright yellow")
+                SchoolBus.Shape = Enum.PartType.Block
+                SchoolBus.TopSurface = Enum.SurfaceType.Smooth
+                SchoolBus.BottomSurface = Enum.SurfaceType.Smooth
+                SchoolBus.Anchored = true
+                SchoolBus.CanCollide = true
+                SchoolBus.Parent = workspace
+                SchoolBus.CFrame = OriginalPosition + Vector3.new(15, 0, 0)
+                wait(0.5)
+                TargetPlayer.Character.HumanoidRootPart.CFrame = SchoolBus.CFrame + Vector3.new(0, 3, 0)
+                local WeldConstraint = Instance.new("WeldConstraint")
+                WeldConstraint.Part0 = SchoolBus
+                WeldConstraint.Part1 = TargetPlayer.Character.HumanoidRootPart
+                WeldConstraint.Parent = SchoolBus
+                wait(1)
+                local FarPosition = Vector3.new(math.random(-10000, 10000), 5000, math.random(-10000, 10000))
+                SchoolBus.CFrame = CFrame.new(FarPosition)
+                wait(3)
+                if WeldConstraint then
+                    WeldConstraint:Destroy()
+                end
+                wait(0.5)
+                if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    TargetPlayer.Character.HumanoidRootPart.CFrame = OriginalPosition
+                end
+                wait(1)
+                if SchoolBus then
+                    SchoolBus:Destroy()
+                end
+                
+                Notify("Success", "School bus teleport completed for " .. getgenv().TargetUserName)
+            else
+                Notify("Error", "Target player not found or invalid")
+            end
+        else
+            Notify("Error", "Please select a target player first")
+        end
+    end
+})
+
+OptionsTargetting:AddToggle("ViewTargetToggle", {
+    Title = "View", 
+    Description = nil,
+    Default = false,
+    Callback = function(Value)
+		getgenv().View = Value
+        while getgenv().View and task.wait() do
+            if getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
+				pcall(function()
+					local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
+					workspace.CurrentCamera.CameraSubject = Target.Character.Head 
+				end)
+            elseif getgenv().Ready then
+				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+                Notify("Error","Please choose a player to target")
+                break
+            end
+        end
+		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+    end 
+})
+
+OptionsTargetting:AddToggle("FlingTargetToggle", {
+    Title = "Fling", 
+    Description = nil,
+    Default = false,
+    Callback = function(Value)
+        getgenv().FlingTarget = Value
+        if getgenv().FlingTarget then
+            if not getgenv().TargetUserName then  
+                Notify("Error","Please choose a player to target") 
+                return 
+            end
+            
+            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Humanoid and game.Players.LocalPlayer.Character.Humanoid.RootPart then
+                if game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
+                    getgenv().OldPos = game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame
+                end
+                
+                if game.Players[getgenv().TargetUserName].Character.Head then
+                    workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
+                elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
+                    workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle")
+                else
+                    workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Humanoid
+                end
+                
+                if not game.Players[getgenv().TargetUserName].Character:FindFirstChildWhichIsA("BasePart") then
+                    return
+                end
+                
+                local function FPos(BasePart, Pos, Ang)
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e9, 9e9 * 15, 9e9)
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
+                end
+                
+                local function SFBasePart()
+                    local Angle = 0
+                    getgenv().FPDH = workspace.FallenPartsDestroyHeight
+                    workspace.FallenPartsDestroyHeight = 0/0
+                    
+                    repeat
+                        task.wait()
+                        pcall(function()
+                            if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
+                                if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 80 then
+                                    Angle = Angle + 150
+                                    for _, Offset in ipairs({
+                                        Vector3.new(0, 2.5, 0), Vector3.new(0, -2.5, 0),
+                                        Vector3.new(3.5, 2.5, -3.5), Vector3.new(-3.5, -2.5, 3.5),
+                                        Vector3.new(0, 2.5, 0), Vector3.new(0, -2.5, 0),
+                                        Vector3.new(4, 3, -4), Vector3.new(-4, -3, 4),
+                                        Vector3.new(5, 0, 0), Vector3.new(-5, 0, 0)
+                                    }) do
+                                        FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, 
+                                             CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), 
+                                             CFrame.Angles(math.rad(Angle), math.rad(Angle/2), math.rad(Angle/3)))
+                                        task.wait()
+                                    end
+                                else
+                                    for _, Data in ipairs({
+                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(120)},
+                                        {Vector3.new(0, -3, -game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(-120)},
+                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed * 2), math.rad(120)},
+                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(120)},
+                                        {Vector3.new(0, -3, -game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(-120)},
+                                        {Vector3.new(0, 3, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 0.8), math.rad(120)},
+                                        {Vector3.new(5, -3, 0), math.rad(150)},
+                                        {Vector3.new(-5, -3, 0), math.rad(-150)},
+                                        {Vector3.new(0, -5, 0), math.rad(180)},
+                                        {Vector3.new(0, 5, 0), math.rad(-180)}
+                                    }) do
+                                        FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], math.rad(Angle), 0))
+                                        task.wait()
+                                    end                        
+                                end
+                                game.Players.LocalPlayer.Character.Humanoid.Sit = false
+                                if game.Players[getgenv().TargetUserName].Character:FindFirstChild("Head") then
+                                    workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
+                                end
+                            end
+                        end)
+                    until not getgenv().FlingTarget 
+                end
+                
+                local BV1 = Instance.new("BodyVelocity")
+                BV1.Name = "Flinger1"
+                BV1.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
+                BV1.Velocity = Vector3.new(9e9, 9e9, 9e9)
+                BV1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+
+                local BV2 = Instance.new("BodyAngularVelocity")
+                BV2.Name = "Spinner"
+                BV2.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
+                BV2.AngularVelocity = Vector3.new(9e9, 9e9, 9e9)
+                BV2.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+
+                game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+                game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+            
+                SFBasePart()
+
+                if BV1 then BV1:Destroy() end
+                if BV2 then BV2:Destroy() end
+                
+                game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+                workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+                
+                repeat
+                    game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                    game.Players.LocalPlayer.Character.Humanoid:ChangeState("GettingUp")
+                    table.foreach(game.Players.LocalPlayer.Character:GetChildren(), function(_, x)
+                        if x:IsA("BasePart") then
+                            x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                        end
+                    end)
+                    task.wait()
+                until (game.Players.LocalPlayer.Character.Humanoid.RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+                
+                workspace.FallenPartsDestroyHeight = getgenv().FPDH
+                if game.Players.LocalPlayer.Character.Humanoid.Sit then
+                    wait(1)
+                    game.Players.LocalPlayer.Character.Humanoid.sit = false
+                end
+            end
+        end
+    end 
+})
+
+
+ChatTargetting:AddInput("Input", {
+    Title = "Text Chat",
+    Description = nil,
+    Default = nil,
+    Placeholder = "Enter here text",
+    Numeric = false,
+    Finished = true,
+    Callback = function(Value)
+        if getgenv().Ready then
+            getgenv().ChatMessage = Value
+        end
+    end
+})
+
+ChatTargetting:AddToggle("seendToggle", {
+    Title = "seend",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendMessageLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendMessageLoop and getgenv().Ready do
+                        if getgenv().ChatMessage and getgenv().ChatMessage ~= "" then
+                            Chat(getgenv().ChatMessage)
+                        end
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
+ChatTargetting:AddToggle("randomToggle", {
+    Title = "random",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendRandomLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendRandomLoop and getgenv().Ready do
+                        local randomMessages = {
+                            "FRONT-EVILL ON TOP",
+                            "NOOBS BEWARE",
+                            "FRONT-EVILL RULES",
+                            "JTALKM ON TOP"
+                        }
+                        local randomIndex = math.random(1, #randomMessages)
+                        Chat(randomMessages[randomIndex])
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
+
+ChatTargetting:AddToggle("randomToggle", {
+    Title = "Spam Okay",
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        if getgenv().Ready then
+            getgenv().SendRandomLoop = state
+            
+            if state then
+                spawn(function()
+                    while getgenv().SendRandomLoop and getgenv().Ready do
+                        local randomMessages = {
+                            [[
+           .                 
+   .                         
+  .                          
+ .          .                 
+..
+..
+..
+  ...                         .
+     .
+     ..
+     .                       .]]
+                        }
+                        local randomIndex = math.random(1, #randomMessages)
+                        Chat(randomMessages[randomIndex])
+                        task.wait()
+                    end
+                end)
+            end
+        end
+    end
+})
+
+
 local PlkFarmPlayer = Tabs.Player:AddSection("InfiniteJump")
-local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & jump ")
 local NoClipPlayer = Tabs.Player:AddSection("NoClip")
+local CatPlayerTabPlayer = Tabs.Player:AddSection("car")
+local SpeedJumpPlayer = Tabs.Player:AddSection("Speed & jump ")
 
 
 PlkFarmPlayer:AddToggle("InfiniteJump", {
@@ -245,6 +662,106 @@ NoClipPlayer:AddToggle("Noclip", {
     end
 })
 
+
+CatPlayerTabPlayer:AddSlider("CarSpeedSlider", {
+    Title = "Car Speed",
+    Description = nil,
+    Default = 50,
+    Min = 0,
+    Max = 500,
+    Rounding = 1,
+    Callback = function(Value)
+        getgenv().CarSpeed = Value
+        print("Car speed set to:", Value)
+    end
+})
+
+CatPlayerTabPlayer:AddToggle("CarSpeedToggle", {
+    Title = "Enable Car Speed", 
+    Description =  nil,
+    Default = false,
+    Callback = function(state)
+        getgenv().CarSpeedEnabled = state
+        if state then
+            print("Car Speed Enabled")
+            spawn(function()
+                while getgenv().CarSpeedEnabled do
+                    pcall(function()
+                        local Player = game.Players.LocalPlayer
+                        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+                            local Vehicle = nil
+                            
+                            if Player.Character.Humanoid.SeatPart then
+                                Vehicle = Player.Character.Humanoid.SeatPart.Parent
+                            end
+                            
+                            if not Vehicle then
+                                for _, v in pairs(workspace:GetChildren()) do
+                                    if v:FindFirstChild("VehicleSeat") or v:FindFirstChild("Seat") then
+                                        local seat = v:FindFirstChild("VehicleSeat") or v:FindFirstChild("Seat")
+                                        if seat.Occupant == Player.Character.Humanoid then
+                                            Vehicle = v
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                            
+                            if Vehicle then
+                                for _, part in pairs(Vehicle:GetDescendants()) do
+                                    if part:IsA("VehicleSeat") then
+                                        part.MaxSpeed = getgenv().CarSpeed or 50
+                                        part.Torque = (getgenv().CarSpeed or 50) * 100
+                                    elseif part:IsA("BodyVelocity") then
+                                        part.MaxForce = Vector3.new(4000, 0, 4000)
+                                        if Player.Character.Humanoid.MoveDirection.Magnitude > 0 then
+                                            part.Velocity = Player.Character.Humanoid.MoveDirection * (getgenv().CarSpeed or 50)
+                                        end
+                                    elseif part:IsA("BodyPosition") then
+                                        part.MaxForce = Vector3.new(4000, 0, 4000)
+                                    end
+                                end
+                                
+                                if Vehicle.PrimaryPart or Vehicle:FindFirstChild("Body") or Vehicle:FindFirstChild("Main") then
+                                    local MainPart = Vehicle.PrimaryPart or Vehicle:FindFirstChild("Body") or Vehicle:FindFirstChild("Main")
+                                    if MainPart and Player.Character.Humanoid.MoveDirection.Magnitude > 0 then
+                                        local BodyVelocity = MainPart:FindFirstChild("CustomSpeed") or Instance.new("BodyVelocity")
+                                        BodyVelocity.Name = "CustomSpeed"
+                                        BodyVelocity.MaxForce = Vector3.new(math.huge, 0, math.huge)
+                                        BodyVelocity.Velocity = MainPart.CFrame.LookVector * (getgenv().CarSpeed or 50)
+                                        BodyVelocity.Parent = MainPart
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                    wait(0.1)
+                end
+            end)
+        else
+            print("Car Speed Disabled")
+            -- إزالة التأثيرات المطبقة
+            pcall(function()
+                local Player = game.Players.LocalPlayer
+                if Player.Character then
+                    for _, v in pairs(workspace:GetChildren()) do
+                        for _, part in pairs(v:GetDescendants()) do
+                            if part:IsA("BodyVelocity") and part.Name == "CustomSpeed" then
+                                part:Destroy()
+                            elseif part:IsA("VehicleSeat") then
+                                part.MaxSpeed = 25
+                                part.Torque = 2500
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end 
+})
+
+
+
 SpeedJumpPlayer:AddToggle("HighJump", {
     Title = "HighJump",
     Description = "Enables higher jumping ability",
@@ -275,30 +792,13 @@ SpeedJumpPlayer:AddToggle("SpeedBoost", {
     end
 })
 
-local FaemFofSE = Tabs.Setting:AddSection("RemoveFog")
+
+
+
 local FarmFpsQuSetting = Tabs.Setting:AddSection("FPS & Quailite")
 local ServerNano = Tabs.Setting:AddSection("Server")
 local MoodPlayerSetting = Tabs.Setting:AddSection("Mood")
 local ForPlayerSetting = Tabs.Setting:AddSection("last")
-
-FaemFofSE:AddButton({
-    Title = "Remove Fog",
-    Description = nil,
-    Callback = function()     
-       if getgenv().Ready then
-            local lighting = game:GetService("Lighting")
-            lighting.FogStart = 0
-            lighting.FogEnd = 9e9
-            lighting.Brightness = 1
-       
-            for _, v in pairs(lighting:GetChildren()) do
-                if v:IsA("Atmosphere") or v:IsA("Sky") or v:IsA("BloomEffect") or v:IsA("BlurEffect") then
-                 v:Destroy()
-                end
-            end   
-        end
-    end
-})
 
 -------- FPS ---------
 FarmFpsQuSetting:AddButton({
@@ -366,40 +866,6 @@ FarmFpsQuSetting:AddButton({
         workspace.Terrain.WaterTransparency = 0.65
         workspace.Terrain.WaterWaveSize = 0.15
         workspace.Terrain.WaterWaveSpeed = 10
-    end
-})
-
-ServerNano:AddButton({
-    Title = "New Server",
-    Description = nil,
-    Callback = function() 
-       if getgenv().Ready then 
-         local TeleportService = game:GetService("TeleportService")
-         local Players = game:GetService("Players")
-         local HttpService = game:GetService("HttpService")
-        
-         local placeId = game.PlaceId
-        
-         local servers = {}
-         local req = httprequest({
-            Url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Desc&limit=100"
-         })
-         local body = HttpService:JSONDecode(req.Body)
-        
-         if body and body.data then
-             for i, v in pairs(body.data) do
-                 if v.playing < v.maxPlayers and v.id ~= game.JobId then
-                     table.insert(servers, v.id)
-                 end
-             end
-         end
-        
-           if #servers > 0 then
-                TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)])
-               else
-                TeleportService:Teleport(placeId)
-            end
-        end
     end
 })
 
@@ -1046,342 +1512,53 @@ DanceScript:AddButton({
     end
 })
 
-local PlayerNameTargetting = Tabs.Targetting:AddSection("Target")
-local OptionsTargetting = Tabs.Targetting:AddSection("Options")
-local ChatTargetting = Tabs.Targetting:AddSection("Chat Player")
 
-local TargetInput = PlayerNameTargetting:AddInput("Input", {
-    Title = "Player Name",
+local AudioHub = Tabs.Humando:AddSection("Audio")
+
+
+
+local currentSound = nil
+
+local SoundInput = AudioHub:AddInput("Sound ID", {
+    Title = "Music Player",
     Description = nil,
-    Default = nil,
-    Placeholder = "Name Here",
-    Numeric = false,
+    Default = "",
+    Placeholder = "Enter song ID here",
+    Numeric = true,
     Finished = true,
-    Callback = function(Value)
-		if getgenv().Ready then 
-			local TargetName = GetPlayer(Value)
-			if TargetName then
-				Notify("Successed","The Player @"..TargetName.Name.." has been chosen!")
-				getgenv().TargetUserName = TargetName.Name
-			else
-				Notify("Error","Unknown Player")
-				getgenv().TargetUserName = nil
-			end
-		end
-    end
-})
-
-game.Players.PlayerRemoving:Connect(function(Player)
-	pcall(function()
-		if Player.Name == getgenv().TargetUserName then
-			getgenv().TargetUserName = nil
-            Options.FlingTargetToggle:SetValue(false)
-			Notify("Error","Target left or rejoined")
-		end
-	end)
-end)
-
-PlayerNameTargetting:AddButton({
-    Title = "Choose Player Tool",
-    Description = "Click on a player to select him",
-    Callback = function()
-		for _,P in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
-		for _,P in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do if P.Name == "ClickTarget" then P:Destroy() end end
-		local GetTargetTool = Instance.new("Tool")
-		GetTargetTool.Name = "ClickTarget"
-		GetTargetTool.RequiresHandle = false
-		GetTargetTool.TextureId = "rbxassetid://13769558274"
-		GetTargetTool.ToolTip = "Choose Player"
-
-		local function ActivateTool()
-			local Hit = game.Players.LocalPlayer:GetMouse().Target
-			local Person = nil
-			if Hit and Hit.Parent then
-				if Hit.Parent:IsA("Model") then
-					Person = game.Players:GetPlayerFromCharacter(Hit.Parent)
-				elseif Hit.Parent:IsA("Accessory") then
-					Person = game.Players:GetPlayerFromCharacter(Hit.Parent.Parent)
-				end
-				if Person then
-					TargetInput:SetValue(Person.Name)
-				end
-			end
-		end
-
-		GetTargetTool.Activated:Connect(function()
-			ActivateTool()
-		end)
-		GetTargetTool.Parent = game.Players.LocalPlayer.Backpack
-    end
-})
-
-OptionsTargetting:AddButton({
-    Title = "Get Information",
-    Description = nil,
-    Callback = function()
-		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
-			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
-			Notify("@".. Target.Name .. " Infoâ†“","Account Age: ".. tostring(Target.AccountAge) .."\nLevel: ".. tostring(game.Players.LocalPlayer:GetAttribute("Level")) .."\nTeam: ".. tostring(GetTeamOf(Target)))
-		elseif getgenv().Ready then
-			Notify("Error","Please choose a player to target")
-		end
-    end
-})
-
-OptionsTargetting:AddButton({
-    Title = "Teleport To",
-    Description = nil,
-    Callback = function()
-		if getgenv().Ready and getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
-			local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-2) * CFrame.Angles(0,math.rad(180),0)
-		elseif getgenv().Ready then
-			Notify("Error","Please choose a player to target")
-		end
-    end
-})
-
-OptionsTargetting:AddButton({
-    Title = "Kill",
-    Description = nil,
-    Callback = function()
-		if getgenv().Ready then
-
-		end	
-    end
-})
-
-OptionsTargetting:AddToggle("ViewTargetToggle", {
-    Title = "View", 
-    Description = nil,
-    Default = false,
-    Callback = function(Value)
-		getgenv().View = Value
-        while getgenv().View and task.wait() do
-            if getgenv().TargetUserName and game.Players:FindFirstChild(getgenv().TargetUserName) then
-				pcall(function()
-					local Target = game.Players:FindFirstChild(getgenv().TargetUserName)
-					workspace.CurrentCamera.CameraSubject = Target.Character.Head 
-				end)
-            elseif getgenv().Ready then
-				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-                Notify("Error","Please choose a player to target")
-                break
-            end
-        end
-		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-    end 
-})
-
-OptionsTargetting:AddToggle("FlingTargetToggle", {
-    Title = "Fling", 
-    Description = nil,
-    Default = false,
-    Callback = function(Value)
-		getgenv().FlingTarget = Value
-        if getgenv().FlingTarget then
-            if not getgenv().TargetUserName then  Notify("Error","Please choose a player to target") return end
-			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.Humanoid and game.Players.LocalPlayer.Character.Humanoid.RootPart then
-				if game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
-					getgenv().OldPos = game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame
-				end
-				if game.Players[getgenv().TargetUserName].Character.Head then
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
-				elseif game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle") then
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character:FindFirstChildOfClass("Accessory"):FindFirstChild("Handle")
-				else
-					workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Humanoid
-				end
-				if not game.Players[getgenv().TargetUserName].Character:FindFirstChildWhichIsA("BasePart") then
-					return
-				end
-				
-				local function FPos(BasePart, Pos, Ang)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
-					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
-				end
-				
-				local function SFBasePart()
-					local Angle = 0
-					getgenv().FPDH = workspace.FallenPartsDestroyHeight
-					workspace.FallenPartsDestroyHeight = 0/0
-					repeat
-						task.wait()
-						pcall(function()
-							if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
-								if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 50 then
-									Angle = Angle + 100
-									for _, Offset in ipairs({
-										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0),
-										Vector3.new(2.25, 1.5, -2.25), Vector3.new(-2.25, -1.5, 2.25),
-										Vector3.new(0, 1.5, 0), Vector3.new(0, -1.5, 0)
-									}) do
-										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Offset) + game.Players[getgenv().TargetUserName].Character.Humanoid.MoveDirection * (game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(Angle), 0, 0))
-										task.wait()
-									end
-								else
-									for _, Data in ipairs({
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
-										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), 0},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.WalkSpeed), math.rad(90)},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
-										{Vector3.new(0, -1.5, -game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), 0},
-										{Vector3.new(0, 1.5, game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude / 1.25), math.rad(90)},
-										{Vector3.new(0, -1.5, 0), math.rad(90)},
-										{Vector3.new(0, -1.5, 0), 0},
-										{Vector3.new(0, -1.5, 0), math.rad(-90)},
-										{Vector3.new(0, -1.5, 0), 0}
-									}) do
-										FPos(game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart, CFrame.new(Data[1]), CFrame.Angles(Data[2], 0, 0))
-										task.wait()
-									end                        
-								end
-								game.Players.LocalPlayer.Character.Humanoid.Sit = false
-								if game.Players[getgenv().TargetUserName].Character:FindFirstChild("Head") then
-									workspace.CurrentCamera.CameraSubject = game.Players[getgenv().TargetUserName].Character.Head
-								end
-							end
-						end)
-					until not getgenv().FlingTarget 
-				end
-				
-				local BV = Instance.new("BodyVelocity")
-				BV.Name = "Flinger"
-				BV.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-				BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
-				BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
-
-				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-			
-				SFBasePart()
-
-				BV:Destroy()
-				game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-				workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
-				
-				repeat
-					game.Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
-					game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
-					game.Players.LocalPlayer.Character.Humanoid:ChangeState("GettingUp")
-					table.foreach(game.Players.LocalPlayer.Character:GetChildren(), function(_, x)
-						if x:IsA("BasePart") then
-							x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
-						end
-					end)
-					task.wait()
-				until (game.Players.LocalPlayer.Character.Humanoid.RootPart.Position - getgenv().OldPos.p).Magnitude < 25
-				workspace.FallenPartsDestroyHeight = getgenv().FPDH
-				if game.Players.LocalPlayer.Character.Humanoid.Sit then
-					wait(1)
-					game.Players.LocalPlayer.Character.Humanoid.sit = false
-				end
-			end
-		end
-    end 
-})
-
-
-ChatTargetting:AddInput("Input", {
-    Title = "Text Chat",
-    Description = nil,
-    Default = nil,
-    Placeholder = "Enter here text",
-    Numeric = false,
-    Finished = true,
-    Callback = function(Value)
-        if getgenv().Ready then
-            getgenv().ChatMessage = Value
-        end
-    end
-})
-
-ChatTargetting:AddToggle("seendToggle", {
-    Title = "seend",
-    Description = nil,
-    Default = false,
-    Callback = function(state)
-        if getgenv().Ready then
-            getgenv().SendMessageLoop = state
+    Callback = function(SoundID)
+        if SoundID and SoundID ~= "" then
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://" .. SoundID
+            sound.Volume = 1
+            sound.Looped = true 
+            sound.Parent = game.Workspace
+            sound:Play()
             
-            if state then
-                spawn(function()
-                    while getgenv().SendMessageLoop and getgenv().Ready do
-                        if getgenv().ChatMessage and getgenv().ChatMessage ~= "" then
-                            Chat(getgenv().ChatMessage)
-                        end
-                        task.wait()
-                    end
-                end)
+            if currentSound then
+                currentSound:Destroy()
             end
-        end
-    end
-})
-
-ChatTargetting:AddToggle("randomToggle", {
-    Title = "random",
-    Description = nil,
-    Default = false,
-    Callback = function(state)
-        if getgenv().Ready then
-            getgenv().SendRandomLoop = state
+            currentSound = sound
             
-            if state then
-                spawn(function()
-                    while getgenv().SendRandomLoop and getgenv().Ready do
-                        local randomMessages = {
-                            "FRONT-EVILL ON TOP",
-                            "NOOBS BEWARE",
-                            "FRONT-EVILL RULES",
-                            "JTALKM ON TOP"
-                        }
-                        local randomIndex = math.random(1, #randomMessages)
-                        Chat(randomMessages[randomIndex])
-                        task.wait()
-                    end
-                end)
-            end
+            print("Playing song with ID:", SoundID)
+        else
+            print("Please enter a valid ID")
         end
     end
 })
 
-
-ChatTargetting:AddToggle("randomToggle", {
-    Title = "Spam Okay",
+AudioHub:AddButton({
+    Title = "Stop Sound",
     Description = nil,
-    Default = false,
-    Callback = function(state)
-        if getgenv().Ready then
-            getgenv().SendRandomLoop = state
-            
-            if state then
-                spawn(function()
-                    while getgenv().SendRandomLoop and getgenv().Ready do
-                        local randomMessages = {
-                            [[
-           .                 
-   .                         
-  .                          
- .          .                 
-..
-..
-..
-  ...                         .
-     .
-     ..
-     .                       .]]
-                        }
-                        local randomIndex = math.random(1, #randomMessages)
-                        Chat(randomMessages[randomIndex])
-                        task.wait()
-                    end
-                end)
-            end
+    Callback = function()
+        if currentSound then
+            currentSound:Stop()
+            print("Current sound stopped")
+        else
+            print("No sound is currently playing")
         end
     end
 })
-
 
 
 -----------------------------------------------------------------------------------------------------
