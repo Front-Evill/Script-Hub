@@ -147,6 +147,7 @@ local Tabs = {
     Player = Window:AddTab({ Title = "PLayer", Icon = "user" }),
 	Setting = Window:AddTab({ Title = "Setting", Icon = "settings" }),
     Scin = Window:AddTab({ Title = "Scin Player", Icon = "user" })
+	Targetting = Window:AddTab({ Title = "Targetting", Icon = "target" }),
 }
 
 local PlkFarmPlayer = Tabs.Player:AddSection("InfiniteJump")
@@ -1145,7 +1146,7 @@ OptionsTargetting:AddButton({
     Description = nil,
     Callback = function()
 		if getgenv().Ready then
-			
+
 		end	
     end
 })
