@@ -1,5 +1,7 @@
 --DATA
 getgenv().Ready = false
+getgenv().ESPEnabled = getgenv().ESPEnabled or false
+getgenv().ESPObjects = getgenv().ESPObjects or {}
 getgenv().savedPosition = nil
 getgenv().TargetUserName = nil
 getgenv().SendMessageLoop = state
@@ -11,6 +13,183 @@ local function Notify(Title,Dis)
         local sound = Instance.new("Sound", game.Workspace) sound.SoundId = "rbxassetid://3398620867" sound.Volume = 3 sound.Ended:Connect(function() sound:Destroy() end) sound:Play()
     end)
 end
+
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+
+local LocalPlayer = Players.LocalPlayer
+
+local function createESP(player)
+    if getgenv().ESPObjects[player] then
+        return
+    end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local outerBox = Drawing.new("Square")
+    outerBox.Visible = false
+    outerBox.Color = Color3.new(0, 0, 0)
+    outerBox.Thickness = 4
+    outerBox.Transparency = 1
+    outerBox.Filled = false
+    
+    local innerBox = Drawing.new("Square")
+    innerBox.Visible = false
+    innerBox.Color = Color3.new(0, 1, 0)
+    innerBox.Thickness = 2
+    innerBox.Transparency = 1
+    innerBox.Filled = false
+    
+    local nameText = Drawing.new("Text")
+    nameText.Visible = false
+    nameText.Color = Color3.new(0, 1, 0)
+    nameText.Size = 18
+    nameText.Center = true
+    nameText.Outline = true
+    nameText.OutlineColor = Color3.new(0, 0, 0) 
+    nameText.Font = 2
+    
+    local distanceText = Drawing.new("Text")
+    distanceText.Visible = false
+    distanceText.Color = Color3.new(0, 1, 0) 
+    distanceText.Size = 14
+    distanceText.Center = true
+    distanceText.Outline = true
+    distanceText.OutlineColor = Color3.new(0, 0, 0) 
+    distanceText.Font = 2
+    
+    getgenv().ESPObjects[player] = {
+        outerBox = outerBox,
+        innerBox = innerBox,
+        nameText = nameText,
+        distanceText = distanceText,
+        connection = nil
+    }
+    
+    local function updateESP()
+        if not getgenv().ESPEnabled then
+            outerBox.Visible = false
+            innerBox.Visible = false
+            nameText.Visible = false
+            distanceText.Visible = false
+            return
+        end
+        
+        if character and character.Parent and humanoidRootPart and humanoidRootPart.Parent then
+            local vector, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
+            
+            if onScreen then
+                local head = character:FindFirstChild("Head")
+                local leg = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftFoot") or character:FindFirstChild("LeftLowerLeg")
+                
+                if head and leg then
+                    local headVector = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
+                    local legVector = Camera:WorldToViewportPoint(leg.Position - Vector3.new(0, 0.5, 0))
+                    
+                    local height = math.abs(headVector.Y - legVector.Y)
+                    local width = height * 0.6
+                    
+                    outerBox.Size = Vector2.new(width + 4, height + 4)
+                    outerBox.Position = Vector2.new(vector.X - (width + 4)/2, headVector.Y - 2)
+                    outerBox.Visible = true
+                    
+                    innerBox.Size = Vector2.new(width, height)
+                    innerBox.Position = Vector2.new(vector.X - width/2, headVector.Y)
+                    innerBox.Visible = true
+                    
+                    local distance = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude)
+                    
+                    nameText.Text = "@" .. player.Name
+                    nameText.Position = Vector2.new(vector.X, headVector.Y - 35)
+                    nameText.Visible = true
+                    
+                    distanceText.Text = distance .. "m"
+                    distanceText.Position = Vector2.new(vector.X, headVector.Y - 18)
+                    distanceText.Visible = true
+                else
+                    outerBox.Visible = false
+                    innerBox.Visible = false
+                    nameText.Visible = false
+                    distanceText.Visible = false
+                end
+            else
+                outerBox.Visible = false
+                innerBox.Visible = false
+                nameText.Visible = false
+                distanceText.Visible = false
+            end
+        else
+            outerBox.Visible = false
+            innerBox.Visible = false
+            nameText.Visible = false
+            distanceText.Visible = false
+        end
+    end
+    
+    getgenv().ESPObjects[player].connection = RunService.Heartbeat:Connect(updateESP)
+end
+
+local function removeESP(player)
+    if getgenv().ESPObjects[player] then
+        getgenv().ESPObjects[player].outerBox:Remove()
+        getgenv().ESPObjects[player].innerBox:Remove()
+        getgenv().ESPObjects[player].nameText:Remove()
+        getgenv().ESPObjects[player].distanceText:Remove()
+        if getgenv().ESPObjects[player].connection then
+            getgenv().ESPObjects[player].connection:Disconnect()
+        end
+        getgenv().ESPObjects[player] = nil
+    end
+end
+
+local function enableESP()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            createESP(player)
+        end
+    end
+end
+
+local function disableESP()
+    for player, _ in pairs(getgenv().ESPObjects) do
+        removeESP(player)
+    end
+end
+
+local function onPlayerAdded(player)
+    local function onCharacterAdded()
+        wait(1)
+        if getgenv().ESPEnabled then
+            createESP(player)
+        end
+    end
+    
+    if player.Character then
+        onCharacterAdded()
+    end
+    player.CharacterAdded:Connect(onCharacterAdded)
+    player.CharacterRemoving:Connect(function()
+        removeESP(player)
+    end)
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        onPlayerAdded(player)
+    end
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+Players.PlayerRemoving:Connect(function(player)
+    removeESP(player)
+end)
 
 
 
@@ -30,7 +209,7 @@ local function createFireEffect()
    return fire
 end
 
-local function createSmokeEffect()
+local function createSmokeEffect() 
    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
    local smoke = Instance.new("Smoke")
    smoke.Size = 3
@@ -254,145 +433,21 @@ FlyScriptMain:AddButton({
         end
     end
 })
-
-local Toggle = EspPlyaerMain:AddToggle("ESPToggle", {
-   Title = "Player ESP", 
-   Description = "Show all players with white outline and info",
-   Default = false,
-   Callback = function(state)
-       if state then
-           getgenv().ESPEnabled = true
-           getgenv().ESPObjects = {}
-           
-           local function createESP(player)
-               if player == game.Players.LocalPlayer then return end
-               
-               local function updateESP()
-                   if not getgenv().ESPEnabled or not player.Character then return end
-                   
-                   if getgenv().ESPObjects[player] then
-                       getgenv().ESPObjects[player]:Destroy()
-                   end
-                   
-                   if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                       local espFolder = Instance.new("Folder")
-                       espFolder.Name = "ESP_" .. player.Name
-                       espFolder.Parent = game.CoreGui
-                       getgenv().ESPObjects[player] = espFolder
-                       
-                       local highlight = Instance.new("Highlight")
-                       highlight.Parent = espFolder
-                       highlight.Adornee = player.Character
-                       highlight.FillColor = Color3.fromRGB(255, 255, 255)
-                       highlight.FillTransparency = 0.8
-                       highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                       highlight.OutlineTransparency = 0
-                       
-                       local gui = Instance.new("BillboardGui")
-                       gui.Size = UDim2.new(0, 200, 0, 50)
-                       gui.StudsOffset = Vector3.new(0, 3, 0)
-                       gui.AlwaysOnTop = true
-                       gui.Parent = espFolder
-                       gui.Adornee = player.Character.HumanoidRootPart
-                       
-                       local nameLabel = Instance.new("TextLabel")
-                       nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-                       nameLabel.Position = UDim2.new(0, 0, 0, 0)
-                       nameLabel.BackgroundTransparency = 1
-                       nameLabel.Text = player.Name
-                       nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                       nameLabel.TextScaled = true
-                       nameLabel.Font = Enum.Font.SourceSansBold
-                       nameLabel.TextStrokeTransparency = 0
-                       nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-                       nameLabel.Parent = gui
-                       
-                       local distanceLabel = Instance.new("TextLabel")
-                       distanceLabel.Size = UDim2.new(1, 0, 0.5, 0)
-                       distanceLabel.Position = UDim2.new(0, 0, 0.5, 0)
-                       distanceLabel.BackgroundTransparency = 1
-                       distanceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                       distanceLabel.TextScaled = true
-                       distanceLabel.Font = Enum.Font.SourceSans
-                       distanceLabel.TextStrokeTransparency = 0
-                       distanceLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-                       distanceLabel.Parent = gui
-                       
-                       spawn(function()
-                           while getgenv().ESPEnabled and player.Character and gui.Parent do
-                               local localPlayer = game.Players.LocalPlayer
-                               if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("HumanoidRootPart") then
-                                   local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).Magnitude
-                                   distanceLabel.Text = math.floor(distance) .. " studs"
-                               end
-                               wait(0.1)
-                           end
-                       end)
-                   end
-               end
-               
-               updateESP()
-               
-               local connection
-               connection = player.CharacterAdded:Connect(function()
-                   wait(1)
-                   if getgenv().ESPEnabled then
-                       updateESP()
-                   end
-               end)
-               
-               getgenv().ESPObjects[player .. "_Connection"] = connection
-           end
-           
-           for _, player in pairs(game.Players:GetPlayers()) do
-               createESP(player)
-           end
-           
-           getgenv().PlayerAddedConnection = game.Players.PlayerAdded:Connect(function(player)
-               if getgenv().ESPEnabled then
-                   createESP(player)
-               end
-           end)
-           
-           getgenv().PlayerRemovingConnection = game.Players.PlayerRemoving:Connect(function(player)
-               if getgenv().ESPObjects[player] then
-                   getgenv().ESPObjects[player]:Destroy()
-                   getgenv().ESPObjects[player] = nil
-               end
-               if getgenv().ESPObjects[player .. "_Connection"] then
-                   getgenv().ESPObjects[player .. "_Connection"]:Disconnect()
-                   getgenv().ESPObjects[player .. "_Connection"] = nil
-               end
-           end)
-           
-       else
-           getgenv().ESPEnabled = false
-           
-           if getgenv().ESPObjects then
-               for key, obj in pairs(getgenv().ESPObjects) do
-                   if obj then
-                       if typeof(obj) == "RBXScriptConnection" then
-                           obj:Disconnect()
-                       else
-                           obj:Destroy()
-                       end
-                   end
-               end
-               getgenv().ESPObjects = {}
-           end
-           
-           if getgenv().PlayerAddedConnection then
-               getgenv().PlayerAddedConnection:Disconnect()
-               getgenv().PlayerAddedConnection = nil
-           end
-           
-           if getgenv().PlayerRemovingConnection then
-               getgenv().PlayerRemovingConnection:Disconnect()
-               getgenv().PlayerRemovingConnection = nil
-           end
-       end
-   end 
+ 
+local PlayerEspMainToggle = EspPlyaerMain:AddToggle("ESPToggle", {
+    Title = "Player ESP", 
+    Description = nil,
+    Default = false,
+    Callback = function(state)
+        getgenv().ESPEnabled = state
+        if state then
+            enableESP()
+        else
+            disableESP()
+        end
+    end 
 })
+
 
 local AntiFlingToggle = ShildePlayerMain:AddToggle("AntiFlingToggle", {
    Title = "Anti Fling Protection", 
@@ -654,12 +709,6 @@ OptionsTargetting:AddButton({
                        end
                    end)
                end
-               
-               wait(1)
-               if SchoolBus then
-                   SchoolBus:Destroy()
-               end
-               
                Notify("Success", "Player " .. getgenv().TargetUserName .. " has been eliminated!")
            else
                Notify("Error", "Target player not found or invalid")
@@ -695,7 +744,7 @@ OptionsTargetting:AddToggle("ViewTargetToggle", {
 
 
 local ToggleLoopGoToPlayer = OptionsTargetting:AddToggle("TrackingToggle", {
-   Title = "Track Target Player", 
+   Title = "Loop GoTo Player ", 
    Description = nil,
    Default = false,
    Callback = function(state)
