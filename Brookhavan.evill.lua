@@ -668,123 +668,135 @@ OptionsTargetting:AddButton({
             if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 local LocalPlayerOriginalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
                 
-                local function createSchoolBus()
-                    local BusModel = Instance.new("Model")
-                    BusModel.Name = "SchoolBus"
+                local function getBrookhavenBus()
+                    local success, BusModel = pcall(function()
+                        return game:GetObjects("rbxassetid://6758506297")[1]
+                    end)
                     
-                    local BusBody = Instance.new("Part")
-                    BusBody.Name = "Body"
-                    BusBody.Size = Vector3.new(6, 4, 14)
-                    BusBody.Material = Enum.Material.SmoothPlastic
-                    BusBody.BrickColor = BrickColor.new("Bright yellow")
-                    BusBody.Shape = Enum.PartType.Block
-                    BusBody.TopSurface = Enum.SurfaceType.Smooth
-                    BusBody.BottomSurface = Enum.SurfaceType.Smooth
-                    BusBody.Anchored = false
-                    BusBody.CanCollide = true
-                    BusBody.Parent = BusModel
-                    
-                    local BodyVelocity = Instance.new("BodyVelocity")
-                    BodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
-                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-                    BodyVelocity.Parent = BusBody
-                    
-                    local BodyPosition = Instance.new("BodyPosition")
-                    BodyPosition.MaxForce = Vector3.new(4000, 4000, 4000)
-                    BodyPosition.Position = BusBody.Position
-                    BodyPosition.Parent = BusBody
-                    
-                    for i = 1, 4 do
-                        local Wheel = Instance.new("Part")
-                        Wheel.Name = "Wheel" .. i
-                        Wheel.Size = Vector3.new(2, 2, 2)
-                        Wheel.Material = Enum.Material.Rubber
-                        Wheel.BrickColor = BrickColor.new("Really black")
-                        Wheel.Shape = Enum.PartType.Cylinder
-                        Wheel.Parent = BusModel
+                    if success and BusModel then
+                        return BusModel
+                    else
+                        local success2, BusModel2 = pcall(function()
+                            return game:GetObjects("rbxassetid://8560915132")[1]
+                        end)
                         
-                        local WheelWeld = Instance.new("WeldConstraint")
-                        WheelWeld.Part0 = BusBody
-                        WheelWeld.Part1 = Wheel
-                        WheelWeld.Parent = BusBody
-                        
-                        if i <= 2 then
-                            Wheel.CFrame = BusBody.CFrame + Vector3.new(i == 1 and -2.5 or 2.5, -2, 4)
+                        if success2 and BusModel2 then
+                            return BusModel2
                         else
-                            Wheel.CFrame = BusBody.CFrame + Vector3.new(i == 3 and -2.5 or 2.5, -2, -4)
+                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                            if ReplicatedStorage:FindFirstChild("Vehicles") and ReplicatedStorage.Vehicles:FindFirstChild("SchoolBus") then
+                                return ReplicatedStorage.Vehicles.SchoolBus:Clone()
+                            elseif workspace:FindFirstChild("Vehicles") and workspace.Vehicles:FindFirstChild("SchoolBus") then
+                                return workspace.Vehicles.SchoolBus:Clone()
+                            else
+                                local SimpleBus = Instance.new("Model")
+                                SimpleBus.Name = "SchoolBus"
+                                
+                                local VehicleSeat = Instance.new("VehicleSeat")
+                                VehicleSeat.Name = "DriveSeat"
+                                VehicleSeat.Size = Vector3.new(6, 4, 14)
+                                VehicleSeat.Material = Enum.Material.SmoothPlastic
+                                VehicleSeat.BrickColor = BrickColor.new("Bright yellow")
+                                VehicleSeat.TopSurface = Enum.SurfaceType.Smooth
+                                VehicleSeat.BottomSurface = Enum.SurfaceType.Smooth
+                                VehicleSeat.MaxSpeed = 50
+                                VehicleSeat.Torque = 10000
+                                VehicleSeat.TurnSpeed = 50
+                                VehicleSeat.Parent = SimpleBus
+                                
+                                SimpleBus.PrimaryPart = VehicleSeat
+                                return SimpleBus
+                            end
                         end
                     end
-                    
-                    local DriverSeat = Instance.new("Seat")
-                    DriverSeat.Name = "DriverSeat"
-                    DriverSeat.Size = Vector3.new(2, 1, 2)
-                    DriverSeat.Material = Enum.Material.Fabric
-                    DriverSeat.BrickColor = BrickColor.new("Really black")
-                    DriverSeat.Anchored = false
-                    DriverSeat.CanCollide = true
-                    DriverSeat.Parent = BusModel
-                    
-                    local DriverWeld = Instance.new("WeldConstraint")
-                    DriverWeld.Part0 = BusBody
-                    DriverWeld.Part1 = DriverSeat
-                    DriverWeld.Parent = BusBody
-                    DriverSeat.CFrame = BusBody.CFrame + Vector3.new(-1.5, 0, 5)
-                    
-                    local PassengerSeat = Instance.new("Seat")
+                end
+                
+                local Bus = getBrookhavenBus()
+                
+                if not Bus then
+                    Notify("Erro")
+                    return
+                end
+                
+                Bus.Parent = workspace
+                
+                local DriverSeat = Bus:FindFirstChild("DriveSeat") or Bus:FindFirstChild("VehicleSeat") or Bus:FindFirstChildOfClass("VehicleSeat")
+                local PassengerSeat = nil
+                
+                for _, child in pairs(Bus:GetDescendants()) do
+                    if child:IsA("Seat") and child ~= DriverSeat then
+                        PassengerSeat = child
+                        break
+                    end
+                end
+                
+                if not PassengerSeat then
+                    PassengerSeat = Instance.new("Seat")
                     PassengerSeat.Name = "PassengerSeat"
                     PassengerSeat.Size = Vector3.new(2, 1, 2)
                     PassengerSeat.Material = Enum.Material.Fabric
                     PassengerSeat.BrickColor = BrickColor.new("Dark green")
                     PassengerSeat.Anchored = false
                     PassengerSeat.CanCollide = true
-                    PassengerSeat.Parent = BusModel
+                    PassengerSeat.Parent = Bus
                     
-                    local PassengerWeld = Instance.new("WeldConstraint")
-                    PassengerWeld.Part0 = BusBody
-                    PassengerWeld.Part1 = PassengerSeat
-                    PassengerWeld.Parent = BusBody
-                    PassengerSeat.CFrame = BusBody.CFrame + Vector3.new(1.5, 0, -2)
-                    
-                    BusModel.PrimaryPart = BusBody
-                    return BusModel, DriverSeat, PassengerSeat, BodyPosition
+                    if DriverSeat then
+                        local PassengerWeld = Instance.new("WeldConstraint")
+                        PassengerWeld.Part0 = DriverSeat
+                        PassengerWeld.Part1 = PassengerSeat
+                        PassengerWeld.Parent = DriverSeat
+                        PassengerSeat.CFrame = DriverSeat.CFrame + Vector3.new(3, 0, -4)
+                    end
                 end
                 
-                local Bus, DriverSeat, PassengerSeat, BodyPosition = createSchoolBus()
-                Bus.Parent = workspace
-                
                 local LocalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
-                Bus:SetPrimaryPartCFrame(LocalPosition + Vector3.new(5, 2, 0))
+                if Bus.PrimaryPart then
+                    Bus:SetPrimaryPartCFrame(LocalPosition + Vector3.new(5, 2, 0))
+                else
+                    DriverSeat.CFrame = LocalPosition + Vector3.new(5, 2, 0)
+                end
                 
                 wait(1)
                 
                 LocalPlayer.Character.Humanoid.Sit = true
                 LocalPlayer.Character.HumanoidRootPart.CFrame = DriverSeat.CFrame + Vector3.new(0, 2, 0)
                 
-                wait(2)
+                wait(1)
                 
                 local TargetPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
-                BodyPosition.Position = TargetPosition.Position + Vector3.new(8, 2, 0)
                 
-                task.wait()
+                if Bus.PrimaryPart then
+                    Bus:SetPrimaryPartCFrame(TargetPosition + Vector3.new(8, 2, 0))
+                else
+                    DriverSeat.CFrame = TargetPosition + Vector3.new(8, 2, 0)
+                end
+                
+                wait(0.5)
                 
                 TargetPlayer.Character.Humanoid.Sit = true
                 TargetPlayer.Character.HumanoidRootPart.CFrame = PassengerSeat.CFrame + Vector3.new(0, 2, 0)
                 
-                task.wait()
+                wait(0.5)
                 
-                local DeathPosition = Vector3.new(math.random(-15000, 15000), 2000, math.random(-15000, 15000))
-                BodyPosition.Position = DeathPosition
+                local DeathPosition = Vector3.new(math.random(-15000, 15000), 5000, math.random(-15000, 15000))
+                
+                if Bus.PrimaryPart then
+                    Bus:SetPrimaryPartCFrame(CFrame.new(DeathPosition))
+                else
+                    DriverSeat.CFrame = CFrame.new(DeathPosition)
+                end
                 
                 wait(0.5)
                 
                 LocalPlayer.Character.Humanoid.Sit = false
                 
-                wait(1)
+                wait(0.5)
                 
                 LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayerOriginalPosition
                 
                 spawn(function()
-                    wait(2)
+                    wait(1)
+                    
                     if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         local StrongWeld = Instance.new("WeldConstraint")
                         StrongWeld.Part0 = PassengerSeat
@@ -796,21 +808,29 @@ OptionsTargetting:AddButton({
                             TargetPlayer.Character.Humanoid.WalkSpeed = 0
                             TargetPlayer.Character.Humanoid.Sit = true
                         end
-                        
-                        wait(5)
-                        if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("Humanoid") then
-                            TargetPlayer.Character.Humanoid.Health = 0
-                        end
                     end
                     
-                    wait(30)
+                    local FallPosition = Vector3.new(DeathPosition.X, -5000, DeathPosition.Z)
+                    
+                    if Bus.PrimaryPart then
+                        Bus:SetPrimaryPartCFrame(CFrame.new(FallPosition))
+                    else
+                        DriverSeat.CFrame = CFrame.new(FallPosition)
+                    end
+                    
+                    wait(3)
+                    if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("Humanoid") then
+                        TargetPlayer.Character.Humanoid.Health = 0
+                    end
+                    
+                    wait(10)
                     if Bus then
                         Bus:Destroy()
                     end
                 end)
                 
             else
-                Notify("Error", "The Player  is not here")
+                Notify("Error", "The Player is not here")
             end
         else
             Notify("Error", "Pls enter name player in input")
