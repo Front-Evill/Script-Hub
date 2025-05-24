@@ -27,6 +27,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ## Script brook havan
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Brookhavan.evill.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/GUI/brookhavan.arabic.lua"))()
 ```
 
 # Gui
