@@ -657,68 +657,166 @@ OptionsTargetting:AddButton({
 
 
 OptionsTargetting:AddButton({
-   Title = "kill",
-   Description = nil,
-   Callback = function()
-       if getgenv().Ready and getgenv().TargetUserName then
-           local Players = game:GetService("Players")
-           local LocalPlayer = Players.LocalPlayer
-           local TargetPlayer = Players:FindFirstChild(getgenv().TargetUserName)
-           
-           if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-               local SchoolBus = Instance.new("Part")
-               SchoolBus.Name = "SchoolBus"
-               SchoolBus.Size = Vector3.new(10, 5, 20)
-               SchoolBus.Material = Enum.Material.SmoothPlastic
-               SchoolBus.BrickColor = BrickColor.new("Bright yellow")
-               SchoolBus.Shape = Enum.PartType.Block
-               SchoolBus.TopSurface = Enum.SurfaceType.Smooth
-               SchoolBus.BottomSurface = Enum.SurfaceType.Smooth
-               SchoolBus.Anchored = true
-               SchoolBus.CanCollide = true
-               SchoolBus.Parent = workspace
-               
-               local TargetPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
-               SchoolBus.CFrame = TargetPosition + Vector3.new(15, 0, 0)
-               
-               wait(0.5)
-               TargetPlayer.Character.HumanoidRootPart.CFrame = SchoolBus.CFrame + Vector3.new(0, 3, 0)
-               
-               local WeldConstraint = Instance.new("WeldConstraint")
-               WeldConstraint.Part0 = SchoolBus
-               WeldConstraint.Part1 = TargetPlayer.Character.HumanoidRootPart
-               WeldConstraint.Parent = SchoolBus
-               
-               wait(1)
-               local DeathPosition = Vector3.new(math.random(-50000, 50000), -50000, math.random(-50000, 50000))
-               SchoolBus.CFrame = CFrame.new(DeathPosition)
-               
-               wait(2)
-               if WeldConstraint then
-                   WeldConstraint:Destroy()
-               end
-               
-               wait(0.5)
-               if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                   TargetPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(DeathPosition + Vector3.new(0, -100, 0))
-                   
-                   spawn(function()
-                       wait(0.1)
-                       if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("Humanoid") then
-                           TargetPlayer.Character.Humanoid.Health = 0
-                       end
-                   end)
-               end
-               Notify("Success", "Player " .. getgenv().TargetUserName .. " has been eliminated!")
-           else
-               Notify("Error", "Target player not found or invalid")
-           end
-       else
-           Notify("Error", "Please select a target player first")
-       end
-   end
+    Title = "Kill",
+    Description = nil,
+    Callback = function()
+        if getgenv().Ready and getgenv().TargetUserName then
+            local Players = game:GetService("Players")
+            local LocalPlayer = Players.LocalPlayer
+            local TargetPlayer = Players:FindFirstChild(getgenv().TargetUserName)
+            
+            if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local LocalPlayerOriginalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+                
+                local function createSchoolBus()
+                    local BusModel = Instance.new("Model")
+                    BusModel.Name = "SchoolBus"
+                    
+                    local BusBody = Instance.new("Part")
+                    BusBody.Name = "Body"
+                    BusBody.Size = Vector3.new(6, 4, 14)
+                    BusBody.Material = Enum.Material.SmoothPlastic
+                    BusBody.BrickColor = BrickColor.new("Bright yellow")
+                    BusBody.Shape = Enum.PartType.Block
+                    BusBody.TopSurface = Enum.SurfaceType.Smooth
+                    BusBody.BottomSurface = Enum.SurfaceType.Smooth
+                    BusBody.Anchored = false
+                    BusBody.CanCollide = true
+                    BusBody.Parent = BusModel
+                    
+                    local BodyVelocity = Instance.new("BodyVelocity")
+                    BodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+                    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                    BodyVelocity.Parent = BusBody
+                    
+                    local BodyPosition = Instance.new("BodyPosition")
+                    BodyPosition.MaxForce = Vector3.new(4000, 4000, 4000)
+                    BodyPosition.Position = BusBody.Position
+                    BodyPosition.Parent = BusBody
+                    
+                    for i = 1, 4 do
+                        local Wheel = Instance.new("Part")
+                        Wheel.Name = "Wheel" .. i
+                        Wheel.Size = Vector3.new(2, 2, 2)
+                        Wheel.Material = Enum.Material.Rubber
+                        Wheel.BrickColor = BrickColor.new("Really black")
+                        Wheel.Shape = Enum.PartType.Cylinder
+                        Wheel.Parent = BusModel
+                        
+                        local WheelWeld = Instance.new("WeldConstraint")
+                        WheelWeld.Part0 = BusBody
+                        WheelWeld.Part1 = Wheel
+                        WheelWeld.Parent = BusBody
+                        
+                        if i <= 2 then
+                            Wheel.CFrame = BusBody.CFrame + Vector3.new(i == 1 and -2.5 or 2.5, -2, 4)
+                        else
+                            Wheel.CFrame = BusBody.CFrame + Vector3.new(i == 3 and -2.5 or 2.5, -2, -4)
+                        end
+                    end
+                    
+                    local DriverSeat = Instance.new("Seat")
+                    DriverSeat.Name = "DriverSeat"
+                    DriverSeat.Size = Vector3.new(2, 1, 2)
+                    DriverSeat.Material = Enum.Material.Fabric
+                    DriverSeat.BrickColor = BrickColor.new("Really black")
+                    DriverSeat.Anchored = false
+                    DriverSeat.CanCollide = true
+                    DriverSeat.Parent = BusModel
+                    
+                    local DriverWeld = Instance.new("WeldConstraint")
+                    DriverWeld.Part0 = BusBody
+                    DriverWeld.Part1 = DriverSeat
+                    DriverWeld.Parent = BusBody
+                    DriverSeat.CFrame = BusBody.CFrame + Vector3.new(-1.5, 0, 5)
+                    
+                    local PassengerSeat = Instance.new("Seat")
+                    PassengerSeat.Name = "PassengerSeat"
+                    PassengerSeat.Size = Vector3.new(2, 1, 2)
+                    PassengerSeat.Material = Enum.Material.Fabric
+                    PassengerSeat.BrickColor = BrickColor.new("Dark green")
+                    PassengerSeat.Anchored = false
+                    PassengerSeat.CanCollide = true
+                    PassengerSeat.Parent = BusModel
+                    
+                    local PassengerWeld = Instance.new("WeldConstraint")
+                    PassengerWeld.Part0 = BusBody
+                    PassengerWeld.Part1 = PassengerSeat
+                    PassengerWeld.Parent = BusBody
+                    PassengerSeat.CFrame = BusBody.CFrame + Vector3.new(1.5, 0, -2)
+                    
+                    BusModel.PrimaryPart = BusBody
+                    return BusModel, DriverSeat, PassengerSeat, BodyPosition
+                end
+                
+                local Bus, DriverSeat, PassengerSeat, BodyPosition = createSchoolBus()
+                Bus.Parent = workspace
+                
+                local LocalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+                Bus:SetPrimaryPartCFrame(LocalPosition + Vector3.new(5, 2, 0))
+                
+                wait(1)
+                
+                LocalPlayer.Character.Humanoid.Sit = true
+                LocalPlayer.Character.HumanoidRootPart.CFrame = DriverSeat.CFrame + Vector3.new(0, 2, 0)
+                
+                wait(2)
+                
+                local TargetPosition = TargetPlayer.Character.HumanoidRootPart.CFrame
+                BodyPosition.Position = TargetPosition.Position + Vector3.new(8, 2, 0)
+                
+                task.wait()
+                
+                TargetPlayer.Character.Humanoid.Sit = true
+                TargetPlayer.Character.HumanoidRootPart.CFrame = PassengerSeat.CFrame + Vector3.new(0, 2, 0)
+                
+                task.wait()
+                
+                local DeathPosition = Vector3.new(math.random(-15000, 15000), 2000, math.random(-15000, 15000))
+                BodyPosition.Position = DeathPosition
+                
+                wait(0.5)
+                
+                LocalPlayer.Character.Humanoid.Sit = false
+                
+                wait(1)
+                
+                LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayerOriginalPosition
+                
+                spawn(function()
+                    wait(2)
+                    if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local StrongWeld = Instance.new("WeldConstraint")
+                        StrongWeld.Part0 = PassengerSeat
+                        StrongWeld.Part1 = TargetPlayer.Character.HumanoidRootPart
+                        StrongWeld.Parent = PassengerSeat
+                        
+                        if TargetPlayer.Character:FindFirstChild("Humanoid") then
+                            TargetPlayer.Character.Humanoid.JumpPower = 0
+                            TargetPlayer.Character.Humanoid.WalkSpeed = 0
+                            TargetPlayer.Character.Humanoid.Sit = true
+                        end
+                        
+                        wait(5)
+                        if TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("Humanoid") then
+                            TargetPlayer.Character.Humanoid.Health = 0
+                        end
+                    end
+                    
+                    wait(30)
+                    if Bus then
+                        Bus:Destroy()
+                    end
+                end)
+                
+            else
+                Notify("Error", "The Player  is not here")
+            end
+        else
+            Notify("Error", "Pls enter name player in input")
+        end
+    end
 })
-
 
 OptionsTargetting:AddToggle("ViewTargetToggle", {
     Title = "View", 
@@ -846,7 +944,7 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                         pcall(function()
                             if game.Players.LocalPlayer.Character.Humanoid.RootPart and game.Players[getgenv().TargetUserName].Character.Humanoid then
                                 if game.Players[getgenv().TargetUserName].Character.Humanoid.RootPart.Velocity.Magnitude < 80 then
-                                    Angle = Angle + 170
+                                    Angle = Angle + 300
                                     for _, Offset in ipairs({
                                         Vector3.new(0, 2.5, 0), Vector3.new(0, -2.5, 0),
                                         Vector3.new(3.5, 2.5, -3.5), Vector3.new(-3.5, -2.5, 3.5),
@@ -888,13 +986,13 @@ OptionsTargetting:AddToggle("FlingTargetToggle", {
                 local BV1 = Instance.new("BodyVelocity")
                 BV1.Name = "Flinger1"
                 BV1.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV1.Velocity = Vector3.new(9e9 * 7, 9e9 * 7, 9e9 * 7)
+                BV1.Velocity = Vector3.new(9e9 * 77, 9e9 * 77, 9e9 * 77)
                 BV1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 
                 local BV2 = Instance.new("BodyAngularVelocity")
                 BV2.Name = "Spinner"
                 BV2.Parent = game.Players.LocalPlayer.Character.Humanoid.RootPart
-                BV2.AngularVelocity = Vector3.new(9e9 * 8, 9e8 * 8, 9e9 * 8)
+                BV2.AngularVelocity = Vector3.new(9e9 * 88, 9e8 * 88, 9e9 * 88)
                 BV2.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 
                 game.Players.LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
