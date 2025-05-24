@@ -557,7 +557,7 @@ function showLanguageSelector()
    scriptInfo.TextColor3 = Color3.fromRGB(200, 200, 200)
    scriptInfo.TextSize = 14 
    scriptInfo.Font = Enum.Font.GothamSemibold
-   scriptInfo.Text = "GUI BY: FRONT-EVILL | Script By: front-evill / 7sone"
+   scriptInfo.Text = "GUI BY: FRONT-EVILL | Script By: front-evill"
    scriptInfo.TextXAlignment = Enum.TextXAlignment.Center
    scriptInfo.Parent = mainFrame
    
