@@ -30,6 +30,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/GUI/brookhavan.arabic.lua"))()
 ```
 
+## Script ESP player
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/ESP-EVILL.lua"))()
+
 # Gui
 
 ```lua
