@@ -31,9 +31,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ```
 
 ## Script ESP player
-
+```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/ESP-EVILL.lua"))()
-
+```
 # Gui
 
 ```lua
