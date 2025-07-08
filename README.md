@@ -34,6 +34,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/ESP-EVILL.lua"))()
 ```
+
+## SCRIPT NOCLIP
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/noor.front.lua"))()
+```
+
 # Gui
 
 ```lua
