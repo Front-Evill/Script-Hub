@@ -2,12 +2,14 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local mouse = player:GetMouse()
 
 local autoShootEnabled = false
+local murdererDetected = nil
+local currentGameId = nil
 
 local function isSheriff()
     local backpack = player:FindFirstChild("Backpack")
@@ -24,7 +26,7 @@ end
 
 local function getMurderer()
     for _, otherPlayer in pairs(Players:GetPlayers()) do
-        if otherPlayer ~= player then
+        if otherPlayer ~= player and otherPlayer.Character then
             local backpack = otherPlayer:FindFirstChild("Backpack")
             local character = otherPlayer.Character
             
@@ -39,13 +41,29 @@ local function getMurderer()
     return nil
 end
 
-local function shootAtMurderer()
+local function detectNewGame()
+    local gui = playerGui:FindFirstChild("MainGUI")
+    if gui and gui:FindFirstChild("Game") then
+        local gameFrame = gui.Game
+        if gameFrame.Visible then
+            local newGameId = tostring(gameFrame)
+            if currentGameId ~= newGameId then
+                currentGameId = newGameId
+                murdererDetected = nil
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function realShoot()
     if not isSheriff() then
         return false
     end
     
     local murderer = getMurderer()
-    if not murderer or not murderer.Character or not murderer.Character:FindFirstChild("HumanoidRootPart") then
+    if not murderer or not murderer.Character or not murderer.Character:FindFirstChild("Head") then
         return false
     end
     
@@ -56,23 +74,66 @@ local function shootAtMurderer()
     
     if gun.Parent == player.Backpack then
         player.Character.Humanoid:EquipTool(gun)
-        wait(0.2)
+        wait(0.1)
+        gun = player.Character:FindFirstChild("Gun")
+        if not gun then return false end
     end
     
-    local targetPosition = murderer.Character.Head.Position
+    local targetPart = murderer.Character.Head
+    local targetCFrame = CFrame.new(targetPart.Position)
     
-    local args = {
-        [1] = targetPosition,
-        [2] = murderer.Character.Head
-    }
+    mouse.Hit = targetCFrame
+    
+    local success = false
     
     if gun:FindFirstChild("Fire") then
-        gun.Fire:FireServer(unpack(args))
-    elseif gun:FindFirstChild("KnifeServer") then
-        gun.KnifeServer.ShootGun:FireServer(unpack(args))
-    elseif gun:FindFirstChild("RemoteEvent") then
-        gun.RemoteEvent:FireServer(unpack(args))
+        gun.Fire:FireServer(mouse.Hit.Position, targetPart)
+        success = true
     end
+    
+    local remoteEvents = {}
+    for _, child in pairs(gun:GetChildren()) do
+        if child:IsA("RemoteEvent") then
+            table.insert(remoteEvents, child)
+        end
+    end
+    
+    for _, remote in pairs(remoteEvents) do
+        remote:FireServer(mouse.Hit.Position, targetPart)
+        success = true
+    end
+    
+    if gun:FindFirstChild("LocalScript") then
+        local localScript = gun.LocalScript
+        if localScript:FindFirstChild("FireEvent") then
+            localScript.FireEvent:FireServer(mouse.Hit.Position, targetPart)
+            success = true
+        end
+    end
+    
+    return success
+end
+
+local function multiShoot()
+    if not isSheriff() then
+        return false
+    end
+    
+    local murderer = getMurderer()
+    if not murderer or not murderer.Character then
+        return false
+    end
+    
+    spawn(function()
+        for i = 1, 3 do
+            if murderer.Character and murderer.Character:FindFirstChild("Head") then
+                realShoot()
+                wait(0.1)
+            else
+                break
+            end
+        end
+    end)
     
     return true
 end
@@ -193,7 +254,7 @@ imageBorder.Parent = imageLabel
 
 local statusFrame = Instance.new("Frame")
 statusFrame.Name = "StatusFrame"
-statusFrame.Size = UDim2.new(0, 280, 0, 150)
+statusFrame.Size = UDim2.new(0, 280, 0, 180)
 statusFrame.Position = UDim2.new(0, 0, 1, 15)
 statusFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
 statusFrame.BorderSizePixel = 0
@@ -257,13 +318,26 @@ murdererLabel.TextXAlignment = Enum.TextXAlignment.Left
 murdererLabel.ZIndex = 12
 murdererLabel.Parent = statusFrame
 
+local gameStatusLabel = Instance.new("TextLabel")
+gameStatusLabel.Name = "GameStatusLabel"
+gameStatusLabel.Size = UDim2.new(1, -20, 0, 20)
+gameStatusLabel.Position = UDim2.new(0, 10, 0, 65)
+gameStatusLabel.BackgroundTransparency = 1
+gameStatusLabel.Text = "Game: Waiting..."
+gameStatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+gameStatusLabel.TextSize = 11
+gameStatusLabel.Font = Enum.Font.Gotham
+gameStatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+gameStatusLabel.ZIndex = 12
+gameStatusLabel.Parent = statusFrame
+
 local shootButton = Instance.new("TextButton")
 shootButton.Name = "ShootButton"
 shootButton.Size = UDim2.new(1, -20, 0, 30)
-shootButton.Position = UDim2.new(0, 10, 0, 70)
+shootButton.Position = UDim2.new(0, 10, 0, 90)
 shootButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 shootButton.BorderSizePixel = 0
-shootButton.Text = "SHOOT TARGET"
+shootButton.Text = "KILL TARGET"
 shootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 shootButton.TextSize = 12
 shootButton.Font = Enum.Font.GothamBold
@@ -278,10 +352,10 @@ shootCorner.Parent = shootButton
 local autoShootButton = Instance.new("TextButton")
 autoShootButton.Name = "AutoShootButton"
 autoShootButton.Size = UDim2.new(1, -20, 0, 30)
-autoShootButton.Position = UDim2.new(0, 10, 0, 105)
+autoShootButton.Position = UDim2.new(0, 10, 0, 125)
 autoShootButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
 autoShootButton.BorderSizePixel = 0
-autoShootButton.Text = "AUTO SHOOT: OFF"
+autoShootButton.Text = "AUTO KILL: OFF"
 autoShootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 autoShootButton.TextSize = 12
 autoShootButton.Font = Enum.Font.GothamBold
@@ -333,20 +407,9 @@ local startPos = nil
 local dragConnection = nil
 local isMinimized = false
 
-local function smoothDrag()
-    if dragging and dragStart and startPos then
-        local mouse = player:GetMouse()
-        local delta = Vector2.new(mouse.X - dragStart.X, mouse.Y - dragStart.Y)
-        local viewport = workspace.CurrentCamera.ViewportSize
-        
-        local newX = math.clamp(startPos.X.Offset + delta.X, 0, viewport.X - mainFrame.AbsoluteSize.X)
-        local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, viewport.Y - (mainFrame.AbsoluteSize.Y + statusFrame.AbsoluteSize.Y + 15))
-        
-        mainFrame.Position = UDim2.new(0, newX, 0, newY)
-    end
-end
-
 local function updateRoleStatus()
+    detectNewGame()
+    
     local sheriff = isSheriff()
     local murderer = getMurderer()
     
@@ -359,13 +422,33 @@ local function updateRoleStatus()
         statusGlow.BackgroundColor3 = Color3.fromRGB(50, 255, 100)
         
         if murderer then
-            murdererLabel.Text = "Murderer: " .. murderer.Name
+            murdererLabel.Text = "Target: " .. murderer.Name
             murdererLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
             shootButton.Visible = true
             autoShootButton.Visible = true
-            shootButton.Text = "SHOOT " .. murderer.Name:upper()
+            shootButton.Text = "KILL " .. murderer.Name:upper()
+            
+            if murdererDetected ~= murderer.Name then
+                murdererDetected = murderer.Name
+                titleLabel.Text = "KILL: " .. murderer.Name:upper()
+                gameStatusLabel.Text = "TARGET LOCKED!"
+                gameStatusLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                
+                spawn(function()
+                    for i = 1, 5 do
+                        titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                        wait(0.2)
+                        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        wait(0.2)
+                    end
+                    wait(3)
+                    titleLabel.Text = "MM2 Assistant"
+                    gameStatusLabel.Text = "Game: Active"
+                    gameStatusLabel.TextColor3 = Color3.fromRGB(50, 255, 100)
+                end)
+            end
         else
-            murdererLabel.Text = "Murderer: Not Found"
+            murdererLabel.Text = "Target: Searching..."
             murdererLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
             shootButton.Visible = false
             autoShootButton.Visible = false
@@ -383,70 +466,78 @@ local function updateRoleStatus()
         if murderer then
             murdererLabel.Text = "Murderer: " .. murderer.Name
             murdererLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+            
+            if murdererDetected ~= murderer.Name then
+                murdererDetected = murderer.Name
+                titleLabel.Text = "DANGER: " .. murderer.Name:upper()
+                gameStatusLabel.Text = "AVOID MURDERER!"
+                gameStatusLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                
+                spawn(function()
+                    for i = 1, 5 do
+                        titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                        wait(0.2)
+                        titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        wait(0.2)
+                    end
+                    wait(3)
+                    titleLabel.Text = "MM2 Assistant"
+                    gameStatusLabel.Text = "Game: Active"
+                    gameStatusLabel.TextColor3 = Color3.fromRGB(50, 255, 100)
+                end)
+            end
         else
             murdererLabel.Text = "Murderer: Unknown"
             murdererLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+            gameStatusLabel.Text = "Game: Scanning..."
+            gameStatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
         end
     end
 end
 
 imageLabel.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 and isSheriff() then
-        local success = shootAtMurderer()
+    if input.UserInputType == Enum.UserInputType.MouseButton1 and isSheriff() and getMurderer() then
+        multiShoot()
         
-        local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out)
         
-        if success then
-            TweenService:Create(imageLabel, tweenInfo, {
-                Size = UDim2.new(0.85, -10, 0.85, -10),
-                Position = UDim2.new(0.075, 5, 0.075, 5)
-            }):Play()
-            
-            TweenService:Create(imageStroke, tweenInfo, {
-                Color = Color3.fromRGB(50, 255, 100),
-                Thickness = 3
-            }):Play()
-            
-            wait(0.3)
-            
-            TweenService:Create(imageLabel, tweenInfo, {
-                Size = UDim2.new(1, -10, 1, -10),
-                Position = UDim2.new(0, 5, 0, 5)
-            }):Play()
-            
-            TweenService:Create(imageStroke, tweenInfo, {
-                Color = Color3.fromRGB(80, 80, 120),
-                Thickness = 1
-            }):Play()
-        else
-            TweenService:Create(imageStroke, tweenInfo, {
-                Color = Color3.fromRGB(255, 50, 50),
-                Thickness = 3
-            }):Play()
-            
-            wait(0.5)
-            
-            TweenService:Create(imageStroke, tweenInfo, {
-                Color = Color3.fromRGB(80, 80, 120),
-                Thickness = 1
-            }):Play()
-        end
+        TweenService:Create(imageLabel, tweenInfo, {
+            Size = UDim2.new(0.7, -10, 0.7, -10),
+            Position = UDim2.new(0.15, 5, 0.15, 5)
+        }):Play()
+        
+        TweenService:Create(imageStroke, tweenInfo, {
+            Color = Color3.fromRGB(255, 50, 50),
+            Thickness = 5
+        }):Play()
+        
+        wait(0.8)
+        
+        TweenService:Create(imageLabel, tweenInfo, {
+            Size = UDim2.new(1, -10, 1, -10),
+            Position = UDim2.new(0, 5, 0, 5)
+        }):Play()
+        
+        TweenService:Create(imageStroke, tweenInfo, {
+            Color = Color3.fromRGB(80, 80, 120),
+            Thickness = 1
+        }):Play()
     end
 end)
 
 shootButton.MouseButton1Click:Connect(function()
-    if isSheriff() then
-        shootAtMurderer()
+    if isSheriff() and getMurderer() then
+        multiShoot()
     end
 end)
 
 autoShootButton.MouseButton1Click:Connect(function()
     autoShootEnabled = not autoShootEnabled
     if autoShootEnabled then
-        autoShootButton.Text = "AUTO SHOOT: ON"
+        autoShootButton.Text = "AUTO KILL: ON"
         autoShootButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
     else
-        autoShootButton.Text = "AUTO SHOOT: OFF"
+        autoShootButton.Text = "AUTO KILL: OFF"
         autoShootButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
     end
 end)
@@ -458,7 +549,18 @@ titleBar.InputBegan:Connect(function(input)
         dragStart = Vector2.new(mouse.X, mouse.Y)
         startPos = mainFrame.Position
         
-        dragConnection = RunService.Heartbeat:Connect(smoothDrag)
+        dragConnection = RunService.Heartbeat:Connect(function()
+            if dragging and dragStart and startPos then
+                local mouse = player:GetMouse()
+                local delta = Vector2.new(mouse.X - dragStart.X, mouse.Y - dragStart.Y)
+                local viewport = workspace.CurrentCamera.ViewportSize
+                
+                local newX = math.clamp(startPos.X.Offset + delta.X, 0, viewport.X - mainFrame.AbsoluteSize.X)
+                local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, viewport.Y - (mainFrame.AbsoluteSize.Y + statusFrame.AbsoluteSize.Y + 15))
+                
+                mainFrame.Position = UDim2.new(0, newX, 0, newY)
+            end
+        end)
         
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -502,9 +604,12 @@ end)
 spawn(function()
     while mainFrame.Parent do
         updateRoleStatus()
+        
         if autoShootEnabled and isSheriff() and getMurderer() then
-            shootAtMurderer()
+            multiShoot()
+            wait(1.2)
         end
+        
         wait(0.5)
     end
 end)
