@@ -7,6 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+local autoShootEnabled = false
+
 local function isSheriff()
     local backpack = player:FindFirstChild("Backpack")
     local character = player.Character
@@ -54,28 +56,25 @@ local function shootAtMurderer()
     
     if gun.Parent == player.Backpack then
         player.Character.Humanoid:EquipTool(gun)
-        wait(0.1)
+        wait(0.2)
     end
     
-    local targetPosition = murderer.Character.HumanoidRootPart.Position
-    local camera = workspace.CurrentCamera
+    local targetPosition = murderer.Character.Head.Position
     
-    local direction = (targetPosition - camera.CFrame.Position).Unit
-    local raycast = workspace:Raycast(camera.CFrame.Position, direction * 1000)
+    local args = {
+        [1] = targetPosition,
+        [2] = murderer.Character.Head
+    }
     
-    if raycast and raycast.Instance then
-        local hitPosition = raycast.Position
-        
-        if gun:FindFirstChild("Fire") then
-            gun.Fire:FireServer(hitPosition, murderer.Character.Head)
-        elseif gun:FindFirstChild("RemoteEvent") then
-            gun.RemoteEvent:FireServer(hitPosition, murderer.Character.Head)
-        end
-        
-        return true
+    if gun:FindFirstChild("Fire") then
+        gun.Fire:FireServer(unpack(args))
+    elseif gun:FindFirstChild("KnifeServer") then
+        gun.KnifeServer.ShootGun:FireServer(unpack(args))
+    elseif gun:FindFirstChild("RemoteEvent") then
+        gun.RemoteEvent:FireServer(unpack(args))
     end
     
-    return false
+    return true
 end
 
 local screenGui = Instance.new("ScreenGui")
@@ -194,7 +193,7 @@ imageBorder.Parent = imageLabel
 
 local statusFrame = Instance.new("Frame")
 statusFrame.Name = "StatusFrame"
-statusFrame.Size = UDim2.new(0, 280, 0, 120)
+statusFrame.Size = UDim2.new(0, 280, 0, 150)
 statusFrame.Position = UDim2.new(0, 0, 1, 15)
 statusFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
 statusFrame.BorderSizePixel = 0
@@ -248,7 +247,7 @@ roleLabel.Parent = statusFrame
 local murdererLabel = Instance.new("TextLabel")
 murdererLabel.Name = "MurdererLabel"
 murdererLabel.Size = UDim2.new(1, -20, 0, 25)
-murdererLabel.Position = UDim2.new(0, 10, 0, 45)
+murdererLabel.Position = UDim2.new(0, 10, 0, 40)
 murdererLabel.BackgroundTransparency = 1
 murdererLabel.Text = "Murderer: Scanning..."
 murdererLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -260,35 +259,39 @@ murdererLabel.Parent = statusFrame
 
 local shootButton = Instance.new("TextButton")
 shootButton.Name = "ShootButton"
-shootButton.Size = UDim2.new(1, -20, 0, 35)
-shootButton.Position = UDim2.new(0, 10, 0, 75)
+shootButton.Size = UDim2.new(1, -20, 0, 30)
+shootButton.Position = UDim2.new(0, 10, 0, 70)
 shootButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 shootButton.BorderSizePixel = 0
 shootButton.Text = "SHOOT TARGET"
 shootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-shootButton.TextSize = 14
+shootButton.TextSize = 12
 shootButton.Font = Enum.Font.GothamBold
 shootButton.ZIndex = 12
 shootButton.Visible = false
 shootButton.Parent = statusFrame
 
 local shootCorner = Instance.new("UICorner")
-shootCorner.CornerRadius = UDim.new(0, 18)
+shootCorner.CornerRadius = UDim.new(0, 15)
 shootCorner.Parent = shootButton
 
-local shootStroke = Instance.new("UIStroke")
-shootStroke.Color = Color3.fromRGB(255, 100, 100)
-shootStroke.Thickness = 2
-shootStroke.Transparency = 0.6
-shootStroke.Parent = shootButton
+local autoShootButton = Instance.new("TextButton")
+autoShootButton.Name = "AutoShootButton"
+autoShootButton.Size = UDim2.new(1, -20, 0, 30)
+autoShootButton.Position = UDim2.new(0, 10, 0, 105)
+autoShootButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+autoShootButton.BorderSizePixel = 0
+autoShootButton.Text = "AUTO SHOOT: OFF"
+autoShootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoShootButton.TextSize = 12
+autoShootButton.Font = Enum.Font.GothamBold
+autoShootButton.ZIndex = 12
+autoShootButton.Visible = false
+autoShootButton.Parent = statusFrame
 
-local shootGradient = Instance.new("UIGradient")
-shootGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 70, 70)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 30, 30))
-}
-shootGradient.Rotation = 45
-shootGradient.Parent = shootButton
+local autoCorner = Instance.new("UICorner")
+autoCorner.CornerRadius = UDim.new(0, 15)
+autoCorner.Parent = autoShootButton
 
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "Close"
@@ -359,11 +362,13 @@ local function updateRoleStatus()
             murdererLabel.Text = "Murderer: " .. murderer.Name
             murdererLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
             shootButton.Visible = true
+            autoShootButton.Visible = true
             shootButton.Text = "SHOOT " .. murderer.Name:upper()
         else
             murdererLabel.Text = "Murderer: Not Found"
             murdererLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
             shootButton.Visible = false
+            autoShootButton.Visible = false
         end
     else
         roleLabel.Text = "Role: Innocent"
@@ -373,6 +378,7 @@ local function updateRoleStatus()
         glowFrame.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
         statusGlow.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
         shootButton.Visible = false
+        autoShootButton.Visible = false
         
         if murderer then
             murdererLabel.Text = "Murderer: " .. murderer.Name
@@ -430,29 +436,18 @@ end)
 
 shootButton.MouseButton1Click:Connect(function()
     if isSheriff() then
-        local success = shootAtMurderer()
-        
-        if success then
-            local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            TweenService:Create(shootButton, tweenInfo, {
-                BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            }):Play()
-            
-            shootButton.Text = "SHOT FIRED"
-            
-            wait(1.5)
-            updateRoleStatus()
-        else
-            local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            TweenService:Create(shootButton, tweenInfo, {
-                BackgroundColor3 = Color3.fromRGB(120, 120, 120)
-            }):Play()
-            
-            shootButton.Text = "SHOT FAILED"
-            
-            wait(1.5)
-            updateRoleStatus()
-        end
+        shootAtMurderer()
+    end
+end)
+
+autoShootButton.MouseButton1Click:Connect(function()
+    autoShootEnabled = not autoShootEnabled
+    if autoShootEnabled then
+        autoShootButton.Text = "AUTO SHOOT: ON"
+        autoShootButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        autoShootButton.Text = "AUTO SHOOT: OFF"
+        autoShootButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
     end
 end)
 
@@ -463,17 +458,6 @@ titleBar.InputBegan:Connect(function(input)
         dragStart = Vector2.new(mouse.X, mouse.Y)
         startPos = mainFrame.Position
         
-        local tweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-        TweenService:Create(mainFrame, tweenInfo, {
-            Size = UDim2.new(0, 290, 0, 210)
-        }):Play()
-        TweenService:Create(glowFrame, tweenInfo, {
-            BackgroundTransparency = 0.7
-        }):Play()
-        TweenService:Create(statusGlow, tweenInfo, {
-            BackgroundTransparency = 0.8
-        }):Play()
-        
         dragConnection = RunService.Heartbeat:Connect(smoothDrag)
         
         input.Changed:Connect(function()
@@ -483,38 +467,13 @@ titleBar.InputBegan:Connect(function(input)
                     dragConnection:Disconnect()
                     dragConnection = nil
                 end
-                
-                local resetTween = TweenService:Create(mainFrame, tweenInfo, {
-                    Size = UDim2.new(0, 280, 0, 200)
-                })
-                resetTween:Play()
-                TweenService:Create(glowFrame, tweenInfo, {
-                    BackgroundTransparency = 0.85
-                }):Play()
-                TweenService:Create(statusGlow, tweenInfo, {
-                    BackgroundTransparency = 0.9
-                }):Play()
             end
         end)
     end
 end)
 
 closeButton.MouseButton1Click:Connect(function()
-    local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    local closeTween = TweenService:Create(mainFrame, tweenInfo, {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
-    })
-    closeTween:Play()
-    
-    TweenService:Create(statusFrame, tweenInfo, {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
-    }):Play()
-    
-    closeTween.Completed:Connect(function()
-        screenGui:Destroy()
-    end)
+    screenGui:Destroy()
 end)
 
 minimizeButton.MouseButton1Click:Connect(function()
@@ -528,9 +487,6 @@ minimizeButton.MouseButton1Click:Connect(function()
         TweenService:Create(statusFrame, tweenInfo, {
             BackgroundTransparency = 1
         }):Play()
-        TweenService:Create(statusGlow, tweenInfo, {
-            BackgroundTransparency = 1
-        }):Play()
         minimizeButton.Text = "+"
     else
         TweenService:Create(mainFrame, tweenInfo, {
@@ -539,69 +495,17 @@ minimizeButton.MouseButton1Click:Connect(function()
         TweenService:Create(statusFrame, tweenInfo, {
             BackgroundTransparency = 0
         }):Play()
-        TweenService:Create(statusGlow, tweenInfo, {
-            BackgroundTransparency = 0.9
-        }):Play()
         minimizeButton.Text = "-"
     end
-end)
-
-shootButton.MouseEnter:Connect(function()
-    if shootButton.Visible then
-        local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        TweenService:Create(shootButton, tweenInfo, {
-            Size = UDim2.new(1, -15, 0, 40),
-            BackgroundColor3 = Color3.fromRGB(230, 70, 70)
-        }):Play()
-    end
-end)
-
-shootButton.MouseLeave:Connect(function()
-    if shootButton.Visible then
-        local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        TweenService:Create(shootButton, tweenInfo, {
-            Size = UDim2.new(1, -20, 0, 35),
-            BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        }):Play()
-    end
-end)
-
-closeButton.MouseEnter:Connect(function()
-    local tweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(closeButton, tweenInfo, {
-        Size = UDim2.new(0, 35, 0, 35),
-        BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    }):Play()
-end)
-
-closeButton.MouseLeave:Connect(function()
-    local tweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(closeButton, tweenInfo, {
-        Size = UDim2.new(0, 30, 0, 30),
-        BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-    }):Play()
-end)
-
-minimizeButton.MouseEnter:Connect(function()
-    local tweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(minimizeButton, tweenInfo, {
-        Size = UDim2.new(0, 35, 0, 35),
-        BackgroundColor3 = Color3.fromRGB(230, 180, 70)
-    }):Play()
-end)
-
-minimizeButton.MouseLeave:Connect(function()
-    local tweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(minimizeButton, tweenInfo, {
-        Size = UDim2.new(0, 30, 0, 30),
-        BackgroundColor3 = Color3.fromRGB(200, 150, 50)
-    }):Play()
 end)
 
 spawn(function()
     while mainFrame.Parent do
         updateRoleStatus()
-        wait(0.8)
+        if autoShootEnabled and isSheriff() and getMurderer() then
+            shootAtMurderer()
+        end
+        wait(0.5)
     end
 end)
 
@@ -612,7 +516,6 @@ spawn(function()
         mainGradient.Rotation = 135 + math.sin(rotation * 0.015) * 12
         titleGradient.Rotation = 90 + math.sin(rotation * 0.012) * 8
         statusGradient.Rotation = 45 + math.sin(rotation * 0.018) * 10
-        shootGradient.Rotation = 45 + math.sin(rotation * 0.02) * 15
         wait(0.08)
     end
 end)
