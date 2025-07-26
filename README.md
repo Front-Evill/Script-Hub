@@ -35,10 +35,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/ESP-EVILL.lua"))()
 ```
 
-## SCRIPT NOCLIP
+## SCRIPT Auto Shot
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/noor.front.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/auto-shot.lua"))()
 ```
 
 # Gui
