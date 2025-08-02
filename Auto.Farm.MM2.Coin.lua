@@ -16,6 +16,7 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 local coinCount = 0
 local isRoundActive = false
 local isDead = false
@@ -27,11 +28,6 @@ local playerCounts = {murderer = 0, sheriff = 0, innocent = 0}
 local function Notify(Title, Dis)
    pcall(function()
        Fluent:Notify({Title = tostring(Title), Content = tostring(Dis), Duration = 3})
-       local sound = Instance.new("Sound", workspace) 
-       sound.SoundId = "rbxassetid://3398620867" 
-       sound.Volume = 2 
-       sound.Ended:Connect(function() sound:Destroy() end) 
-       sound:Play()
    end)
 end
 
@@ -45,11 +41,13 @@ end
 local function CheckRoundStatus()
    local roundActive = false
    pcall(function()
-       if workspace:FindFirstChild("Status") and workspace.Status:FindFirstChild("RoundLength") then
-           roundActive = workspace.Status.RoundLength.Value > 0
+       if Workspace:FindFirstChild("Status") and Workspace.Status:FindFirstChild("RoundLength") then
+           roundActive = Workspace.Status.RoundLength.Value > 0
        elseif player.PlayerGui:FindFirstChild("MainGUI") then
            local mainGui = player.PlayerGui.MainGUI
-           roundActive = mainGui:FindFirstChild("Game") and mainGui.Game.Visible
+           if mainGui:FindFirstChild("Game") and mainGui.Game.Visible then
+               roundActive = true
+           end
        end
    end)
    return roundActive
@@ -58,11 +56,13 @@ end
 local function GetPlayerRole()
    local role = "Unknown"
    pcall(function()
-       local mainGui = player.PlayerGui:FindFirstChild("MainGUI")
-       if mainGui and mainGui:FindFirstChild("Game") then
-           local roleGui = mainGui.Game:FindFirstChild("Roles")
-           if roleGui and roleGui:FindFirstChild("RoleText") then
-               role = roleGui.RoleText.Text
+       if player.PlayerGui:FindFirstChild("MainGUI") then
+           local roleGui = player.PlayerGui.MainGUI:FindFirstChild("Game")
+           if roleGui and roleGui:FindFirstChild("Roles") then
+               local roleText = roleGui.Roles:FindFirstChild("RoleText")
+               if roleText then
+                   role = roleText.Text
+               end
            end
        end
    end)
@@ -72,13 +72,15 @@ end
 local function CreateHighlight(obj, color, transparency)
    if not obj then return nil end
    
-   local highlight = Instance.new("Highlight")
-   highlight.FillColor = color
-   highlight.OutlineColor = color
-   highlight.FillTransparency = transparency or 0.4
-   highlight.OutlineTransparency = 0
-   highlight.Parent = obj
-   return highlight
+   pcall(function()
+       local highlight = Instance.new("Highlight")
+       highlight.FillColor = color
+       highlight.OutlineColor = color
+       highlight.FillTransparency = transparency or 0.3
+       highlight.OutlineTransparency = 0
+       highlight.Parent = obj
+       return highlight
+   end)
 end
 
 local function GetPlayerRole_Advanced(targetPlayer)
@@ -86,12 +88,11 @@ local function GetPlayerRole_Advanced(targetPlayer)
    
    pcall(function()
        if targetPlayer and targetPlayer.Character then
-           local character = targetPlayer.Character
-           local backpack = targetPlayer.Backpack
-           
-           if character:FindFirstChild("Knife") or (backpack and backpack:FindFirstChild("Knife")) then
+           if targetPlayer.Character:FindFirstChild("Knife") or 
+              (targetPlayer.Backpack and targetPlayer.Backpack:FindFirstChild("Knife")) then
                role = "murderer"
-           elseif character:FindFirstChild("Gun") or (backpack and backpack:FindFirstChild("Gun")) then
+           elseif targetPlayer.Character:FindFirstChild("Gun") or 
+                  (targetPlayer.Backpack and targetPlayer.Backpack:FindFirstChild("Gun")) then
                role = "sheriff"
            end
        end
@@ -107,6 +108,7 @@ local function UpdatePlayerHighlights()
        if otherPlayer ~= player and otherPlayer.Character then
            if playerHighlights[otherPlayer] then
                playerHighlights[otherPlayer]:Destroy()
+               playerHighlights[otherPlayer] = nil
            end
            
            local role = GetPlayerRole_Advanced(otherPlayer)
@@ -127,20 +129,27 @@ local function GetAllCoins()
    local coins = {}
    
    pcall(function()
-       for _, obj in pairs(workspace:GetDescendants()) do
-           if obj.Name == "Coin_Server" and obj:IsA("BasePart") and obj.Parent then
+       for _, obj in pairs(Workspace:GetDescendants()) do
+           if obj.Name == "Coin_Server" and obj:IsA("BasePart") and obj.Parent and obj.Transparency < 1 then
                table.insert(coins, obj)
            end
        end
        
-       local workplace = workspace:FindFirstChild("Workplace")
-       if workplace then
-           local coinContainer = workplace:FindFirstChild("CoinContainer")
+       if Workspace:FindFirstChild("Workplace") then
+           local coinContainer = Workspace.Workplace:FindFirstChild("CoinContainer")
            if coinContainer then
                for _, child in pairs(coinContainer:GetChildren()) do
-                   if child.Name == "Coin_Server" and child:IsA("BasePart") then
+                   if child.Name == "Coin_Server" and child:IsA("BasePart") and child.Transparency < 1 then
                        table.insert(coins, child)
                    end
+               end
+           end
+       end
+       
+       if Workspace:FindFirstChild("Normal") then
+           for _, obj in pairs(Workspace.Normal:GetDescendants()) do
+               if obj.Name == "Coin_Server" and obj:IsA("BasePart") and obj.Transparency < 1 then
+                   table.insert(coins, obj)
                end
            end
        end
@@ -187,12 +196,13 @@ local function GetClosestCoin()
    local coins = GetAllCoins()
    if #coins == 0 then return nil end
    
-   local humanoidRootPart = player.Character.HumanoidRootPart
+   local character = player.Character
+   local humanoidRootPart = character.HumanoidRootPart
    local closestCoin = nil
    local shortestDistance = math.huge
    
    for _, coin in pairs(coins) do
-       if coin and coin.Parent then
+       if coin and coin.Parent and coin.Transparency < 1 then
            local distance = (humanoidRootPart.Position - coin.Position).Magnitude
            if distance < shortestDistance then
                shortestDistance = distance
@@ -218,11 +228,9 @@ local function MoveToCoin(coin)
        CurrentTween = nil
    end
    
-   humanoid.PlatformStand = true
-   
    local distance = (humanoidRootPart.Position - coin.Position).Magnitude
    local speed = 100
-   local duration = math.clamp(distance / speed, 0.1, 1.2)
+   local duration = math.min(distance / speed, 1)
    
    local tweenInfo = TweenInfo.new(
        duration,
@@ -233,39 +241,33 @@ local function MoveToCoin(coin)
        0
    )
    
-   local targetPosition = coin.Position + Vector3.new(0, 1, 0)
+   local targetPosition = coin.Position
    
    CurrentTween = TweenService:Create(humanoidRootPart, tweenInfo, {
-       Position = targetPosition
+       CFrame = CFrame.new(targetPosition)
    })
    
    CurrentTween:Play()
    
-   spawn(function()
-       CurrentTween.Completed:Wait()
-       
+   CurrentTween.Completed:Connect(function()
        if coin and coin.Parent and ValidateCharacter() and isRoundActive and not isDead then
-           local attempts = 0
-           
-           while coin and coin.Parent and attempts < 5 and ValidateCharacter() and not isDead do
-               attempts = attempts + 1
-               
-               humanoidRootPart.Position = coin.Position + Vector3.new(0, 0.5, 0)
-               
-               firetouchinterest(humanoidRootPart, coin, 0)
-               wait(0.02)
-               firetouchinterest(humanoidRootPart, coin, 1)
-               wait(0.02)
-               
-               if not coin.Parent then
-                   coinCount = coinCount + 1
-                   break
+           spawn(function()
+               for i = 1, 5 do
+                   if coin and coin.Parent then
+                       firetouchinterest(humanoidRootPart, coin, 0)
+                       wait(0.05)
+                       firetouchinterest(humanoidRootPart, coin, 1)
+                       wait(0.05)
+                       
+                       if not coin.Parent then
+                           coinCount = coinCount + 1
+                           break
+                       end
+                   else
+                       break
+                   end
                end
-           end
-       end
-       
-       if ValidateCharacter() then
-           humanoid.PlatformStand = false
+           end)
        end
    end)
    
@@ -279,15 +281,12 @@ local function EquipKnife()
        if player.Backpack:FindFirstChild("Knife") then
            knife = player.Backpack.Knife
            knife.Parent = player.Character
-       elseif workspace:FindFirstChild("Normal") and workspace.Normal:FindFirstChild("Knife") then
-           knife = workspace.Normal.Knife
+       elseif Workspace:FindFirstChild("Normal") and Workspace.Normal:FindFirstChild("Knife") then
+           knife = Workspace.Normal.Knife
            if ValidateCharacter() then
                firetouchinterest(player.Character.HumanoidRootPart, knife, 0)
                firetouchinterest(player.Character.HumanoidRootPart, knife, 1)
                wait(0.2)
-               if player.Character:FindFirstChild("Knife") then
-                   knife = player.Character.Knife
-               end
            end
        end
    end)
@@ -299,12 +298,9 @@ local function KillAllPlayers()
    if not ValidateCharacter() or isDead or not isRoundActive then return end
    
    local knife = EquipKnife()
-   if not knife then 
-       Notify("Error", "Knife not found")
-       return 
-   end
+   if not knife then return end
    
-   Notify("Kill Mode", "Eliminating targets")
+   wait(0.5)
    
    for _, otherPlayer in pairs(Players:GetPlayers()) do
        if otherPlayer ~= player and otherPlayer.Character and 
@@ -314,13 +310,11 @@ local function KillAllPlayers()
            
            pcall(function()
                local otherRoot = otherPlayer.Character.HumanoidRootPart
-               player.Character.HumanoidRootPart.Position = otherRoot.Position + Vector3.new(0, 1, 0)
+               player.Character.HumanoidRootPart.CFrame = CFrame.new(otherRoot.Position)
                
-               wait(0.1)
-               
-               if knife:FindFirstChild("Stab") then
+               if knife and knife:FindFirstChild("Stab") then
                    knife.Stab:FireServer()
-               else
+               elseif knife then
                    knife:Activate()
                end
                
@@ -333,29 +327,28 @@ end
 local function FlingAllPlayers()
    if not ValidateCharacter() or isDead or not isRoundActive then return end
    
-   Notify("Fling Mode", "Activating fling")
-   
-   for _, otherPlayer in pairs(Players:GetPlayers()) do
-       if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-           pcall(function()
+   pcall(function()
+       for _, otherPlayer in pairs(Players:GetPlayers()) do
+           if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
                local bodyVelocity = Instance.new("BodyVelocity")
                bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
                bodyVelocity.Velocity = Vector3.new(
                    math.random(-50, 50), 
-                   math.random(30, 70), 
+                   math.random(30, 60), 
                    math.random(-50, 50)
                )
                bodyVelocity.Parent = otherPlayer.Character.HumanoidRootPart
                
                game:GetService("Debris"):AddItem(bodyVelocity, 1)
-           end)
+           end
        end
-   end
+   end)
 end
 
 local function StartCollection()
    if CollectConnection then
        CollectConnection:Disconnect()
+       CollectConnection = nil
    end
    
    CollectConnection = spawn(function()
@@ -372,7 +365,7 @@ local function StartCollection()
                        wait(1)
                    end
                else
-                   wait(2)
+                   wait(1)
                end
            end)
            wait(0.1)
@@ -383,15 +376,12 @@ end
 local function StartESP()
    if ESPConnection then
        ESPConnection:Disconnect()
+       ESPConnection = nil
    end
    
    ESPConnection = spawn(function()
        while getgenv().Ready.ESPPlayers do
-           pcall(function()
-               if isRoundActive then
-                   UpdatePlayerHighlights()
-               end
-           end)
+           pcall(UpdatePlayerHighlights)
            wait(1)
        end
    end)
@@ -400,15 +390,12 @@ end
 local function StartCoinESP()
    if CoinESPConnection then
        CoinESPConnection:Disconnect()
+       CoinESPConnection = nil
    end
    
    CoinESPConnection = spawn(function()
        while getgenv().Ready.ESPCoins do
-           pcall(function()
-               if isRoundActive then
-                   UpdateCoinHighlights()
-               end
-           end)
+           pcall(UpdateCoinHighlights)
            wait(0.5)
        end
    end)
@@ -417,6 +404,7 @@ end
 local function StartFlingMonitor()
    if FlingConnection then
        FlingConnection:Disconnect()
+       FlingConnection = nil
    end
    
    FlingConnection = spawn(function()
@@ -428,7 +416,7 @@ local function StartFlingMonitor()
                       role == "Sheriff" or role == "Innocent" then
                        FlingAllPlayers()
                        coinCount = 0
-                       wait(3)
+                       wait(2)
                    end
                end
            end)
@@ -440,6 +428,7 @@ end
 local function StartKillMonitor()
    if KillConnection then
        KillConnection:Disconnect()
+       KillConnection = nil
    end
    
    KillConnection = spawn(function()
@@ -450,7 +439,7 @@ local function StartKillMonitor()
                    if role:lower():find("murder") or role == "Murderer" then
                        KillAllPlayers()
                        coinCount = 0
-                       wait(3)
+                       wait(2)
                    end
                end
            end)
@@ -459,62 +448,31 @@ local function StartKillMonitor()
    end)
 end
 
-local function StopCollection()
-   if CollectConnection then
-       CollectConnection = nil
-   end
-   if CurrentTween then
-       CurrentTween:Cancel()
-       CurrentTween = nil
-   end
-   if ValidateCharacter() then
-       player.Character.Humanoid.PlatformStand = false
-   end
-   coinCount = 0
-end
-
-local function StopESP()
-   if ESPConnection then
-       ESPConnection = nil
-   end
+local function StopAll()
+   if CollectConnection then CollectConnection = nil end
+   if CurrentTween then CurrentTween:Cancel() CurrentTween = nil end
+   if ESPConnection then ESPConnection = nil end
+   if CoinESPConnection then CoinESPConnection = nil end
+   if FlingConnection then FlingConnection = nil end
+   if KillConnection then KillConnection = nil end
    
    for _, highlight in pairs(playerHighlights) do
-       if highlight then
-           highlight:Destroy()
-       end
+       if highlight then highlight:Destroy() end
    end
-   playerHighlights = {}
-end
-
-local function StopCoinESP()
-   if CoinESPConnection then
-       CoinESPConnection = nil
+   for _, highlight in pairs(coinHighlights) do
+       if highlight then highlight:Destroy() end
    end
    
-   for _, highlight in pairs(coinHighlights) do
-       if highlight then
-           highlight:Destroy()
-       end
-   end
+   playerHighlights = {}
    coinHighlights = {}
-end
-
-local function StopFlingMonitor()
-   if FlingConnection then
-       FlingConnection = nil
-   end
-end
-
-local function StopKillMonitor()
-   if KillConnection then
-       KillConnection = nil
-   end
+   coinCount = 0
 end
 
 local function SetupCharacterHandlers()
    if ValidateCharacter() then
        isDead = false
-       player.Character.Humanoid.Died:Connect(function()
+       local humanoid = player.Character.Humanoid
+       humanoid.Died:Connect(function()
            isDead = true
            coinCount = 0
        end)
@@ -527,29 +485,16 @@ player.CharacterAdded:Connect(function()
    SetupCharacterHandlers()
    coinCount = 0
    
-   if getgenv().Ready.BeachBallCollector then
-       wait(1)
-       StartCollection()
-   end
-   if getgenv().Ready.ESPPlayers then
-       StartESP()
-   end
-   if getgenv().Ready.ESPCoins then
-       StartCoinESP()
-   end
-   if getgenv().Ready.FlingPlayers then
-       StartFlingMonitor()
-   end
-   if getgenv().Ready.KillAllPlayers then
-       StartKillMonitor()
-   end
+   if getgenv().Ready.BeachBallCollector then StartCollection() end
+   if getgenv().Ready.ESPPlayers then StartESP() end
+   if getgenv().Ready.ESPCoins then StartCoinESP() end
+   if getgenv().Ready.FlingPlayers then StartFlingMonitor() end
+   if getgenv().Ready.KillAllPlayers then StartKillMonitor() end
 end)
 
 player.CharacterRemoving:Connect(function()
    isDead = true
-   StopCollection()
-   StopESP()
-   StopCoinESP()
+   StopAll()
 end)
 
 Players.PlayerRemoving:Connect(function(removedPlayer)
@@ -564,12 +509,12 @@ if ValidateCharacter() then
 end
 
 local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform())
-local Guitheme = "Dark"
+local themes = {"Amethyst", "Light", "Aqua", "Rose", "Darker", "Dark"}
+local Guitheme = themes[math.random(1, #themes)]
 local High = IsOnMobile and 380 or 480
 
 if IsOnMobile then
-   local teez
-   teez = game:GetService("CoreGui").ChildAdded:Connect(function(P)
+   local teez = game:GetService("CoreGui").ChildAdded:Connect(function(P)
        if P.Name == "ScreenGui" then
            local Button = Instance.new("TextButton")
            local UICorner = Instance.new("UICorner")
@@ -585,32 +530,29 @@ if IsOnMobile then
            Button.TextScaled = true
            Button.Draggable = true
            Button.AutoButtonColor = false
-           Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
            
+           local themeColors = {
+               Light = Color3.fromRGB(255, 255, 255), 
+               Amethyst = Color3.fromRGB(153, 102, 204), 
+               Aqua = Color3.fromRGB(0, 255, 255), 
+               Rose = Color3.fromRGB(255, 182, 193), 
+               Darker = Color3.fromRGB(40, 40, 40), 
+               Dark = Color3.fromRGB(30, 30, 30)
+           }
+           
+           Button.BackgroundColor3 = themeColors[Guitheme] or Color3.fromRGB(255, 255, 255)
            UICorner.Parent = Button
            UICorner.CornerRadius = UDim.new(0, 12)
            
            Button.MouseButton1Click:Connect(function()
                for _, F in ipairs(P:GetChildren()) do
                    if F.Name ~= "Hider" and not F:FindFirstChild("UIListLayout") and not F:FindFirstChild("UISizeConstraint") then
-                       if F.Visible then 
-                           Button.Text = "View"
-                           F.Visible = false 
-                       else 
-                           Button.Text = "Hide"
-                           F.Visible = true 
-                       end
+                       F.Visible = not F.Visible
+                       Button.Text = F.Visible and "Hide" or "View"
                    end
                end
            end)
-           getgenv().Done = true
        end
-   end)
-   
-   spawn(function()
-       while not getgenv().Done do task.wait() end
-       if teez then teez:Disconnect() end
-       getgenv().Done = false
    end)
 end
 
@@ -631,13 +573,7 @@ local Window = Fluent:CreateWindow({
    MinimizeKey = Enum.KeyCode.B
 })
 
-local Tabs = {
-   Main = Window:AddTab({ Title = "Home", Icon = "home" }),
-}
-
-Window:SelectTab(1)
-
-local Tab = Tabs.Main:AddSection("MM2 Auto Features")
+local Tab = Window:AddTab({ Title = "Home", Icon = "home" }):AddSection("MM2 Features")
 
 local playerCountLabel = Tab:AddParagraph({
    Title = "Player Count",
@@ -646,104 +582,73 @@ local playerCountLabel = Tab:AddParagraph({
 
 local coinsLeftLabel = Tab:AddParagraph({
    Title = "Coins Progress",
-   Content = "Coins Collected: 0/40 | Remaining: 40"
+   Content = "Coins: 0/40 | Remaining: 40"
 })
 
-Tab:AddToggle("BeachBallCollectorEnhanced", {
-   Title = "Start Farm Beach Ball",
-   Default = getgenv().Ready.BeachBallCollector or false,
+Tab:AddToggle("BeachBallCollector", {
+   Title = "Farm Coins",
+   Default = false,
    Callback = function(state)
        getgenv().Ready.BeachBallCollector = state
-       
-       if state then
-           StartCollection()
-           Notify("Farm Active", "Coin collection started")
-       else
-           StopCollection()
-           Notify("Farm Stopped", "Coin collection stopped")
-       end
+       if state then StartCollection() else StopAll() end
    end 
 })
 
 Tab:AddToggle("ESPPlayers", {
    Title = "ESP Players",
-   Default = getgenv().Ready.ESPPlayers or false,
+   Default = false,
    Callback = function(state)
        getgenv().Ready.ESPPlayers = state
-       
-       if state then
-           StartESP()
-           Notify("ESP Active", "Player highlighting enabled")
-       else
-           StopESP()
-           Notify("ESP Stopped", "Player highlighting disabled")
+       if state then StartESP() else 
+           for _, highlight in pairs(playerHighlights) do
+               if highlight then highlight:Destroy() end
+           end
+           playerHighlights = {}
        end
    end 
 })
 
 Tab:AddToggle("ESPCoins", {
    Title = "ESP Coins",
-   Default = getgenv().Ready.ESPCoins or false,
+   Default = false,
    Callback = function(state)
        getgenv().Ready.ESPCoins = state
-       
-       if state then
-           StartCoinESP()
-           Notify("Coin ESP Active", "Coin highlighting enabled")
-       else
-           StopCoinESP()
-           Notify("Coin ESP Stopped", "Coin highlighting disabled")
+       if state then StartCoinESP() else
+           for _, highlight in pairs(coinHighlights) do
+               if highlight then highlight:Destroy() end
+           end
+           coinHighlights = {}
        end
    end 
 })
 
 Tab:AddToggle("FlingPlayers", {
    Title = "Auto Fling (Sheriff/Innocent)",
-   Default = getgenv().Ready.FlingPlayers or false,
+   Default = false,
    Callback = function(state)
        getgenv().Ready.FlingPlayers = state
-       
-       if state then
-           StartFlingMonitor()
-           Notify("Fling Monitor", "Auto fling activated")
-       else
-           StopFlingMonitor()
-           Notify("Fling Stopped", "Auto fling deactivated")
-       end
+       if state then StartFlingMonitor() else FlingConnection = nil end
    end 
 })
 
 Tab:AddToggle("KillAllPlayers", {
    Title = "Auto Kill (Murderer)",
-   Default = getgenv().Ready.KillAllPlayers or false,
+   Default = false,
    Callback = function(state)
        getgenv().Ready.KillAllPlayers = state
-       
-       if state then
-           StartKillMonitor()
-           Notify("Kill Monitor", "Auto kill activated")
-       else
-           StopKillMonitor()
-           Notify("Kill Stopped", "Auto kill deactivated")
-       end
+       if state then StartKillMonitor() else KillConnection = nil end
    end 
 })
 
 spawn(function()
    while true do
        wait(0.5)
-       if getgenv().Ready.BeachBallCollector or getgenv().Ready.ESPPlayers or 
-          getgenv().Ready.ESPCoins or getgenv().Ready.FlingPlayers or 
-          getgenv().Ready.KillAllPlayers then
-           
-           CountPlayers()
-           
-           playerCountLabel:SetDesc(string.format("Murderer: %d | Sheriff: %d | Innocent: %d", 
-               playerCounts.murderer, playerCounts.sheriff, playerCounts.innocent))
-           
-           local remaining = math.max(0, 40 - coinCount)
-           coinsLeftLabel:SetDesc(string.format("Coins Collected: %d/40 | Remaining: %d",
-               coinCount, remaining))
-       end
+       CountPlayers()
+       
+       playerCountLabel:SetDesc(string.format("Murderer: %d | Sheriff: %d | Innocent: %d", 
+           playerCounts.murderer, playerCounts.sheriff, playerCounts.innocent))
+       
+       local remaining = math.max(0, 40 - coinCount)
+       coinsLeftLabel:SetDesc(string.format("Coins: %d/40 | Remaining: %d", coinCount, remaining))
    end
 end)
