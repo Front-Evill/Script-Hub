@@ -35,10 +35,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hu
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/ESP-EVILL.lua"))()
 ```
 
-## SCRIPT Auto Shot
+## Farm Coin MM2
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/auto-shot.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Front-Evill/Script-Hub/refs/heads/main/Auto.Farm.MM2.Coin.lua"))()
 ```
 
 # Gui
