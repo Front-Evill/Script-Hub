@@ -9,7 +9,6 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Debris = game:GetService("Debris")
-local MarketplaceService = game:GetService("MarketplaceService")
 
 local player = Players.LocalPlayer
 local CollectConnection = nil
@@ -25,55 +24,67 @@ local playerHighlights = {}
 local playerCounts = {murderer = 0, sheriff = 0, innocent = 0}
 
 local function ShowWelcomeScreen()
-    local welcomeGui = Instance.new("ScreenGui")
-    welcomeGui.Name = "WelcomeGui"
-    welcomeGui.Parent = game:GetService("CoreGui")
-    
-    local welcomeLabel = Instance.new("TextLabel")
-    welcomeLabel.Name = "WelcomeLabel"
-    welcomeLabel.Parent = welcomeGui
-    welcomeLabel.Size = UDim2.new(1, 0, 1, 0)
-    welcomeLabel.Position = UDim2.new(0, 0, 0, 0)
-    welcomeLabel.BackgroundTransparency = 1
-    welcomeLabel.Text = ""
-    welcomeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    welcomeLabel.TextScaled = true
-    welcomeLabel.Font = Enum.Font.GothamBold
-    welcomeLabel.TextStrokeTransparency = 0
-    welcomeLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    
-    local welcomeText = "Welcome to Script Front evill"
-    local currentText = ""
-    
-    for i = 1, #welcomeText do
-        currentText = currentText .. welcomeText:sub(i, i)
-        welcomeLabel.Text = currentText
-        wait(0.05)
-    end
-    
-    wait(2)
-    welcomeGui:Destroy()
+    spawn(function()
+        local welcomeGui = Instance.new("ScreenGui")
+        welcomeGui.Name = "WelcomeGui"
+        welcomeGui.Parent = game:GetService("CoreGui")
+        
+        local welcomeLabel = Instance.new("TextLabel")
+        welcomeLabel.Name = "WelcomeLabel"
+        welcomeLabel.Parent = welcomeGui
+        welcomeLabel.Size = UDim2.new(1, 0, 1, 0)
+        welcomeLabel.Position = UDim2.new(0, 0, 0, 0)
+        welcomeLabel.BackgroundTransparency = 1
+        welcomeLabel.Text = ""
+        welcomeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        welcomeLabel.TextScaled = true
+        welcomeLabel.Font = Enum.Font.GothamBold
+        welcomeLabel.TextStrokeTransparency = 0
+        welcomeLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        
+        local welcomeText = "Welcome to Script Front evill"
+        local currentText = ""
+        
+        for i = 1, #welcomeText do
+            currentText = currentText .. welcomeText:sub(i, i)
+            welcomeLabel.Text = currentText
+            wait(0.05)
+        end
+        
+        wait(2)
+        welcomeGui:Destroy()
+    end)
 end
 
 local function TweenTo(Part)
-    if Running then return end
+    if Running or not ValidateCharacter() then return nil end
     Running = true
+    
+    local distance = (player.Character.HumanoidRootPart.Position - Part.Position).Magnitude
+    local speed = 27
+    local duration = distance / speed
+    
     local Tween = TweenService:Create(
         player.Character.HumanoidRootPart,
-        TweenInfo.new((player.Character.HumanoidRootPart.Position - Part.Position).Magnitude / 27, Enum.EasingStyle.Linear),
-        {CFrame = CFrame.new(Part.Position) * CFrame.Angles(0, player.Character.HumanoidRootPart.Orientation.Y, 0)}
+        TweenInfo.new(duration, Enum.EasingStyle.Linear),
+        {CFrame = CFrame.new(Part.Position) * CFrame.Angles(0, math.rad(player.Character.HumanoidRootPart.Orientation.Y), 0)}
     )
+    
     table.insert(TweenList, Tween)
+    
     Tween.Completed:Connect(function()
         Running = false
     end)
+    
     Tween:Play()
     return Tween
 end
 
 local function StopAllTweens()
     for _, Tween in ipairs(TweenList) do
-        Tween:Cancel()
+        if Tween then
+            Tween:Cancel()
+        end
     end
     TweenList = {}
     Running = false
@@ -81,12 +92,9 @@ end
 
 local function Notify(Title, Dis)
     pcall(function()
-        Fluent:Notify({Title = tostring(Title), Content = tostring(Dis), Duration = 3})
-        local sound = Instance.new("Sound", workspace)
-        sound.SoundId = "rbxassetid://3398620867"
-        sound.Volume = 1
-        sound.Ended:Connect(function() sound:Destroy() end)
-        sound:Play()
+        if Fluent then
+            Fluent:Notify({Title = tostring(Title), Content = tostring(Dis), Duration = 3})
+        end
     end)
 end
 
@@ -132,15 +140,17 @@ local function GetPlayerRole()
 end
 
 local function CreateHighlight(obj, color, isPlayer)
-    if obj and ((isPlayer and obj:FindFirstChild("HumanoidRootPart")) or (not isPlayer and obj:IsA("BasePart"))) then
-        local highlight = Instance.new("Highlight")
-        highlight.FillColor = color
-        highlight.OutlineColor = color
-        highlight.FillTransparency = isPlayer and 0.3 or 0.1
-        highlight.OutlineTransparency = 0
-        highlight.Parent = obj
-        return highlight
-    end
+    pcall(function()
+        if obj and ((isPlayer and obj:FindFirstChild("HumanoidRootPart")) or (not isPlayer and obj:IsA("BasePart"))) then
+            local highlight = Instance.new("Highlight")
+            highlight.FillColor = color
+            highlight.OutlineColor = color
+            highlight.FillTransparency = isPlayer and 0.3 or 0.1
+            highlight.OutlineTransparency = 0
+            highlight.Parent = obj
+            return highlight
+        end
+    end)
     return nil
 end
 
@@ -165,36 +175,40 @@ end
 local function UpdatePlayerHighlights()
     if not getgenv().Ready.ESPPlayers then return end
     
-    for _, otherPlayer in pairs(Players:GetPlayers()) do
-        if otherPlayer ~= player and otherPlayer.Character then
-            if playerHighlights[otherPlayer] then
-                playerHighlights[otherPlayer]:Destroy()
-                playerHighlights[otherPlayer] = nil
+    pcall(function()
+        for _, otherPlayer in pairs(Players:GetPlayers()) do
+            if otherPlayer ~= player and otherPlayer.Character then
+                if playerHighlights[otherPlayer] then
+                    playerHighlights[otherPlayer]:Destroy()
+                    playerHighlights[otherPlayer] = nil
+                end
+                
+                local role = GetPlayerRole_Advanced(otherPlayer)
+                local color = Color3.fromRGB(0, 255, 0)
+                
+                if role == "murderer" then
+                    color = Color3.fromRGB(255, 0, 0)
+                elseif role == "sheriff" then
+                    color = Color3.fromRGB(0, 100, 255)
+                end
+                
+                playerHighlights[otherPlayer] = CreateHighlight(otherPlayer.Character, color, true)
             end
-            
-            local role = GetPlayerRole_Advanced(otherPlayer)
-            local color = Color3.fromRGB(0, 255, 0)
-            
-            if role == "murderer" then
-                color = Color3.fromRGB(255, 0, 0)
-            elseif role == "sheriff" then
-                color = Color3.fromRGB(0, 100, 255)
-            end
-            
-            playerHighlights[otherPlayer] = CreateHighlight(otherPlayer.Character, color, true)
         end
-    end
+    end)
 end
 
 local function CountPlayers()
     playerCounts = {murderer = 0, sheriff = 0, innocent = 0}
     
-    for _, otherPlayer in pairs(Players:GetPlayers()) do
-        if otherPlayer.Character then
-            local role = GetPlayerRole_Advanced(otherPlayer)
-            playerCounts[role] = playerCounts[role] + 1
+    pcall(function()
+        for _, otherPlayer in pairs(Players:GetPlayers()) do
+            if otherPlayer.Character then
+                local role = GetPlayerRole_Advanced(otherPlayer)
+                playerCounts[role] = playerCounts[role] + 1
+            end
         end
-    end
+    end)
 end
 
 local function GetAllCoins()
@@ -260,50 +274,50 @@ local function MoveToCoin(coin)
         return false
     end
     
-    StopAllTweens()
-    
-    local character = player.Character
-    local humanoidRootPart = character.HumanoidRootPart
-    local humanoid = character.Humanoid
-    
-    humanoid.PlatformStand = true
-    humanoidRootPart.Anchored = false
-    
-    local tweenResult = TweenTo(coin)
-    if tweenResult then
-        tweenResult.Completed:Connect(function()
-            if coin and coin.Parent and ValidateCharacter() and isRoundActive and not isDead then
-                spawn(function()
-                    local attempts = 0
-                    local originalCoin = coin
-                    
-                    while originalCoin and originalCoin.Parent and attempts < 8 and ValidateCharacter() and not isDead do
-                        attempts = attempts + 1
+    pcall(function()
+        StopAllTweens()
+        
+        local character = player.Character
+        local humanoidRootPart = character.HumanoidRootPart
+        local humanoid = character.Humanoid
+        
+        humanoid.PlatformStand = true
+        
+        local tweenResult = TweenTo(coin)
+        if tweenResult then
+            tweenResult.Completed:Connect(function()
+                if coin and coin.Parent and ValidateCharacter() and isRoundActive and not isDead then
+                    spawn(function()
+                        local attempts = 0
                         
-                        humanoidRootPart.CFrame = CFrame.new(originalCoin.Position + Vector3.new(0, 0.5, 0))
-                        
-                        firetouchinterest(humanoidRootPart, originalCoin, 0)
-                        wait(0.02)
-                        firetouchinterest(humanoidRootPart, originalCoin, 1)
-                        wait(0.02)
-                        
-                        if not originalCoin.Parent then
-                            coinCount = coinCount + 1
-                            break
+                        while coin and coin.Parent and attempts < 8 and ValidateCharacter() and not isDead do
+                            attempts = attempts + 1
+                            
+                            humanoidRootPart.CFrame = CFrame.new(coin.Position + Vector3.new(0, 0.5, 0))
+                            
+                            firetouchinterest(humanoidRootPart, coin, 0)
+                            wait(0.02)
+                            firetouchinterest(humanoidRootPart, coin, 1)
+                            wait(0.02)
+                            
+                            if not coin.Parent then
+                                coinCount = coinCount + 1
+                                break
+                            end
                         end
-                    end
-                    
+                        
+                        if ValidateCharacter() then
+                            humanoid.PlatformStand = false
+                        end
+                    end)
+                else
                     if ValidateCharacter() then
                         humanoid.PlatformStand = false
                     end
-                end)
-            else
-                if ValidateCharacter() then
-                    humanoid.PlatformStand = false
                 end
-            end
-        end)
-    end
+            end)
+        end
+    end)
     
     return true
 end
@@ -331,52 +345,54 @@ end
 local function KillAllPlayers()
     if not ValidateCharacter() or isDead or not isRoundActive then return end
     
-    local knife = EquipKnife()
-    if not knife then 
-        Notify("Error", "No knife found!")
-        return 
-    end
-    
-    Notify("Kill Mode", "Starting elimination process...")
-    wait(0.8)
-    
-    for _, otherPlayer in pairs(Players:GetPlayers()) do
-        if otherPlayer ~= player and otherPlayer.Character and 
-           otherPlayer.Character:FindFirstChild("HumanoidRootPart") and 
-           otherPlayer.Character:FindFirstChild("Humanoid") and 
-           otherPlayer.Character.Humanoid.Health > 0 then
-            
-            pcall(function()
-                local otherRoot = otherPlayer.Character.HumanoidRootPart
-                
-                local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-                local targetCFrame = CFrame.new(otherRoot.Position + Vector3.new(0, 2, 0))
-                
-                local killTween = TweenService:Create(player.Character.HumanoidRootPart, tweenInfo, {
-                    CFrame = targetCFrame
-                })
-                
-                killTween:Play()
-                killTween.Completed:Wait()
-                
-                if knife and knife:FindFirstChild("Stab") then
-                    knife.Stab:FireServer()
-                elseif knife then
-                    knife:Activate()
-                end
-                
-                wait(0.1)
-            end)
+    pcall(function()
+        local knife = EquipKnife()
+        if not knife then 
+            Notify("Error", "No knife found!")
+            return 
         end
-    end
+        
+        Notify("Kill Mode", "Starting elimination process...")
+        wait(0.8)
+        
+        for _, otherPlayer in pairs(Players:GetPlayers()) do
+            if otherPlayer ~= player and otherPlayer.Character and 
+               otherPlayer.Character:FindFirstChild("HumanoidRootPart") and 
+               otherPlayer.Character:FindFirstChild("Humanoid") and 
+               otherPlayer.Character.Humanoid.Health > 0 then
+                
+                pcall(function()
+                    local otherRoot = otherPlayer.Character.HumanoidRootPart
+                    
+                    local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+                    local targetCFrame = CFrame.new(otherRoot.Position + Vector3.new(0, 2, 0))
+                    
+                    local killTween = TweenService:Create(player.Character.HumanoidRootPart, tweenInfo, {
+                        CFrame = targetCFrame
+                    })
+                    
+                    killTween:Play()
+                    killTween.Completed:Wait()
+                    
+                    if knife and knife:FindFirstChild("Stab") then
+                        knife.Stab:FireServer()
+                    elseif knife then
+                        knife:Activate()
+                    end
+                    
+                    wait(0.1)
+                end)
+            end
+        end
+    end)
 end
 
 local function FlingAllPlayers()
     if not ValidateCharacter() or isDead or not isRoundActive then return end
     
-    Notify("Fling Mode", "Activating fling script...")
-    
     pcall(function()
+        Notify("Fling Mode", "Activating fling script...")
+        
         for _, otherPlayer in pairs(Players:GetPlayers()) do
             if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 local bodyVelocity = Instance.new("BodyVelocity")
@@ -400,27 +416,22 @@ local function StartCollection()
         CollectConnection = nil
     end
     
-    CollectConnection = spawn(function()
-        while getgenv().Ready.BeachBallCollector do
-            pcall(function()
-                isRoundActive = CheckRoundStatus()
+    CollectConnection = RunService.Heartbeat:Connect(function()
+        if not getgenv().Ready.BeachBallCollector then return end
+        
+        pcall(function()
+            isRoundActive = CheckRoundStatus()
+            
+            if ValidateCharacter() and isRoundActive and not isDead then
+                CountPlayers()
                 
-                if ValidateCharacter() and isRoundActive and not isDead then
-                    CountPlayers()
-                    
-                    local closestCoin = GetClosestCoin()
-                    if closestCoin then
-                        MoveToCoin(closestCoin)
-                        wait(1.5)
-                    else
-                        wait(0.3)
-                    end
-                else
-                    wait(0.8)
+                local closestCoin = GetClosestCoin()
+                if closestCoin then
+                    MoveToCoin(closestCoin)
+                    wait(1.5)
                 end
-            end)
-            wait(0.05)
-        end
+            end
+        end)
     end)
 end
 
@@ -430,15 +441,14 @@ local function StartESP()
         ESPConnection = nil
     end
     
-    ESPConnection = spawn(function()
-        while getgenv().Ready.ESPPlayers do
-            pcall(function()
-                if isRoundActive then
-                    UpdatePlayerHighlights()
-                end
-            end)
-            wait(0.8)
-        end
+    ESPConnection = RunService.Heartbeat:Connect(function()
+        if not getgenv().Ready.ESPPlayers then return end
+        
+        pcall(function()
+            if isRoundActive then
+                UpdatePlayerHighlights()
+            end
+        end)
     end)
 end
 
@@ -448,21 +458,20 @@ local function StartFlingMonitor()
         FlingConnection = nil
     end
     
-    FlingConnection = spawn(function()
-        while getgenv().Ready.FlingPlayers do
-            pcall(function()
-                if coinCount >= 40 and isRoundActive and not isDead then
-                    local role = GetPlayerRole()
-                    if role:lower():find("sheriff") or role:lower():find("innocent") or 
-                       role == "Sheriff" or role == "Innocent" then
-                        FlingAllPlayers()
-                        coinCount = 0
-                        wait(3)
-                    end
+    FlingConnection = RunService.Heartbeat:Connect(function()
+        if not getgenv().Ready.FlingPlayers then return end
+        
+        pcall(function()
+            if coinCount >= 40 and isRoundActive and not isDead then
+                local role = GetPlayerRole()
+                if role:lower():find("sheriff") or role:lower():find("innocent") or 
+                   role == "Sheriff" or role == "Innocent" then
+                    FlingAllPlayers()
+                    coinCount = 0
+                    wait(3)
                 end
-            end)
-            wait(0.8)
-        end
+            end
+        end)
     end)
 end
 
@@ -472,25 +481,25 @@ local function StartKillMonitor()
         KillConnection = nil
     end
     
-    KillConnection = spawn(function()
-        while getgenv().Ready.KillAllPlayers do
-            pcall(function()
-                if coinCount >= 40 and isRoundActive and not isDead then
-                    local role = GetPlayerRole()
-                    if role:lower():find("murder") or role == "Murderer" then
-                        KillAllPlayers()
-                        coinCount = 0
-                        wait(3)
-                    end
+    KillConnection = RunService.Heartbeat:Connect(function()
+        if not getgenv().Ready.KillAllPlayers then return end
+        
+        pcall(function()
+            if coinCount >= 40 and isRoundActive and not isDead then
+                local role = GetPlayerRole()
+                if role:lower():find("murder") or role == "Murderer" then
+                    KillAllPlayers()
+                    coinCount = 0
+                    wait(3)
                 end
-            end)
-            wait(0.8)
-        end
+            end
+        end)
     end)
 end
 
 local function StopCollection()
     if CollectConnection then
+        CollectConnection:Disconnect()
         CollectConnection = nil
     end
     StopAllTweens()
@@ -503,6 +512,7 @@ end
 
 local function StopESP()
     if ESPConnection then
+        ESPConnection:Disconnect()
         ESPConnection = nil
     end
     
@@ -516,12 +526,14 @@ end
 
 local function StopFlingMonitor()
     if FlingConnection then
+        FlingConnection:Disconnect()
         FlingConnection = nil
     end
 end
 
 local function StopKillMonitor()
     if KillConnection then
+        KillConnection:Disconnect()
         KillConnection = nil
     end
 end
@@ -579,6 +591,7 @@ end
 ShowWelcomeScreen()
 
 local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform())
+
 function RandomTheme() 
     local themes = {"Amethyst", "Light", "Aqua", "Rose", "Darker", "Dark"} 
     return themes[math.random(1, #themes)] 
@@ -651,7 +664,7 @@ end
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = MarketplaceService:GetProductInfo(game.PlaceId).Name, 
+    Title = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name, 
     SubTitle = "By Front -evill / 7sone", 
     TabWidth = 170, 
     Size = UDim2.fromOffset(620, High), 
@@ -750,12 +763,16 @@ spawn(function()
             
             CountPlayers()
             
-            playerCountLabel:SetDesc(string.format("Murderer: %d | Sheriff: %d | Innocent: %d", 
-                playerCounts.murderer, playerCounts.sheriff, playerCounts.innocent))
+            if playerCountLabel then
+                playerCountLabel:SetDesc(string.format("Murderer: %d | Sheriff: %d | Innocent: %d", 
+                    playerCounts.murderer, playerCounts.sheriff, playerCounts.innocent))
+            end
             
-            local remaining = math.max(0, 40 - coinCount)
-            coinsLeftLabel:SetDesc(string.format("Coins Collected: %d/40 | Remaining: %d",
-                coinCount, remaining))
+            if coinsLeftLabel then
+                local remaining = math.max(0, 40 - coinCount)
+                coinsLeftLabel:SetDesc(string.format("Coins Collected: %d/40 | Remaining: %d",
+                    coinCount, remaining))
+            end
         end
     end
 end)
