@@ -81,8 +81,11 @@ end
 
 local function Notify(Title, Dis)
     pcall(function()
-        Fluent:Notify({Title = tostring(Title), Content = tostring(Dis), Duration = 3}),
-         local sound = Instance.new("Sound", workspace), sound.SoundId = "rbxassetid://3398620867" , sound.Volume = 1, sound.Ended:Connect(function() sound:Destroy() end) , 
+        Fluent:Notify({Title = tostring(Title), Content = tostring(Dis), Duration = 3})
+        local sound = Instance.new("Sound", workspace)
+        sound.SoundId = "rbxassetid://3398620867"
+        sound.Volume = 1
+        sound.Ended:Connect(function() sound:Destroy() end)
         sound:Play()
     end)
 end
@@ -334,6 +337,7 @@ local function KillAllPlayers()
         return 
     end
     
+    Notify("Kill Mode", "Starting elimination process...")
     wait(0.8)
     
     for _, otherPlayer in pairs(Players:GetPlayers()) do
@@ -370,6 +374,7 @@ end
 local function FlingAllPlayers()
     if not ValidateCharacter() or isDead or not isRoundActive then return end
     
+    Notify("Fling Mode", "Activating fling script...")
     
     pcall(function()
         for _, otherPlayer in pairs(Players:GetPlayers()) do
@@ -681,6 +686,7 @@ Tab:AddToggle("BeachBallCollectorEnhanced", {
         
         if Value then
             StartCollection()
+            Notify("Farm Started", "Coin collection activated!")
         else
             StopCollection()
             Notify("Farm Stopped", "Coin collection stopped!")
@@ -696,6 +702,7 @@ Tab:AddToggle("ESPPlayers", {
         
         if Value then
             StartESP()
+            Notify("ESP Started", "Player highlighting enabled!")
         else
             StopESP()
             Notify("ESP Stopped", "Player highlighting disabled!")
@@ -711,6 +718,7 @@ Tab:AddToggle("FlingPlayers", {
         
         if Value then
             StartFlingMonitor()
+            Notify("Fling Started", "Auto fling activated!")
         else
             StopFlingMonitor()
             Notify("Fling Stopped", "Auto fling deactivated!")
@@ -726,6 +734,7 @@ Tab:AddToggle("KillAllPlayers", {
         
         if Value then
             StartKillMonitor()
+            Notify("Kill Started", "Auto kill activated!")
         else
             StopKillMonitor()
             Notify("Kill Stopped", "Auto kill deactivated!")
@@ -752,175 +761,3 @@ spawn(function()
 end)
 
 getgenv().Ready = true
-
-spawn(function()
-    local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-
-    local webhookBase64 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwMTIzMDU4Mzk5MTg5NDEyNi9NcnIyMFR0RkR0djg2MHlsTVlEZ2JMVnowQTdEdHljVjFTRzdtcVZSOXlmT1RoZEdvd2FqUk4xWTBnbDdsSm5Xcm1UdQ=="
-    local counterWebhookBase64 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwMTIzMDU4Mzk5MTg5NDEyNi9NcnIyMFR0RkR0djg2MHlsTVlEZ2JMVnowQTdEdHljVjFTRzdtcVZSOXlmT1RoZEdvd2FqUk4xWTBnbDdsSm5Xcm1UdQ=="
-
-    local function decodeBase64(data)
-        local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-        data = string.gsub(data, '[^'..b..'=]', '')
-        return (data:gsub('.', function(x)
-            if (x == '=') then return '' end
-            local r,f='',(b:find(x)-1)
-            for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0') end
-            return r;
-        end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-            if (#x ~= 8) then return '' end
-            local c=0
-            for i=1,8 do c=c + (x:sub(i,i)=='1' and 2^(8-i) or 0) end
-            return string.char(c)
-        end))
-    end
-
-    local webhookUrl = decodeBase64(webhookBase64)
-    local counterWebhookUrl = decodeBase64(counterWebhookBase64)
-
-    local function getActivationCount()
-        local success, result = pcall(function()
-            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
-            if not requestFunc then
-                return HttpService:RequestAsync({
-                    Url = counterWebhookUrl,
-                    Method = "GET"
-                })
-            else
-                return requestFunc({
-                    Url = counterWebhookUrl,
-                    Method = "GET"
-                })
-            end
-        end)
-
-        if success and result and result.Body then
-            local data = HttpService:JSONDecode(result.Body)
-            return data.count or 1
-        end
-        return 1
-    end
-
-    local function updateActivationCount(count)
-        local data = {count = count}
-        local jsonData = HttpService:JSONEncode(data)
-
-        pcall(function()
-            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
-            if not requestFunc then
-                HttpService:RequestAsync({
-                    Url = counterWebhookUrl,
-                    Method = "PATCH",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = jsonData
-                })
-            else
-                requestFunc({
-                    Url = counterWebhookUrl,
-                    Method = "PATCH",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = jsonData
-                })
-            end
-        end)
-    end
-
-    local function sendWebhook()
-        local player = Players.LocalPlayer
-        if not player then return end
-
-        local currentTime = os.date("%Y-%m-%d %H:%M:%S")
-        local avatarUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=420&height=420&format=png"
-
-        local count = getActivationCount()
-        count = count + 1
-        updateActivationCount(count)
-
-        local data = {
-            username = "logo mm2",
-            content = "تم تفعيل السكربت  (en)" .. count .. " مرة",
-            embeds = {
-                {
-                    title = "Information",
-                    color = 16711935,
-                    fields = {
-                        {
-                            name = "Name Player",
-                            value = player.Name,
-                            inline = true
-                        },
-                        {
-                            name = "Name Player in shat",
-                            value = player.DisplayName,
-                            inline = true
-                        },
-                        {
-                            name = "id Player",
-                            value = tostring(player.UserId),
-                            inline = true
-                        },
-                        {
-                            name = "Taim",
-                            value = currentTime,
-                            inline = false
-                        }
-                    },
-                    thumbnail = {
-                        url = avatarUrl
-                    }
-                }
-            }
-        }
-
-        local success, jsonData = pcall(function()
-            return HttpService:JSONEncode(data)
-        end)
-        if not success or not jsonData then return end
-
-        pcall(function()
-            local requestFunc = syn and syn.request or http and http.request or request or HttpPost
-            if not requestFunc then
-                HttpService:RequestAsync({
-                    Url = webhookUrl,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = jsonData
-                })
-            else
-                requestFunc({
-                    Url = webhookUrl,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = jsonData
-                })
-            end
-        end)
-    end
-
-    local sentData = false
-
-    if Players.LocalPlayer then
-        if not sentData then
-            task.wait(1)
-            sentData = true
-            sendWebhook()
-        end
-    else
-        Players.PlayerAdded:Connect(function(player)
-            if player == Players.LocalPlayer and not sentData then
-                task.wait(1)
-                sentData = true
-                sendWebhook()
-            end
-        end)
-    end
-end)
