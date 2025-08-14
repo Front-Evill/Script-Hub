@@ -5,7 +5,7 @@ local ScrollingFrame = Instance.new("ScrollingFrame")
 local UIGridLayout = Instance.new("UIGridLayout")
 
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://3398620867"
+sound.SoundId = "rbxassetid://"
 sound.Volume = 0.3
 sound.Looped = true
 sound.Parent = game.Workspace
