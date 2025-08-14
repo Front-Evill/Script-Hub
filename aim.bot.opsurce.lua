@@ -70,7 +70,7 @@ end
 local function getMyRole()
    return getPlayerRole(player)
 end
-
+--[[
 local function getRoleColor(role)
    if role == "Murderer" then
        return Color3.new(1, 0, 0)
@@ -82,7 +82,7 @@ local function getRoleColor(role)
        return Color3.new(1, 1, 1)
    end
 end
-
+--]]
 local function createESP(targetPlayer)
   if espBoxes[targetPlayer] then return end
   
@@ -192,7 +192,8 @@ local function updateESP(targetPlayer)
       end
       
       esp.gui.Adornee = rootPart
-      
+
+      --[[
       if isMM2 then
           local role = getPlayerRole(targetPlayer)
           local roleColor = getRoleColor(role)
@@ -216,6 +217,7 @@ local function updateESP(targetPlayer)
           esp.roleLabel.Text = "â­گ"
           esp.roleLabel.TextColor3 = playerColor
       end
+      --]]
       
       local distance = math.floor((rootPart.Position - camera.CFrame.Position).Magnitude)
       esp.distanceLabel.Text = distance .. "m"
@@ -246,6 +248,7 @@ local function removeESP(targetPlayer)
   end
 end
 
+-- تحديد لاعب  محلي هل هو قاتل او شيرف  | تحديد نوع ايم بوت
 local function findTarget()
    if isMM2 then
        local myRole = getMyRole()
