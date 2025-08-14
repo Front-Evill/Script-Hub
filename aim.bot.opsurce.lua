@@ -70,7 +70,6 @@ end
 local function getMyRole()
    return getPlayerRole(player)
 end
---[[
 local function getRoleColor(role)
    if role == "Murderer" then
        return Color3.new(1, 0, 0)
@@ -82,7 +81,6 @@ local function getRoleColor(role)
        return Color3.new(1, 1, 1)
    end
 end
---]]
 local function createESP(targetPlayer)
   if espBoxes[targetPlayer] then return end
   
@@ -510,7 +508,7 @@ local function updateGUI()
           gui.espStatus.Text = espEnabled and "ESP: ON | T/E Toggle" or "ESP: OFF | T/E Toggle"
           gui.espStatus.TextColor3 = espEnabled and Color3.new(0.3, 0.8, 1) or Color3.new(0.5, 0.5, 0.5)
       end
-      
+      --[[
       if isMM2 and gui.roleStatus then
           local myRole = getMyRole()
           local roleColor = getRoleColor(myRole)
@@ -531,7 +529,7 @@ local function updateGUI()
       task.wait()
   end
 end
-
+--]]
 local function manageESP()
   while true do
       for _, targetPlayer in pairs(Players:GetPlayers()) do
