@@ -191,7 +191,6 @@ local function updateESP(targetPlayer)
       
       esp.gui.Adornee = rootPart
 
-      --[[
       if isMM2 then
           local role = getPlayerRole(targetPlayer)
           local roleColor = getRoleColor(role)
@@ -215,7 +214,6 @@ local function updateESP(targetPlayer)
           esp.roleLabel.Text = "â­گ"
           esp.roleLabel.TextColor3 = playerColor
       end
-      --]]
       
       local distance = math.floor((rootPart.Position - camera.CFrame.Position).Magnitude)
       esp.distanceLabel.Text = distance .. "m"
@@ -246,7 +244,6 @@ local function removeESP(targetPlayer)
   end
 end
 
--- تحديد لاعب  محلي هل هو قاتل او شيرف  | تحديد نوع ايم بوت
 local function findTarget()
    if isMM2 then
        local myRole = getMyRole()
@@ -508,7 +505,6 @@ local function updateGUI()
           gui.espStatus.Text = espEnabled and "ESP: ON | T/E Toggle" or "ESP: OFF | T/E Toggle"
           gui.espStatus.TextColor3 = espEnabled and Color3.new(0.3, 0.8, 1) or Color3.new(0.5, 0.5, 0.5)
       end
-      --[[
       if isMM2 and gui.roleStatus then
           local myRole = getMyRole()
           local roleColor = getRoleColor(myRole)
@@ -529,7 +525,6 @@ local function updateGUI()
       task.wait()
   end
 end
---]]
 local function manageESP()
   while true do
       for _, targetPlayer in pairs(Players:GetPlayers()) do
