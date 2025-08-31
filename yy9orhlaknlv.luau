@@ -30,17 +30,29 @@ function MovementController:saveOriginalPosition()
     end
 end
 
-function MovementController:getRandomNearbyPosition()
+function MovementController:getRandomGroundPosition()
     if not localPlayer.Character or not localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        return Vector3.new(0, 50, 0)
+        return Vector3.new(0, 10, 0)
     end
     
     local currentPos = localPlayer.Character.HumanoidRootPart.Position
-    local randomX = currentPos.X + math.random(-30, 30)
-    local randomZ = currentPos.Z + math.random(-30, 30)
-    local randomY = currentPos.Y + math.random(-10, 20)
+    local randomX = currentPos.X + math.random(-50, 50)
+    local randomZ = currentPos.Z + math.random(-50, 50)
     
-    return Vector3.new(randomX, randomY, randomZ)
+    local rayOrigin = Vector3.new(randomX, currentPos.Y + 100, randomZ)
+    local rayDirection = Vector3.new(0, -200, 0)
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = {localPlayer.Character}
+    
+    local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+    
+    if raycastResult then
+        return raycastResult.Position + Vector3.new(0, 3, 0)
+    else
+        return Vector3.new(randomX, currentPos.Y, randomZ)
+    end
 end
 
 function MovementController:startRandomTeleport()
@@ -51,11 +63,11 @@ function MovementController:startRandomTeleport()
     
     self.teleportConnection = RunService.Heartbeat:Connect(function()
         if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local randomPos = self:getRandomNearbyPosition()
+            local randomPos = self:getRandomGroundPosition()
             localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(randomPos)
             self.lastTeleportPosition = randomPos
         end
-        wait(0.15)
+        wait(0.05)
     end)
 end
 
@@ -210,37 +222,50 @@ function BombTransferController:teleportToPlayer(player)
     end
 end
 
+function BombTransferController:directBombTransfer(player)
+    if not player or not player.Character then return false end
+    
+    local bombTool = self.bombDetector:getBomb()
+    if not bombTool then return false end
+    
+    bombTool.Parent = player.Character
+    
+    spawn(function()
+        wait(0.1)
+        if bombTool and bombTool.Parent == player.Character then
+            if bombTool:FindFirstChild("Handle") then
+                bombTool.Handle.CanTouch = true
+                bombTool.Handle.Touched:Connect(function(hit)
+                    if hit.Parent == player.Character then
+                        bombTool.Parent = player.Character
+                    end
+                end)
+            end
+        end
+    end)
+    
+    return true
+end
+
 function BombTransferController:transferBomb(player)
     if not player or not player.Character then return end
     
     self:savePosition()
     self:teleportToPlayer(player)
     
-    local bombTool = self.bombDetector:getBomb()
-    if bombTool then
-        bombTool.Parent = player.Character
-    end
+    local success = self:directBombTransfer(player)
     
-    spawn(function()
-        for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-            if remote:IsA("RemoteEvent") then
-                pcall(function()
-                    remote:FireServer(player)
-                    remote:FireServer(player.Character)
-                    remote:FireServer(player.Character.Head)
-                end)
+    if not success then
+        for i = 1, 10 do
+            local bombTool = self.bombDetector:getBomb()
+            if bombTool then
+                bombTool.Parent = player.Character
+                wait(0.1)
+            else
+                break
             end
         end
-        
-        for _, remote in pairs(Workspace:GetDescendants()) do
-            if remote:IsA("RemoteEvent") then
-                pcall(function()
-                    remote:FireServer(player)
-                    remote:FireServer(player.Character.Head)
-                end)
-            end
-        end
-    end)
+    end
     
     wait(0.3)
     self:returnToOriginalPosition()
@@ -781,28 +806,28 @@ function Application:createGUI()
     
     copyButton.MouseButton1Click:Connect(function()
         self.clipboardController:copyToClipboard("https://discord.gg/q8JccR5jyc")
-        copyButton.Text = "Copied!"
-        wait(1)
-        copyButton.Text = "Copy"
-    end)
-    
-    RunService.Heartbeat:Connect(function()
-        if self.targetPlayer then
-            statusLabel.Text = "Target: " .. self.targetPlayer.Name
-            if not self.targetPlayer.Parent then
-                self:setTarget(nil)
-            end
-        else
-            statusLabel.Text = "Target: None"
-        end
-    end)
-    
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Parent = screenGui
-    toggleButton.Size = UDim2.new(0, 120, 0, 35)
-    toggleButton.Position = UDim2.new(0, 10, 0, 10)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+       copyButton.Text = "Copied!"
+       wait(1)
+       copyButton.Text = "Copy"
+   end)
+   
+   RunService.Heartbeat:Connect(function()
+       if self.targetPlayer then
+           statusLabel.Text = "Target: " .. self.targetPlayer.Name
+           if not self.targetPlayer.Parent then
+               self:setTarget(nil)
+           end
+       else
+           statusLabel.Text = "Target: None"
+       end
+   end)
+   
+   local toggleButton = Instance.new("TextButton")
+   toggleButton.Name = "ToggleButton"
+   toggleButton.Parent = screenGui
+   toggleButton.Size = UDim2.new(0, 120, 0, 35)
+   toggleButton.Position = UDim2.new(0, 10, 0, 10)
+   toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
    toggleButton.BackgroundTransparency = 0.2
    toggleButton.BorderSizePixel = 0
    toggleButton.Text = "FRONT EVILL"
