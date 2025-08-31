@@ -92,6 +92,124 @@ function MovementController:isActive()
     return self.isRandomTeleporting
 end
 
+local ReachController = {}
+ReachController.__index = ReachController
+
+function ReachController.new()
+    local self = setmetatable({}, ReachController)
+    self.reachEnabled = false
+    self.reachDistance = 50
+    self.reachConnection = nil
+    self.reachVisual = nil
+    return self
+end
+
+function ReachController:createReachVisual()
+    if self.reachVisual then
+        self.reachVisual:Destroy()
+    end
+    
+    if not localPlayer.Character or not localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+    
+    local reachPart = Instance.new("Part")
+    reachPart.Name = "ReachVisual"
+    reachPart.Parent = workspace
+    reachPart.Anchored = true
+    reachPart.CanCollide = false
+    reachPart.CanTouch = false
+    reachPart.Transparency = 0.8
+    reachPart.Color = Color3.fromRGB(255, 0, 0)
+    reachPart.Material = Enum.Material.Neon
+    reachPart.Shape = Enum.PartType.Block
+    reachPart.Size = Vector3.new(self.reachDistance * 2, 0.5, self.reachDistance * 2)
+    
+    self.reachVisual = reachPart
+end
+
+function ReachController:updateReachVisual()
+    if not self.reachEnabled or not self.reachVisual then return end
+    
+    if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = localPlayer.Character.HumanoidRootPart
+        self.reachVisual.CFrame = CFrame.new(rootPart.Position.X, rootPart.Position.Y - 3, rootPart.Position.Z)
+        self.reachVisual.Size = Vector3.new(self.reachDistance * 2, 0.5, self.reachDistance * 2)
+    end
+end
+
+function ReachController:toggleReach()
+    self.reachEnabled = not self.reachEnabled
+    
+    if self.reachEnabled then
+        self:createReachVisual()
+        
+        self.reachConnection = RunService.Heartbeat:Connect(function()
+            self:updateReachVisual()
+        end)
+        
+        if localPlayer.Character then
+            local humanoid = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                local originalReachDistance = 3
+                
+                for _, tool in pairs(localPlayer.Character:GetChildren()) do
+                    if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                        tool.Handle.Size = Vector3.new(self.reachDistance, self.reachDistance, self.reachDistance)
+                        tool.Handle.Transparency = 1
+                    end
+                end
+                
+                for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
+                    if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                        tool.Handle.Size = Vector3.new(self.reachDistance, self.reachDistance, self.reachDistance)
+                        tool.Handle.Transparency = 1
+                    end
+                end
+            end
+        end
+    else
+        if self.reachConnection then
+            self.reachConnection:Disconnect()
+            self.reachConnection = nil
+        end
+        
+        if self.reachVisual then
+            self.reachVisual:Destroy()
+            self.reachVisual = nil
+        end
+        
+        if localPlayer.Character then
+            for _, tool in pairs(localPlayer.Character:GetChildren()) do
+                if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                    tool.Handle.Size = Vector3.new(1, 1, 1)
+                    tool.Handle.Transparency = 0
+                end
+            end
+            
+            for _, tool in pairs(localPlayer.Backpack:GetChildren()) do
+                if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                    tool.Handle.Size = Vector3.new(1, 1, 1)
+                    tool.Handle.Transparency = 0
+                end
+            end
+        end
+    end
+    
+    return self.reachEnabled
+end
+
+function ReachController:setDistance(distance)
+    self.reachDistance = distance
+    if self.reachEnabled then
+        self:updateReachVisual()
+    end
+end
+
+function ReachController:isActive()
+    return self.reachEnabled
+end
+
 local ProtectionController = {}
 ProtectionController.__index = ProtectionController
 
@@ -187,6 +305,7 @@ function BombTransferController.new(bombDetector)
     self.transferConnection = nil
     self.targetPlayer = nil
     self.originalPosition = nil
+    self.transferDistance = 8
     return self
 end
 
@@ -215,7 +334,7 @@ function BombTransferController:teleportToPlayer(player)
         local targetPosition = player.Character.HumanoidRootPart.Position
         local targetCFrame = player.Character.HumanoidRootPart.CFrame
         
-        local frontPosition = targetPosition + targetCFrame.LookVector * -1.5
+        local frontPosition = targetPosition + targetCFrame.LookVector * -self.transferDistance
         localPlayer.Character.HumanoidRootPart.CFrame = CFrame.lookAt(frontPosition, targetPosition)
         
         wait(0.1)
@@ -267,7 +386,7 @@ function BombTransferController:transferBomb(player)
         end
     end
     
-    wait(0.3)
+    wait(0.5)
     self:returnToOriginalPosition()
 end
 
@@ -619,6 +738,7 @@ function Application.new()
     self.movementController = MovementController.new()
     self.protectionController = ProtectionController.new()
     self.clipboardController = ClipboardController.new()
+    self.reachController = ReachController.new()
     
     return self
 end
@@ -634,8 +754,8 @@ function Application:createGUI()
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = screenGui
-    mainFrame.Size = UDim2.new(0, 300, 0, 580)
-    mainFrame.Position = UDim2.new(0.5, -150, 0.5, -290)
+    mainFrame.Size = UDim2.new(0, 300, 0, 630)
+    mainFrame.Position = UDim2.new(0.5, -150, 0.5, -315)
     mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BackgroundTransparency = 0.3
     mainFrame.BorderSizePixel = 0
@@ -721,91 +841,151 @@ function Application:createGUI()
             else
                 self.movementController:startRandomTeleport()
             end
-        end, color = Color3.fromRGB(0, 255, 200)}
-    }
-    
-    for i, data in ipairs(buttonData) do
-        local button = Instance.new("TextButton")
-        button.Name = "Button" .. i
-        button.Parent = mainFrame
-        button.Size = UDim2.new(0.9, 0, 0, 40)
-        button.Position = UDim2.new(0.05, 0, 0, 100 + (i - 1) * 50)
-        button.BackgroundColor3 = data.color
-        button.BackgroundTransparency = 0.2
-        button.BorderSizePixel = 0
-        button.Text = data.name
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 14
-        button.Font = Enum.Font.Gotham
-        
-        local buttonCorner = Instance.new("UICorner")
-        buttonCorner.CornerRadius = UDim.new(0, 8)
-        buttonCorner.Parent = button
-        
-        button.MouseEnter:Connect(function()
-            local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.1})
-            tween:Play()
-        end)
-        
-        button.MouseLeave:Connect(function()
-            local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.2})
-            tween:Play()
-        end)
-        
-        button.MouseButton1Click:Connect(function()
-            spawn(data.func)
-        end)
-    end
-    
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(0.9, 0, 0, 25)
-    statusLabel.Position = UDim2.new(0.05, 0, 0, 460)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Text = "Target: None"
-    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    statusLabel.TextSize = 12
-    statusLabel.Font = Enum.Font.Gotham
-    statusLabel.Parent = mainFrame
-    
-    local discordFrame = Instance.new("Frame")
-    discordFrame.Size = UDim2.new(0.9, 0, 0, 35)
-    discordFrame.Position = UDim2.new(0.05, 0, 0, 490)
-    discordFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    discordFrame.BorderSizePixel = 0
-    discordFrame.Parent = mainFrame
-    
-    local discordCorner = Instance.new("UICorner")
-    discordCorner.CornerRadius = UDim.new(0, 8)
-    discordCorner.Parent = discordFrame
-    
-    local discordLabel = Instance.new("TextLabel")
-    discordLabel.Size = UDim2.new(0.7, 0, 1, 0)
-    discordLabel.Position = UDim2.new(0, 5, 0, 0)
-    discordLabel.BackgroundTransparency = 1
-    discordLabel.Text = "https://discord.gg/q8JccR5jyc"
-    discordLabel.TextColor3 = Color3.fromRGB(100, 149, 237)
-    discordLabel.TextSize = 11
-    discordLabel.Font = Enum.Font.Gotham
-    discordLabel.TextXAlignment = Enum.TextXAlignment.Left
-    discordLabel.Parent = discordFrame
-    
-    local copyButton = Instance.new("TextButton")
-    copyButton.Size = UDim2.new(0.25, 0, 0.8, 0)
-    copyButton.Position = UDim2.new(0.72, 0, 0.1, 0)
-    copyButton.BackgroundColor3 = Color3.fromRGB(100, 149, 237)
-    copyButton.BorderSizePixel = 0
-    copyButton.Text = "Copy"
-    copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    copyButton.TextSize = 12
-    copyButton.Font = Enum.Font.Gotham
-    copyButton.Parent = discordFrame
-    
-    local copyCorner = Instance.new("UICorner")
-    copyCorner.CornerRadius = UDim.new(0, 6)
-    copyCorner.Parent = copyButton
-    
-    copyButton.MouseButton1Click:Connect(function()
-        self.clipboardController:copyToClipboard("https://discord.gg/q8JccR5jyc")
+        end, color = Color3.fromRGB(0, 255, 200)},
+       {name = "Extended Reach", func = function() self.reachController:toggleReach() end, color = Color3.fromRGB(255, 0, 255)}
+   }
+   
+   for i, data in ipairs(buttonData) do
+       local button = Instance.new("TextButton")
+       button.Name = "Button" .. i
+       button.Parent = mainFrame
+       button.Size = UDim2.new(0.9, 0, 0, 40)
+       button.Position = UDim2.new(0.05, 0, 0, 100 + (i - 1) * 50)
+       button.BackgroundColor3 = data.color
+       button.BackgroundTransparency = 0.2
+       button.BorderSizePixel = 0
+       button.Text = data.name
+       button.TextColor3 = Color3.fromRGB(255, 255, 255)
+       button.TextSize = 14
+       button.Font = Enum.Font.Gotham
+       
+       local buttonCorner = Instance.new("UICorner")
+       buttonCorner.CornerRadius = UDim.new(0, 8)
+       buttonCorner.Parent = button
+       
+       button.MouseEnter:Connect(function()
+           local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.1})
+           tween:Play()
+       end)
+       
+       button.MouseLeave:Connect(function()
+           local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.2})
+           tween:Play()
+       end)
+       
+       button.MouseButton1Click:Connect(function()
+           spawn(data.func)
+       end)
+   end
+   
+   local reachFrame = Instance.new("Frame")
+   reachFrame.Size = UDim2.new(0.9, 0, 0, 35)
+   reachFrame.Position = UDim2.new(0.05, 0, 0, 510)
+   reachFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+   reachFrame.BorderSizePixel = 0
+   reachFrame.Parent = mainFrame
+   
+   local reachCorner = Instance.new("UICorner")
+   reachCorner.CornerRadius = UDim.new(0, 8)
+   reachCorner.Parent = reachFrame
+   
+   local reachLabel = Instance.new("TextLabel")
+   reachLabel.Size = UDim2.new(0.3, 0, 1, 0)
+   reachLabel.Position = UDim2.new(0, 5, 0, 0)
+   reachLabel.BackgroundTransparency = 1
+   reachLabel.Text = "Reach:"
+   reachLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+   reachLabel.TextSize = 12
+   reachLabel.Font = Enum.Font.Gotham
+   reachLabel.TextXAlignment = Enum.TextXAlignment.Left
+   reachLabel.Parent = reachFrame
+   
+   local reachSlider = Instance.new("TextBox")
+   reachSlider.Size = UDim2.new(0.4, 0, 0.8, 0)
+   reachSlider.Position = UDim2.new(0.32, 0, 0.1, 0)
+   reachSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+   reachSlider.BorderSizePixel = 0
+   reachSlider.Text = "50"
+   reachSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+   reachSlider.TextSize = 12
+   reachSlider.Font = Enum.Font.Gotham
+   reachSlider.Parent = reachFrame
+   
+   local sliderCorner = Instance.new("UICorner")
+   sliderCorner.CornerRadius = UDim.new(0, 4)
+   sliderCorner.Parent = reachSlider
+   
+   local setReachButton = Instance.new("TextButton")
+   setReachButton.Size = UDim2.new(0.25, 0, 0.8, 0)
+   setReachButton.Position = UDim2.new(0.73, 0, 0.1, 0)
+   setReachButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+   setReachButton.BorderSizePixel = 0
+   setReachButton.Text = "Set"
+   setReachButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+   setReachButton.TextSize = 12
+   setReachButton.Font = Enum.Font.Gotham
+   setReachButton.Parent = reachFrame
+   
+   local setReachCorner = Instance.new("UICorner")
+   setReachCorner.CornerRadius = UDim.new(0, 4)
+   setReachCorner.Parent = setReachButton
+   
+   setReachButton.MouseButton1Click:Connect(function()
+       local distance = tonumber(reachSlider.Text)
+       if distance and distance > 0 and distance <= 200 then
+           self.reachController:setDistance(distance)
+       end
+   end)
+   
+   local statusLabel = Instance.new("TextLabel")
+   statusLabel.Size = UDim2.new(0.9, 0, 0, 25)
+   statusLabel.Position = UDim2.new(0.05, 0, 0, 555)
+   statusLabel.BackgroundTransparency = 1
+   statusLabel.Text = "Target: None"
+   statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+   statusLabel.TextSize = 12
+   statusLabel.Font = Enum.Font.Gotham
+   statusLabel.Parent = mainFrame
+   
+   local discordFrame = Instance.new("Frame")
+   discordFrame.Size = UDim2.new(0.9, 0, 0, 35)
+   discordFrame.Position = UDim2.new(0.05, 0, 0, 585)
+   discordFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+   discordFrame.BorderSizePixel = 0
+   discordFrame.Parent = mainFrame
+   
+   local discordCorner = Instance.new("UICorner")
+   discordCorner.CornerRadius = UDim.new(0, 8)
+   discordCorner.Parent = discordFrame
+   
+   local discordLabel = Instance.new("TextLabel")
+   discordLabel.Size = UDim2.new(0.7, 0, 1, 0)
+   discordLabel.Position = UDim2.new(0, 5, 0, 0)
+   discordLabel.BackgroundTransparency = 1
+   discordLabel.Text = "https://discord.gg/q8JccR5jyc"
+   discordLabel.TextColor3 = Color3.fromRGB(100, 149, 237)
+   discordLabel.TextSize = 11
+   discordLabel.Font = Enum.Font.Gotham
+   discordLabel.TextXAlignment = Enum.TextXAlignment.Left
+   discordLabel.Parent = discordFrame
+   
+   local copyButton = Instance.new("TextButton")
+   copyButton.Size = UDim2.new(0.25, 0, 0.8, 0)
+   copyButton.Position = UDim2.new(0.72, 0, 0.1, 0)
+   copyButton.BackgroundColor3 = Color3.fromRGB(100, 149, 237)
+   copyButton.BorderSizePixel = 0
+   copyButton.Text = "Copy"
+   copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+   copyButton.TextSize = 12
+   copyButton.Font = Enum.Font.Gotham
+   copyButton.Parent = discordFrame
+   
+   local copyCorner = Instance.new("UICorner")
+   copyCorner.CornerRadius = UDim.new(0, 6)
+   copyCorner.Parent = copyButton
+   
+   copyButton.MouseButton1Click:Connect(function()
+       self.clipboardController:copyToClipboard("https://discord.gg/q8JccR5jyc")
        copyButton.Text = "Copied!"
        wait(1)
        copyButton.Text = "Copy"
@@ -819,6 +999,14 @@ function Application:createGUI()
            end
        else
            statusLabel.Text = "Target: None"
+       end
+       
+       if self.reachController.reachEnabled then
+           reachLabel.Text = "Reach: " .. self.reachController.reachDistance .. " ON"
+           reachLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+       else
+           reachLabel.Text = "Reach: OFF"
+           reachLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
        end
    end)
    
@@ -846,7 +1034,7 @@ function Application:createGUI()
    toggleButton.MouseButton1Click:Connect(function()
        isVisible = not isVisible
        if isVisible then
-           mainFrame:TweenPosition(UDim2.new(0.5, -150, 0.5, -290), "Out", "Quad", 0.3, true)
+           mainFrame:TweenPosition(UDim2.new(0.5, -150, 0.5, -315), "Out", "Quad", 0.3, true)
            mainFrame.Visible = true
        else
            mainFrame:TweenPosition(UDim2.new(0.5, -150, 1.2, 0), "In", "Quad", 0.3, true, function()
