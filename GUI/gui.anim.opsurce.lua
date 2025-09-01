@@ -11,7 +11,7 @@ local CountdownFrame = Instance.new("Frame")
 local CountdownLabel = Instance.new("TextLabel")
 
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://"
+sound.SoundId = "rbxassetid://3398620867"
 sound.Volume = 0.3
 sound.Looped = true
 sound.Parent = game.Workspace
