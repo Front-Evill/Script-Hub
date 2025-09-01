@@ -3,6 +3,12 @@ local MainFrame = Instance.new("Frame")
 local CloseButton = Instance.new("TextButton")
 local ScrollingFrame = Instance.new("ScrollingFrame")
 local UIGridLayout = Instance.new("UIGridLayout")
+local MinimizedFrame = Instance.new("Frame")
+local ShowButton = Instance.new("TextButton")
+local DeleteButton = Instance.new("TextButton")
+
+local currentAnimation = nil
+local isMinimized = false
 
 function NotifySound ()
 local sound = Instance.new("Sound")
@@ -14,8 +20,9 @@ sound:Play()
 end
 
 ScreenGui.Name = "AnimationGUI"
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
 
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
@@ -64,6 +71,50 @@ UIGridLayout.Parent = ScrollingFrame
 UIGridLayout.CellSize = UDim2.new(0, 180, 0, 50)
 UIGridLayout.CellPadding = UDim2.new(0, 10, 0, 10)
 UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+MinimizedFrame.Name = "MinimizedFrame"
+MinimizedFrame.Parent = ScreenGui
+MinimizedFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MinimizedFrame.BorderSizePixel = 0
+MinimizedFrame.Position = UDim2.new(0, 20, 0, 20)
+MinimizedFrame.Size = UDim2.new(0, 200, 0, 40)
+MinimizedFrame.Active = true
+MinimizedFrame.Draggable = true
+MinimizedFrame.Visible = false
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 8)
+MinCorner.Parent = MinimizedFrame
+
+ShowButton.Name = "ShowButton"
+ShowButton.Parent = MinimizedFrame
+ShowButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+ShowButton.BorderSizePixel = 0
+ShowButton.Position = UDim2.new(0, 5, 0, 5)
+ShowButton.Size = UDim2.new(0, 150, 0, 30)
+ShowButton.Font = Enum.Font.GothamBold
+ShowButton.Text = "🎭 Animation GUI"
+ShowButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShowButton.TextSize = 12
+
+local ShowCorner = Instance.new("UICorner")
+ShowCorner.CornerRadius = UDim.new(0, 6)
+ShowCorner.Parent = ShowButton
+
+DeleteButton.Name = "DeleteButton"
+DeleteButton.Parent = MinimizedFrame
+DeleteButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+DeleteButton.BorderSizePixel = 0
+DeleteButton.Position = UDim2.new(1, -35, 0, 5)
+DeleteButton.Size = UDim2.new(0, 30, 0, 30)
+DeleteButton.Font = Enum.Font.GothamBold
+DeleteButton.Text = "X"
+DeleteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeleteButton.TextSize = 14
+
+local DelCorner = Instance.new("UICorner")
+DelCorner.CornerRadius = UDim.new(0, 6)
+DelCorner.Parent = DeleteButton
 
 local animationData = {
    Levitation = {
@@ -160,13 +211,15 @@ local function ApplyAnimation(animName)
            Title = "Warning!",
            Text = "You must be R15 to use animations!",
            Duration = 5
-          NotifySound()
        })
+       NotifySound()
        return
    end
    
    local data = animationData[animName]
    if not data then return end
+   
+   currentAnimation = animName
    
    local Animate = plr.Character.Animate
    
@@ -185,32 +238,38 @@ local function ApplyAnimation(animName)
        Title = "Success!",
        Text = animName .. " animation applied!",
        Duration = 3
-        NotifySound()
    })
+   NotifySound()
+end
+
+local function ReapplyAnimation()
+   if currentAnimation then
+       ApplyAnimation(currentAnimation)
+   end
 end
 
 local animations = {
-   {name = "Levitation", color = Color3.fromRGB(138, 43, 226)},
-   {name = "Astronaut", color = Color3.fromRGB(30, 144, 255)},
-   {name = "Ninja", color = Color3.fromRGB(75, 75, 75)},
-   {name = "Pirate", color = Color3.fromRGB(139, 69, 19)},
-   {name = "Toy", color = Color3.fromRGB(255, 182, 193)},
-   {name = "Cowboy", color = Color3.fromRGB(139, 90, 43)},
-   {name = "Princess", color = Color3.fromRGB(255, 20, 147)},
-   {name = "Knight", color = Color3.fromRGB(112, 128, 144)},
-   {name = "Vampire", color = Color3.fromRGB(139, 0, 0)},
-   {name = "Patrol", color = Color3.fromRGB(0, 100, 0)},
-   {name = "Elder", color = Color3.fromRGB(139, 137, 112)},
-   {name = "Mage", color = Color3.fromRGB(72, 61, 139)},
-   {name = "Werewolf", color = Color3.fromRGB(139, 90, 0)},
-   {name = "Cartoony", color = Color3.fromRGB(255, 165, 0)},
-   {name = "Sneaky", color = Color3.fromRGB(47, 79, 79)},
-   {name = "Stylish", color = Color3.fromRGB(255, 105, 180)},
-   {name = "Bubbly", color = Color3.fromRGB(255, 182, 193)},
-   {name = "Superhero", color = Color3.fromRGB(220, 20, 60)},
-   {name = "Stylized", color = Color3.fromRGB(186, 85, 211)},
-   {name = "Popstar", color = Color3.fromRGB(255, 20, 147)},
-   {name = "Wickind", color = Color3.fromRGB(255, 42, 340)}
+   {name = "Levitation", emoji = "✨", color = Color3.fromRGB(138, 43, 226)},
+   {name = "Astronaut", emoji = "🚀", color = Color3.fromRGB(30, 144, 255)},
+   {name = "Ninja", emoji = "🥷", color = Color3.fromRGB(75, 75, 75)},
+   {name = "Pirate", emoji = "🏴‍☠️", color = Color3.fromRGB(139, 69, 19)},
+   {name = "Toy", emoji = "🧸", color = Color3.fromRGB(255, 182, 193)},
+   {name = "Cowboy", emoji = "🤠", color = Color3.fromRGB(139, 90, 43)},
+   {name = "Princess", emoji = "👸", color = Color3.fromRGB(255, 20, 147)},
+   {name = "Knight", emoji = "⚔️", color = Color3.fromRGB(112, 128, 144)},
+   {name = "Vampire", emoji = "🧛", color = Color3.fromRGB(139, 0, 0)},
+   {name = "Patrol", emoji = "👮", color = Color3.fromRGB(0, 100, 0)},
+   {name = "Elder", emoji = "👴", color = Color3.fromRGB(139, 137, 112)},
+   {name = "Mage", emoji = "🧙", color = Color3.fromRGB(72, 61, 139)},
+   {name = "Werewolf", emoji = "🐺", color = Color3.fromRGB(139, 90, 0)},
+   {name = "Cartoony", emoji = "🎨", color = Color3.fromRGB(255, 165, 0)},
+   {name = "Sneaky", emoji = "🤫", color = Color3.fromRGB(47, 79, 79)},
+   {name = "Stylish", emoji = "💃", color = Color3.fromRGB(255, 105, 180)},
+   {name = "Bubbly", emoji = "🫧", color = Color3.fromRGB(255, 182, 193)},
+   {name = "Superhero", emoji = "🦸", color = Color3.fromRGB(220, 20, 60)},
+   {name = "Stylized", emoji = "🎭", color = Color3.fromRGB(186, 85, 211)},
+   {name = "Popstar", emoji = "⭐", color = Color3.fromRGB(255, 20, 147)},
+   {name = "Wickind", emoji = "😈", color = Color3.fromRGB(255, 42, 200)}
 }
 
 for i, anim in ipairs(animations) do
@@ -222,7 +281,7 @@ for i, anim in ipairs(animations) do
    Button.BackgroundColor3 = anim.color
    Button.BorderSizePixel = 0
    Button.Font = Enum.Font.GothamBold
-   Button.Text = anim.name
+   Button.Text = anim.emoji .. " " .. anim.name
    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
    Button.TextSize = 14
    Button.LayoutOrder = i
@@ -250,9 +309,43 @@ end
 local contentSize = math.ceil(#animations / 3) * (50 + 10) + 10
 ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentSize)
 
-CloseButton.MouseButton1Click:Connect(function()
-   sound:Stop()
+local UserInputService = game:GetService("UserInputService")
+
+UserInputService.InputBegan:Connect(function(input)
+   if input.KeyCode == Enum.KeyCode.K then
+       if MainFrame.Visible then
+           MainFrame.Visible = false
+           if UserInputService.TouchEnabled then
+               MinimizedFrame.Visible = true
+           end
+       else
+           MainFrame.Visible = true
+           MinimizedFrame.Visible = false
+       end
+   end
+end)
+
+ShowButton.MouseButton1Click:Connect(function()
+   MainFrame.Visible = true
+   MinimizedFrame.Visible = false
+end)
+
+DeleteButton.MouseButton1Click:Connect(function()
    ScreenGui:Destroy()
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+   MainFrame.Visible = false
+   if UserInputService.TouchEnabled then
+       MinimizedFrame.Visible = true
+   else
+       ScreenGui:Destroy()
+   end
+end)
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+   wait(2)
+   ReapplyAnimation()
 end)
 
 MainFrame.Size = UDim2.new(0, 0, 0, 0)
