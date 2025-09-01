@@ -93,7 +93,7 @@ ShowButton.BorderSizePixel = 0
 ShowButton.Position = UDim2.new(0, 5, 0, 5)
 ShowButton.Size = UDim2.new(0, 150, 0, 30)
 ShowButton.Font = Enum.Font.GothamBold
-ShowButton.Text = "🎭 Animation GUI"
+ShowButton.Text = "🎭 Animation GUI | BY FRONT EVILL"
 ShowButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShowButton.TextSize = 12
 
