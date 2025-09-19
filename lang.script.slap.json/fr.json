@@ -1,0 +1,42 @@
+{
+  "title": "Principal",
+  "subtitle": "Par : FRONT EVILL",
+  "tabs": {
+    "main": "Principal",
+    "visuals": "Visuels",
+    "player": "Joueur",
+    "settings": "Paramètres Script",
+    "donate": "Faire un don"
+  },
+  "buttons": {
+    "auto_win": "Victoire Auto",
+    "new_colors": "Nouvelles Couleurs ESP (Toutes Cartes)",
+    "test_notification": "Test de Notification"
+  },
+  "toggles": {
+    "overcoming": "Surmonter les difficultés",
+    "anti_afk": "Anti AFK",
+    "anti_seat": "Anti Siège",
+    "anti_slide": "Anti-Glisse",
+    "esp_players": "ESP Joueurs",
+    "detect_object": "Détecter Objet 38",
+    "notifications": "Activer Notifications",
+    "sound": "Son",
+    "loop_sound": "Répéter Son"
+  },
+  "sliders": {
+    "duration": "Durée",
+    "volume": "Volume Sonore"
+  },
+  "sections": {
+    "win_map": "Carte Victoire",
+    "anti": "Anti",
+    "esp": "ESP",
+    "last": "Dernier",
+    "notify": "Notifier"
+  },
+  "notifications": {
+    "success": "Oui!",
+    "discord_copy": "Serveur Discord Copié"
+  }
+}
