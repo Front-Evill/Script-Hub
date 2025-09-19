@@ -22,7 +22,8 @@
     "detect_object": "Détecter Objet 38",
     "notifications": "Activer Notifications",
     "sound": "Son",
-    "loop_sound": "Répéter Son"
+    "loop_sound": "Répéter Son",
+    "auto_slap": "Gifler Auto Tous Joueurs"
   },
   "sliders": {
     "duration": "Durée",
