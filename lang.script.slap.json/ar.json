@@ -1,8 +1,8 @@
 {
-  "title": "الرئيسي",
+  "title": "الرئيسية",
   "subtitle": "بواسطة: FRONT EVILL",
   "tabs": {
-    "main": "الرئيسي",
+    "main": "الرئيسية",
     "visuals": "المرئيات",
     "player": "اللاعب",
     "settings": "إعدادات السكربت",
@@ -10,20 +10,20 @@
   },
   "buttons": {
     "auto_win": "فوز تلقائي",
-    "new_colors": "ألوان جديدة للرؤية (جميع الخرائط)",
-    "test_notification": "اختبار الإشعار"
+    "new_colors": "ألوان ESP جديدة (كل الخرائط)",
+    "test_notification": "اختبار الإشعارات"
   },
   "toggles": {
-    "overcoming": "التغلب على الصعوبات",
-    "anti_afk": "مضاد التوقف",
-    "anti_seat": "مضاد الجلوس",
-    "anti_slide": "مضاد الانزلاق",
-    "esp_players": "رؤية اللاعبين",
-    "detect_object": "اكتشاف الكائن 38",
-    "notifications": "تمكين الإشعارات",
-    "sound": "صوت",
+    "overcoming": "تجاوز الصعوبات",
+    "anti_afk": "منع AFK",
+    "anti_seat": "منع الجلوس",
+    "anti_slide": "منع الانزلاق",
+    "esp_players": "ESP للاعبين",
+    "detect_object": "كشف الكائن 38",
+    "notifications": "تفعيل الإشعارات",
+    "sound": "الصوت",
     "loop_sound": "تكرار الصوت",
-    "sticky_slap": "صفع سريع بالالتصاق لجميع اللاعبين"
+    "auto_slap": "صفع تلقائي لجميع اللاعبين"
   },
   "sliders": {
     "duration": "المدة",
@@ -31,13 +31,14 @@
   },
   "sections": {
     "win_map": "خريطة الفوز",
-    "anti": "مضاد",
-    "esp": "رؤية",
+    "anti": "منع",
+    "esp": "ESP",
     "last": "الأخير",
-    "notify": "إشعار"
+    "notify": "إشعار",
+    "slap": "الصفع التلقائي"
   },
   "notifications": {
-    "success": "نعم!",
-    "discord_copy": "تم نسخ رابط خادم الديسكورد"
+    "success": "نجاح!",
+    "discord_copy": "تم نسخ سيرفر ديسكورد"
   }
 }
