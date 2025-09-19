@@ -10,7 +10,7 @@
   },
   "buttons": {
     "auto_win": "فوز تلقائي",
-    "new_colors": "ألوان ESP جديدة (كل الخرائط)",
+    "new_colors": "ألوان ESP جديدة",
     "test_notification": "اختبار الإشعارات"
   },
   "toggles": {
@@ -19,7 +19,7 @@
     "anti_seat": "منع الجلوس",
     "anti_slide": "منع الانزلاق",
     "esp_players": "ESP للاعبين",
-    "detect_object": "كشف الكائن 38",
+    "detect_object": "كشف مكان الفوز",
     "notifications": "تفعيل الإشعارات",
     "sound": "الصوت",
     "loop_sound": "تكرار الصوت",
