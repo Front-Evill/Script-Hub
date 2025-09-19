@@ -1,0 +1,42 @@
+{
+  "title": "Main",
+  "subtitle": "By : FRONT EVILL",
+  "tabs": {
+    "main": "Main",
+    "visuals": "Visuals",
+    "player": "Player",
+    "settings": "Set. Script",
+    "donate": "Donate"
+  },
+  "buttons": {
+    "auto_win": "Auto Win",
+    "new_colors": "New Colors Esp (All Maps)",
+    "test_notification": "Test Notification"
+  },
+  "toggles": {
+    "overcoming": "Overcoming difficulties",
+    "anti_afk": "Anti Afk",
+    "anti_seat": "Anti Seat",
+    "anti_slide": "Anti-Slide",
+    "esp_players": "ESP Players",
+    "detect_object": "Detect Object 38",
+    "notifications": "Enable Notifications",
+    "sound": "Sound",
+    "loop_sound": "Loop Sound"
+  },
+  "sliders": {
+    "duration": "Duration",
+    "volume": "Sound Volume"
+  },
+  "sections": {
+    "win_map": "Win Map",
+    "anti": "Anti",
+    "esp": "Esp",
+    "last": "Last",
+    "notify": "Notify"
+  },
+  "notifications": {
+    "success": "Yeas!",
+    "discord_copy": "Now You Copy Server Discord"
+  }
+}
