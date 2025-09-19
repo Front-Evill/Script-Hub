@@ -34,7 +34,8 @@
     "anti": "एंटी",
     "esp": "ESP",
     "last": "अंतिम",
-    "notify": "सूचना"
+    "notify": "सूचना",
+    "player_targeting": "खिलाड़ियों को लक्षित करना"
   },
   "notifications": {
     "success": "हाँ!",
