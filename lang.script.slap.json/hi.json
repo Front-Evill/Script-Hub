@@ -22,7 +22,8 @@
     "detect_object": "ऑब्जेक्ट 38 का पता लगाएं",
     "notifications": "नोटिफिकेशन सक्षम करें",
     "sound": "ध्वनि",
-    "loop_sound": "लूप ध्वनि"
+    "loop_sound": "लूप ध्वनि",
+    "auto_slap": "सभी खिलाड़ियों को ऑटो थप्पड़"
   },
   "sliders": {
     "duration": "अवधि",
