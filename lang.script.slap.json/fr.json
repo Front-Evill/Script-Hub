@@ -3,11 +3,11 @@
   "subtitle": "Par : FRONT EVILL",
   "tabs": {
     "main": "Principal",
+    "targeting": "Ciblage",
     "visuals": "Visuels",
     "player": "Joueur",
     "settings": "Paramètres Script",
     "donate": "Faire un don",
-    "targeting": "Ciblage"
   },
   "buttons": {
     "auto_win": "Victoire Auto",
