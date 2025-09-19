@@ -1,0 +1,42 @@
+{
+  "title": "मुख्य",
+  "subtitle": "द्वारा: FRONT EVILL",
+  "tabs": {
+    "main": "मुख्य",
+    "visuals": "दृश्य",
+    "player": "खिलाड़ी",
+    "settings": "स्क्रिप्ट सेट",
+    "donate": "दान करें"
+  },
+  "buttons": {
+    "auto_win": "ऑटो जीत",
+    "new_colors": "नए रंग ESP (सभी मैप्स)",
+    "test_notification": "टेस्ट नोटिफिकेशन"
+  },
+  "toggles": {
+    "overcoming": "कठिनाइयों पर काबू पाना",
+    "anti_afk": "एंटी AFK",
+    "anti_seat": "एंटी सीट",
+    "anti_slide": "एंटी-स्लाइड",
+    "esp_players": "ESP खिलाड़ी",
+    "detect_object": "ऑब्जेक्ट 38 का पता लगाएं",
+    "notifications": "नोटिफिकेशन सक्षम करें",
+    "sound": "ध्वनि",
+    "loop_sound": "लूप ध्वनि"
+  },
+  "sliders": {
+    "duration": "अवधि",
+    "volume": "ध्वनि वॉल्यूम"
+  },
+  "sections": {
+    "win_map": "विन मैप",
+    "anti": "एंटी",
+    "esp": "ESP",
+    "last": "अंतिम",
+    "notify": "सूचना"
+  },
+  "notifications": {
+    "success": "हाँ!",
+    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी हो गया"
+  }
+}
