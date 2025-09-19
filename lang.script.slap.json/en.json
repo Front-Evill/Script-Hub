@@ -3,11 +3,11 @@
   "subtitle": "Par : FRONT EVILL",
   "tabs": {
     "main": "Principal",
+    "targeting": "Targeting",
     "visuals": "Visuals",
     "player": "Player",
     "settings": "Script Settings",
     "donate": "Donate",
-    "targeting": "Targeting"
   },
   "buttons": {
     "auto_win": "Auto Win",
