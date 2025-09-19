@@ -1,0 +1,42 @@
+{
+  "title": "الرئيسي",
+  "subtitle": "بواسطة: FRONT EVILL",
+  "tabs": {
+    "main": "الرئيسي",
+    "visuals": "المرئيات",
+    "player": "اللاعب",
+    "settings": "إعدادات السكربت",
+    "donate": "تبرع"
+  },
+  "buttons": {
+    "auto_win": "فوز تلقائي",
+    "new_colors": "ألوان جديدة للرؤية (جميع الخرائط)",
+    "test_notification": "اختبار الإشعار"
+  },
+  "toggles": {
+    "overcoming": "التغلب على الصعوبات",
+    "anti_afk": "مضاد التوقف",
+    "anti_seat": "مضاد الجلوس",
+    "anti_slide": "مضاد الانزلاق",
+    "esp_players": "رؤية اللاعبين",
+    "detect_object": "اكتشاف الكائن 38",
+    "notifications": "تمكين الإشعارات",
+    "sound": "صوت",
+    "loop_sound": "تكرار الصوت"
+  },
+  "sliders": {
+    "duration": "المدة",
+    "volume": "مستوى الصوت"
+  },
+  "sections": {
+    "win_map": "خريطة الفوز",
+    "anti": "مضاد",
+    "esp": "رؤية",
+    "last": "الأخير",
+    "notify": "إشعار"
+  },
+  "notifications": {
+    "success": "نعم!",
+    "discord_copy": "تم نسخ رابط خادم الديسكورد"
+  }
+}
