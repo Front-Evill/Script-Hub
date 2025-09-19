@@ -6,7 +6,8 @@
     "visuals": "Visuals",
     "player": "Player",
     "settings": "Script Settings",
-    "donate": "Donate"
+    "donate": "Donate",
+    "targting": "Targting"
   },
   "buttons": {
     "auto_win": "Auto Win",
