@@ -36,6 +36,7 @@
     "last": "Dernier",
     "notify": "Notifier",
     "slap": "Auto Slap",
+    "player_targeting": "Ciblage des joueurs"
   },
   "notifications": {
     "success": "Oui!",
