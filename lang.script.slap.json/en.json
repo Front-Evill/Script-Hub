@@ -11,7 +11,9 @@
   "buttons": {
     "auto_win": "Auto Win",
     "new_colors": "New ESP Colors (All Maps)",
-    "test_notification": "Test Notification"
+    "test_notification": "Test Notification",
+    "choose_player_tool": "Choose Player Tool",
+    "teleport_to_target": "Teleport u"
   },
   "toggles": {
     "overcoming": "Overcoming difficulties",
@@ -23,7 +25,9 @@
     "notifications": "Enable Notifications",
     "sound": "Sound",
     "loop_sound": "Loop Sound",
-    "auto_slap": "Auto Slap All Players"
+    "auto_slap": "Auto Slap All Players",
+    "camera_follow": "Cameraa Follow Targting",
+    "slap_target": "Slap Target",
   },
   "sliders": {
     "duration": "Duration",
@@ -36,10 +40,14 @@
     "last": "Last",
     "notify": "Notify",
     "slap": "Auto Slap",
-    "player_targeting": "Player Targeting"
   },
   "notifications": {
     "success": "Yes!",
     "discord_copy": "Discord Server Copied"
+  },
+  {
+  "input": {
+    "player_targeting": "Player Targeting",
+  }
   }
 }
