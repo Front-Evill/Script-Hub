@@ -34,7 +34,8 @@
     "anti": "Anti",
     "esp": "ESP",
     "last": "Dernier",
-    "notify": "Notifier"
+    "notify": "Notifier",
+    "slap": "Auto Slap",
   },
   "notifications": {
     "success": "Oui!",
