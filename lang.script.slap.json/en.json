@@ -1,43 +1,44 @@
 {
-  "title": "Main",
-  "subtitle": "By : FRONT EVILL",
+  "title": "Principal",
+  "subtitle": "Par : FRONT EVILL",
   "tabs": {
-    "main": "Main",
+    "main": "Principal",
     "visuals": "Visuals",
     "player": "Player",
-    "settings": "Set. Script",
+    "settings": "Script Settings",
     "donate": "Donate"
   },
   "buttons": {
     "auto_win": "Auto Win",
-    "new_colors": "New Colors Esp (All Maps)",
+    "new_colors": "New ESP Colors (All Maps)",
     "test_notification": "Test Notification"
   },
   "toggles": {
     "overcoming": "Overcoming difficulties",
-    "anti_afk": "Anti Afk",
+    "anti_afk": "Anti AFK",
     "anti_seat": "Anti Seat",
     "anti_slide": "Anti-Slide",
     "esp_players": "ESP Players",
-    "detect_object": "Detect Object 38",
+    "detect_object": "Esp WIN",
     "notifications": "Enable Notifications",
     "sound": "Sound",
     "loop_sound": "Loop Sound",
-    "sticky_slap": "Sticky Fast Slap All Players"
+    "auto_slap": "Auto Slap All Players"
   },
   "sliders": {
     "duration": "Duration",
-    "volume": "Sound Volume"
+    "volume": "Volume"
   },
   "sections": {
     "win_map": "Win Map",
     "anti": "Anti",
-    "esp": "Esp",
+    "esp": "ESP",
     "last": "Last",
-    "notify": "Notify"
+    "notify": "Notify",
+    "slap": "Auto Slap"
   },
   "notifications": {
-    "success": "Yeas!",
-    "discord_copy": "Now You Copy Server Discord"
+    "success": "Yes!",
+    "discord_copy": "Discord Server Copied"
   }
 }
