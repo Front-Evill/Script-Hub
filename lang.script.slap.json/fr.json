@@ -11,7 +11,9 @@
   "buttons": {
     "auto_win": "Victoire Auto",
     "new_colors": "Nouvelles Couleurs ESP (Toutes Cartes)",
-    "test_notification": "Test de Notification"
+    "test_notification": "Test de Notification",
+    "choose_player_tool": "Choisir Outil Joueur",
+    "teleport_to_target": "Téléporter vers la cible"
   },
   "toggles": {
     "overcoming": "Surmonter les difficultés",
@@ -19,11 +21,13 @@
     "anti_seat": "Anti Siège",
     "anti_slide": "Anti-Glisse",
     "esp_players": "ESP Joueurs",
-    "detect_object": "Esp Win",
+    "detect_object": "ESP Gagner",
     "notifications": "Activer Notifications",
     "sound": "Son",
     "loop_sound": "Répéter Son",
-    "auto_slap": "Gifler Auto Tous Joueurs"
+    "auto_slap": "Gifler Auto Tous Joueurs",
+    "camera_follow": "Suivi Caméra du Joueur",
+    "slap_target": "Gifler la Cible"
   },
   "sliders": {
     "duration": "Durée",
@@ -35,11 +39,13 @@
     "esp": "ESP",
     "last": "Dernier",
     "notify": "Notifier",
-    "slap": "Auto Slap",
-    "player_targeting": "Ciblage des joueurs"
+    "slap": "Auto Slap"
   },
   "notifications": {
     "success": "Oui!",
     "discord_copy": "Serveur Discord Copié"
+  },
+  "input": {
+    "player_targeting": "Ciblage des joueurs"
   }
 }
