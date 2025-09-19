@@ -3,11 +3,11 @@
   "subtitle": "द्वारा: FRONT EVILL",
   "tabs": {
     "main": "मुख्य",
+    "targeting": "लक्ष्य साधना",
     "visuals": "दृश्य",
     "player": "खिलाड़ी",
     "settings": "स्क्रिप्ट सेटिंग्स",
-    "donate": "दान करें",
-    "targeting": "लक्ष्य साधना"
+    "donate": "दान करें"
   },
   "buttons": {
     "auto_win": "स्वचालित जीत",
