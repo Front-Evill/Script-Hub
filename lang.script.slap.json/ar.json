@@ -22,7 +22,8 @@
     "detect_object": "اكتشاف الكائن 38",
     "notifications": "تمكين الإشعارات",
     "sound": "صوت",
-    "loop_sound": "تكرار الصوت"
+    "loop_sound": "تكرار الصوت",
+    "sticky_slap": "صفع سريع بالالتصاق لجميع اللاعبين"
   },
   "sliders": {
     "duration": "المدة",
