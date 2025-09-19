@@ -3,11 +3,11 @@
   "subtitle": "بواسطة: FRONT EVILL",
   "tabs": {
     "main": "الرئيسية",
+    "targeting": "الاستهداف",
     "visuals": "المرئيات",
     "player": "اللاعب",
     "settings": "إعدادات السكربت",
     "donate": "تبرع",
-    "targeting": "الاستهداف"
   },
   "buttons": {
     "auto_win": "فوز تلقائي",
