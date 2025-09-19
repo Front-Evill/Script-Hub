@@ -10,8 +10,10 @@
   },
   "buttons": {
     "auto_win": "فوز تلقائي",
-    "new_colors": "ألوان ESP جديدة",
-    "test_notification": "اختبار الإشعارات"
+    "new_colors": "ألوان ESP جديدة (كل الخرائط)",
+    "test_notification": "اختبار الإشعارات",
+    "choose_player_tool": "اختيار أداة اللاعب",
+    "teleport_to_target": "الانتقال إلى الهدف"
   },
   "toggles": {
     "overcoming": "تجاوز الصعوبات",
@@ -19,11 +21,13 @@
     "anti_seat": "منع الجلوس",
     "anti_slide": "منع الانزلاق",
     "esp_players": "ESP للاعبين",
-    "detect_object": "كشف مكان الفوز",
+    "detect_object": "ESP الفوز",
     "notifications": "تفعيل الإشعارات",
     "sound": "الصوت",
     "loop_sound": "تكرار الصوت",
-    "auto_slap": "صفع تلقائي لجميع اللاعبين"
+    "auto_slap": "صفع تلقائي لجميع اللاعبين",
+    "camera_follow": "تتبع الكاميرا للاعب",
+    "slap_target": "صفع الهدف"
   },
   "sliders": {
     "duration": "المدة",
@@ -36,10 +40,12 @@
     "last": "الأخير",
     "notify": "إشعار",
     "slap": "الصفع التلقائي"
-    "player_targeting": "استهداف لاعبين"
   },
   "notifications": {
     "success": "نجاح!",
     "discord_copy": "تم نسخ سيرفر ديسكورد"
+  },
+  "input": {
+    "player_targeting": "استهداف لاعبين"
   }
 }
