@@ -16,7 +16,8 @@
     "click_player": "اضغط على اللاعب للتحديد",
     "choose_player_tool": "اختر أداة اللاعب",
     "choose_player": "اختر اللاعب",
-    "teleport_to_target": "انتقال إلى الهدف"
+    "teleport_to_target": "انتقال إلى الهدف",
+    "info_targting": "معلومات المستهدف"
   },
   "toggles": {
     "overcoming": "تجاوز الصعوبات",
@@ -45,11 +46,12 @@
     "last": "أخير",
     "notify": "الإشعارات",
     "slap": "الصفع",
-    "options": "خيارات"
+    "options": "خيارات",
+    "player_targeting": "استهداف لاعبين",
   },
   "input": {
-    "player_targeting": "استهداف لاعبين",
     "enter_username": "ادخل اسم المستخدم هنا"
+    "target_player": "استهدف لاعب"
   },
   "notifications": {
     "success": "تم بنجاح!",
