@@ -1,20 +1,22 @@
 {
-  "title": "Principal",
-  "subtitle": "Par : FRONT EVILL",
+  "title": "Main",
+  "subtitle": "By : FRONT EVILL",
   "tabs": {
-    "main": "Principal",
+    "main": "Main",
     "targeting": "Targeting",
     "visuals": "Visuals",
     "player": "Player",
     "settings": "Script Settings",
-    "donate": "Donate",
+    "donate": "Donate"
   },
   "buttons": {
     "auto_win": "Auto Win",
     "new_colors": "New ESP Colors (All Maps)",
     "test_notification": "Test Notification",
+    "click_player": "Click On Player to Select",
     "choose_player_tool": "Choose Player Tool",
-    "teleport_to_target": "Teleport u"
+    "choose_player": "Choose Player",
+    "teleport_to_target": "Teleport to Target"
   },
   "toggles": {
     "overcoming": "Overcoming difficulties",
@@ -22,13 +24,14 @@
     "anti_seat": "Anti Seat",
     "anti_slide": "Anti-Slide",
     "esp_players": "ESP Players",
-    "detect_object": "Esp WIN",
+    "detect_object": "ESP Win",
     "notifications": "Enable Notifications",
     "sound": "Sound",
     "loop_sound": "Loop Sound",
     "auto_slap": "Auto Slap All Players",
-    "camera_follow": "Cameraa Follow Targting",
-    "slap_target": "Slap Target",
+    "slap_target": "Slap Target Continuously",
+    "camera_follow": "Camera Follow Target",
+    "sticky_slap": "Sticky Fast Slap All Players"
   },
   "sliders": {
     "duration": "Duration",
@@ -40,15 +43,15 @@
     "esp": "ESP",
     "last": "Last",
     "notify": "Notify",
-    "slap": "Auto Slap",
+    "slap": "Slap All",
+    "options": "Options"
+  },
+  "input": {
+    "player_targeting": "Player Targeting",
+    "enter_username": "Enter Username Here"
   },
   "notifications": {
     "success": "Yes!",
     "discord_copy": "Discord Server Copied"
-  },
-  {
-  "input": {
-    "player_targeting": "Player Targeting",
-  }
   }
 }
