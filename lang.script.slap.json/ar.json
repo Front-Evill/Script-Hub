@@ -12,7 +12,7 @@
   "buttons": {
     "auto_win": "فوز تلقائي",
     "new_colors": "ألوان ESP جديدة (كل الخرائط)",
-    "test_notification": "اختبار إشعار",
+    "test_notification": "إعطاء معلومات الاستهداف",
     "click_player": "اضغط على اللاعب للتحديد",
     "choose_player_tool": "اختر أداة اللاعب",
     "choose_player": "اختر اللاعب",
@@ -24,6 +24,7 @@
     "anti_seat": "مضاد الجلوس",
     "anti_slide": "مضاد التزحلق",
     "esp_players": "إظهار اللاعبين",
+    "esp_slap_red": "صفع ESP أحمر",
     "detect_object": "إظهار الفوز",
     "notifications": "تفعيل الإشعارات",
     "sound": "الصوت",
@@ -52,6 +53,8 @@
   },
   "notifications": {
     "success": "تم بنجاح!",
-    "discord_copy": "تم نسخ رابط ديسكورد"
+    "discord_copy": "تم نسخ رابط ديسكورد",
+    "Enter_user_name_to_targeting": "ادخل اسم المستخدم للاستهداف",
+    "Target_Leave_or_rejoin": "اللاعب غادر أو أعاد الانضمام"
   }
 }
