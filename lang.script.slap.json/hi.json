@@ -16,7 +16,8 @@
     "click_player": "खिलाड़ी चुनने के लिए क्लिक करें",
     "choose_player_tool": "खिलाड़ी उपकरण चुनें",
     "choose_player": "खिलाड़ी चुनें",
-    "teleport_to_target": "लक्ष्य पर टेलीपोर्ट करें"
+    "teleport_to_target": "लक्ष्य पर टेलीपोर्ट करें",
+    "info_targting": "लक्ष्य जानकारी"
   },
   "toggles": {
     "overcoming": "कठिनाइयों पर काबू पाना",
@@ -32,7 +33,11 @@
     "auto_slap": "सभी खिलाड़ियों को स्वचालित रूप से थप्पड़ मारें",
     "slap_target": "लक्ष्य को लगातार थप्पड़ मारें",
     "camera_follow": "कैमरा लक्ष्य का पालन करे",
-    "sticky_slap": "सभी खिलाड़ियों को तेज़ी से थप्पड़ मारें"
+    "sticky_slap": "सभी खिलाड़ियों को तेज़ी से थप्पड़ मारें",
+    "enable_speed": "गति सक्षम करें",
+    "enable_jump": "जंप पावर सक्षम करें",
+    "inf_jump": "अनंत छलांग",
+    "noclip": "दीवार हैक"
   },
   "sliders": {
     "duration": "अवधि",
@@ -45,16 +50,22 @@
     "last": "अंतिम",
     "notify": "सूचना",
     "slap": "सभी को थप्पड़",
-    "options": "विकल्प"
+    "options": "विकल्प",
+    "player_targeting": "खिलाड़ी लक्ष्य साधना",
+    "input_local_player": "स्थानीय खिलाड़ी इनपुट",
+    "enaple_value_input": "इनपुट मान सक्षम करें",
+    "last_local_player": "अंतिम"
   },
   "input": {
-    "player_targeting": "खिलाड़ी लक्ष्य साधना",
-    "enter_username": "यहाँ उपयोगकर्ता नाम दर्ज करें"
+    "enter_username": "यहाँ उपयोगकर्ता नाम दर्ज करें",
+    "target_player": "लक्ष्य खिलाड़ी",
+    "speed": "स्थानीय खिलाड़ी गति",
+    "jump": "स्थानीय खिलाड़ी जंप पावर"
   },
   "notifications": {
-    "success": "हाँ!",
+    "success": "सफल!",
     "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया",
-    "Enter_user_name_to_targeting": "लक्ष्य साधने के लिए उपयोगकर्ता नाम दर्ज करें",
-    "Target_Leave_or_rejoin": "खिलाड़ी ने छोड़ा या फिर से जुड़ा"
+    "Enter_user_name_to_targeting": "लक्ष्य के लिए उपयोगकर्ता नाम दर्ज करें",
+    "Target_Leave_or_rejoin": "खिलाड़ी ने छोड़ा या फिर से शामिल हुआ"
   }
 }
