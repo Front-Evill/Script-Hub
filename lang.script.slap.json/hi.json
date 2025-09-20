@@ -1,6 +1,6 @@
 {
   "title": "मुख्य",
-  "subtitle": "द्वारा: FRONT EVILL",
+  "subtitle": "द्वारा : FRONT EVILL",
   "tabs": {
     "main": "मुख्य",
     "targeting": "लक्ष्य साधना",
@@ -11,42 +11,47 @@
   },
   "buttons": {
     "auto_win": "स्वचालित जीत",
-    "new_colors": "नई ESP रंग (सभी मानचित्र)",
-    "test_notification": "सूचना परीक्षण",
+    "new_colors": "नई ESP रंग (सभी नक्शे)",
+    "test_notification": "सूचना का परीक्षण",
+    "click_player": "खिलाड़ी चुनने के लिए क्लिक करें",
     "choose_player_tool": "खिलाड़ी उपकरण चुनें",
-    "teleport_to_target": "लक्ष्य पर टेलीपोर्ट"
+    "choose_player": "खिलाड़ी चुनें",
+    "teleport_to_target": "लक्ष्य पर टेलीपोर्ट करें"
   },
   "toggles": {
-    "overcoming": "मुश्किलों पर काबू पाएं",
-    "anti_afk": "एंटी एएफके",
+    "overcoming": "कठिनाइयों पर काबू पाना",
+    "anti_afk": "एंटी AFK",
     "anti_seat": "एंटी सीट",
     "anti_slide": "एंटी-स्लाइड",
     "esp_players": "ESP खिलाड़ी",
     "detect_object": "ESP जीत",
-    "notifications": "सूचनाएँ सक्रिय करें",
+    "notifications": "सूचनाएँ सक्षम करें",
     "sound": "ध्वनि",
-    "loop_sound": "ध्वनि दोहराएं",
-    "auto_slap": "स्वचालित सभी खिलाड़ियों को थप्पड़",
-    "camera_follow": "कैमरा लक्ष्य पर अनुसरण",
-    "slap_target": "लक्ष्य को थप्पड़"
+    "loop_sound": "ध्वनि दोहराएँ",
+    "auto_slap": "सभी खिलाड़ियों को स्वचालित रूप से थप्पड़ मारें",
+    "slap_target": "लक्ष्य को लगातार थप्पड़ मारें",
+    "camera_follow": "कैमरा लक्ष्य का पालन करे",
+    "sticky_slap": "सभी खिलाड़ियों को तेज़ी से थप्पड़ मारें"
   },
   "sliders": {
     "duration": "अवधि",
-    "volume": "ध्वनि स्तर"
+    "volume": "आवाज़"
   },
   "sections": {
     "win_map": "जीत का नक्शा",
     "anti": "एंटी",
     "esp": "ESP",
     "last": "अंतिम",
-    "notify": "सूचित करें",
-    "slap": "स्वचालित थप्पड़"
-  },
-  "notifications": {
-    "success": "सफल!",
-    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया"
+    "notify": "सूचना",
+    "slap": "सभी को थप्पड़",
+    "options": "विकल्प"
   },
   "input": {
-    "player_targeting": "खिलाड़ियों को लक्षित करना"
+    "player_targeting": "खिलाड़ी लक्ष्य साधना",
+    "enter_username": "यहाँ उपयोगकर्ता नाम दर्ज करें"
+  },
+  "notifications": {
+    "success": "हाँ!",
+    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया"
   }
 }
