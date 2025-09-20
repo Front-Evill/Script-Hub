@@ -6,47 +6,52 @@
     "targeting": "Ciblage",
     "visuals": "Visuels",
     "player": "Joueur",
-    "settings": "Paramètres Script",
-    "donate": "Faire un don",
+    "settings": "Paramètres du script",
+    "donate": "Faire un don"
   },
   "buttons": {
-    "auto_win": "Victoire Auto",
-    "new_colors": "Nouvelles Couleurs ESP (Toutes Cartes)",
-    "test_notification": "Test de Notification",
-    "choose_player_tool": "Choisir Outil Joueur",
+    "auto_win": "Victoire automatique",
+    "new_colors": "Nouvelles couleurs ESP (toutes cartes)",
+    "test_notification": "Tester la notification",
+    "click_player": "Cliquez sur un joueur pour sélectionner",
+    "choose_player_tool": "Choisir outil du joueur",
+    "choose_player": "Choisir joueur",
     "teleport_to_target": "Téléporter vers la cible"
   },
   "toggles": {
     "overcoming": "Surmonter les difficultés",
     "anti_afk": "Anti AFK",
     "anti_seat": "Anti Siège",
-    "anti_slide": "Anti-Glisse",
+    "anti_slide": "Anti-glissade",
     "esp_players": "ESP Joueurs",
-    "detect_object": "ESP Gagner",
-    "notifications": "Activer Notifications",
+    "detect_object": "ESP Victoire",
+    "notifications": "Activer les notifications",
     "sound": "Son",
-    "loop_sound": "Répéter Son",
-    "auto_slap": "Gifler Auto Tous Joueurs",
-    "camera_follow": "Suivi Caméra du Joueur",
-    "slap_target": "Gifler la Cible"
+    "loop_sound": "Répéter le son",
+    "auto_slap": "Gifler automatiquement tous les joueurs",
+    "slap_target": "Gifler la cible en continu",
+    "camera_follow": "Caméra suit la cible",
+    "sticky_slap": "Gifler rapidement tous les joueurs"
   },
   "sliders": {
     "duration": "Durée",
-    "volume": "Volume Sonore"
+    "volume": "Volume"
   },
   "sections": {
-    "win_map": "Carte Victoire",
+    "win_map": "Carte de victoire",
     "anti": "Anti",
     "esp": "ESP",
     "last": "Dernier",
     "notify": "Notifier",
-    "slap": "Auto Slap"
-  },
-  "notifications": {
-    "success": "Oui!",
-    "discord_copy": "Serveur Discord Copié"
+    "slap": "Gifler tous",
+    "options": "Options"
   },
   "input": {
-    "player_targeting": "Ciblage des joueurs"
+    "player_targeting": "Ciblage des joueurs",
+    "enter_username": "Entrez le nom d'utilisateur ici"
+  },
+  "notifications": {
+    "success": "Succès!",
+    "discord_copy": "Serveur Discord copié"
   }
 }
