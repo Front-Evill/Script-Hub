@@ -33,7 +33,11 @@
     "auto_slap": "صفع تلقائي لكل اللاعبين",
     "slap_target": "صفع الهدف باستمرار",
     "camera_follow": "الكاميرا تتبع الهدف",
-    "sticky_slap": "صفع سريع لكل اللاعبين"
+    "sticky_slap": "صفع سريع لكل اللاعبين",
+    "enable_speed": "تنفيذ سرعه",
+    "enable_jump": "تنفيذ قوة القفز",
+    "inf_jump": "قفز لا نهائي",
+    "noclip": "اختراق جدران"
   },
   "sliders": {
     "duration": "المدة",
@@ -48,10 +52,15 @@
     "slap": "الصفع",
     "options": "خيارات",
     "player_targeting": "استهداف لاعبين",
-  },
+    "input_local_player": "مدخل لاعب محلي",
+    "enaple_value_input": "تنفيض قيمة المدخل",
+    "last_local_player": "اخر"
+},
   "input": {
-    "enter_username": "ادخل اسم المستخدم هنا"
-    "target_player": "استهدف لاعب"
+    "enter_username": "ادخل اسم المستخدم هنا",
+    "target_player": "استهدف لاعب",
+    "speed": "سرعة لاعب محلي",
+    "jump": "قوة قفز لاعب  محلي"
   },
   "notifications": {
     "success": "تم بنجاح!",
