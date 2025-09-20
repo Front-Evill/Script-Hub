@@ -12,7 +12,7 @@
   "buttons": {
     "auto_win": "Auto Win",
     "new_colors": "New ESP Colors (All Maps)",
-    "test_notification": "Test Notification",
+    "test_notification": "Give Targeting Info",
     "click_player": "Click On Player to Select",
     "choose_player_tool": "Choose Player Tool",
     "choose_player": "Choose Player",
@@ -24,6 +24,7 @@
     "anti_seat": "Anti Seat",
     "anti_slide": "Anti-Slide",
     "esp_players": "ESP Players",
+    "esp_slap_red": "ESP Slap Red",
     "detect_object": "ESP Win",
     "notifications": "Enable Notifications",
     "sound": "Sound",
@@ -43,15 +44,17 @@
     "esp": "ESP",
     "last": "Last",
     "notify": "Notify",
-    "slap": "Slap All",
+    "slap": "Auto Slap",
     "options": "Options"
   },
   "input": {
     "player_targeting": "Player Targeting",
-    "enter_username": "Enter Username Here"
+    "enter_username": "Enter Username..."
   },
   "notifications": {
     "success": "Yes!",
-    "discord_copy": "Discord Server Copied"
+    "discord_copy": "Discord Server Copied",
+    "Enter_user_name_to_targeting": "Enter username to target",
+    "Target_Leave_or_rejoin": "Player left or rejoined"
   }
 }
