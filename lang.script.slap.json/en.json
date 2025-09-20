@@ -16,7 +16,8 @@
     "click_player": "Click On Player to Select",
     "choose_player_tool": "Choose Player Tool",
     "choose_player": "Choose Player",
-    "teleport_to_target": "Teleport to Target"
+    "teleport_to_target": "Teleport to Target",
+    "info_targting": "Target Info"
   },
   "toggles": {
     "overcoming": "Overcoming difficulties",
@@ -32,7 +33,11 @@
     "auto_slap": "Auto Slap All Players",
     "slap_target": "Slap Target Continuously",
     "camera_follow": "Camera Follow Target",
-    "sticky_slap": "Sticky Fast Slap All Players"
+    "sticky_slap": "Sticky Fast Slap All Players",
+    "enable_speed": "Enable Speed",
+    "enable_jump": "Enable Jump Power",
+    "inf_jump": "Infinite Jump",
+    "noclip": "Wall Hack"
   },
   "sliders": {
     "duration": "Duration",
@@ -45,14 +50,20 @@
     "last": "Last",
     "notify": "Notify",
     "slap": "Auto Slap",
-    "options": "Options"
+    "options": "Options",
+    "player_targeting": "Player Targeting",
+    "input_local_player": "Local Player Input",
+    "enaple_value_input": "Enable Input Value",
+    "last_local_player": "Last"
   },
   "input": {
-    "player_targeting": "Player Targeting",
-    "enter_username": "Enter Username..."
+    "enter_username": "Enter Username Here",
+    "target_player": "Target Player",
+    "speed": "Local Player Speed",
+    "jump": "Local Player Jump Power"
   },
   "notifications": {
-    "success": "Yes!",
+    "success": "Success!",
     "discord_copy": "Discord Server Copied",
     "Enter_user_name_to_targeting": "Enter username to target",
     "Target_Leave_or_rejoin": "Player left or rejoined"
