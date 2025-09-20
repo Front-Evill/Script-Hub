@@ -12,7 +12,7 @@
   "buttons": {
     "auto_win": "Victoire automatique",
     "new_colors": "Nouvelles couleurs ESP (toutes cartes)",
-    "test_notification": "Tester la notification",
+    "test_notification": "Donner infos ciblage",
     "click_player": "Cliquez sur un joueur pour sélectionner",
     "choose_player_tool": "Choisir outil du joueur",
     "choose_player": "Choisir joueur",
@@ -24,8 +24,9 @@
     "anti_seat": "Anti Siège",
     "anti_slide": "Anti-glissade",
     "esp_players": "ESP Joueurs",
+    "esp_slap_red": "ESP Gifler Rouge",
     "detect_object": "ESP Victoire",
-    "notifications": "Activer les notifications",
+    "notifications": "Activer notifications",
     "sound": "Son",
     "loop_sound": "Répéter le son",
     "auto_slap": "Gifler automatiquement tous les joueurs",
@@ -52,6 +53,8 @@
   },
   "notifications": {
     "success": "Succès!",
-    "discord_copy": "Serveur Discord copié"
+    "discord_copy": "Serveur Discord copié",
+    "Enter_user_name_to_targeting": "Entrez le nom d'utilisateur pour cibler",
+    "Target_Leave_or_rejoin": "Le joueur a quitté ou rejoint à nouveau"
   }
 }
