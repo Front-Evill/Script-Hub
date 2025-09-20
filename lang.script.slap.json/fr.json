@@ -16,7 +16,8 @@
     "click_player": "Cliquez sur un joueur pour sélectionner",
     "choose_player_tool": "Choisir outil du joueur",
     "choose_player": "Choisir joueur",
-    "teleport_to_target": "Téléporter vers la cible"
+    "teleport_to_target": "Téléporter vers la cible",
+    "info_targting": "Infos cible"
   },
   "toggles": {
     "overcoming": "Surmonter les difficultés",
@@ -32,7 +33,11 @@
     "auto_slap": "Gifler automatiquement tous les joueurs",
     "slap_target": "Gifler la cible en continu",
     "camera_follow": "Caméra suit la cible",
-    "sticky_slap": "Gifler rapidement tous les joueurs"
+    "sticky_slap": "Gifler rapidement tous les joueurs",
+    "enable_speed": "Activer la vitesse",
+    "enable_jump": "Activer la puissance du saut",
+    "inf_jump": "Saut infini",
+    "noclip": "Passer à travers les murs"
   },
   "sliders": {
     "duration": "Durée",
@@ -45,11 +50,17 @@
     "last": "Dernier",
     "notify": "Notifier",
     "slap": "Gifler tous",
-    "options": "Options"
+    "options": "Options",
+    "player_targeting": "Ciblage des joueurs",
+    "input_local_player": "Entrée joueur local",
+    "enaple_value_input": "Activer valeur entrée",
+    "last_local_player": "Dernier"
   },
   "input": {
-    "player_targeting": "Ciblage des joueurs",
-    "enter_username": "Entrez le nom d'utilisateur ici"
+    "enter_username": "Entrez le nom d'utilisateur ici",
+    "target_player": "Joueur cible",
+    "speed": "Vitesse joueur local",
+    "jump": "Puissance saut joueur local"
   },
   "notifications": {
     "success": "Succès!",
