@@ -1,34 +1,37 @@
 {
   "title": "الرئيسية",
-  "subtitle": "بواسطة: FRONT EVILL",
+  "subtitle": "بواسطة : FRONT EVILL",
   "tabs": {
     "main": "الرئيسية",
     "targeting": "الاستهداف",
     "visuals": "المرئيات",
     "player": "اللاعب",
     "settings": "إعدادات السكربت",
-    "donate": "تبرع",
+    "donate": "تبرع"
   },
   "buttons": {
     "auto_win": "فوز تلقائي",
     "new_colors": "ألوان ESP جديدة (كل الخرائط)",
-    "test_notification": "اختبار الإشعارات",
-    "choose_player_tool": "اختيار أداة اللاعب",
-    "teleport_to_target": "الانتقال إلى الهدف"
+    "test_notification": "اختبار إشعار",
+    "click_player": "اضغط على اللاعب للتحديد",
+    "choose_player_tool": "اختر أداة اللاعب",
+    "choose_player": "اختر اللاعب",
+    "teleport_to_target": "انتقال إلى الهدف"
   },
   "toggles": {
     "overcoming": "تجاوز الصعوبات",
-    "anti_afk": "منع AFK",
-    "anti_seat": "منع الجلوس",
-    "anti_slide": "منع الانزلاق",
-    "esp_players": "ESP للاعبين",
-    "detect_object": "ESP الفوز",
+    "anti_afk": "مضاد الخمول",
+    "anti_seat": "مضاد الجلوس",
+    "anti_slide": "مضاد التزحلق",
+    "esp_players": "إظهار اللاعبين",
+    "detect_object": "إظهار الفوز",
     "notifications": "تفعيل الإشعارات",
     "sound": "الصوت",
     "loop_sound": "تكرار الصوت",
-    "auto_slap": "صفع تلقائي لجميع اللاعبين",
-    "camera_follow": "تتبع الكاميرا للاعب",
-    "slap_target": "صفع الهدف"
+    "auto_slap": "صفع تلقائي لكل اللاعبين",
+    "slap_target": "صفع الهدف باستمرار",
+    "camera_follow": "الكاميرا تتبع الهدف",
+    "sticky_slap": "صفع سريع لكل اللاعبين"
   },
   "sliders": {
     "duration": "المدة",
@@ -36,17 +39,19 @@
   },
   "sections": {
     "win_map": "خريطة الفوز",
-    "anti": "منع",
+    "anti": "مضاد",
     "esp": "ESP",
-    "last": "الأخير",
-    "notify": "إشعار",
-    "slap": "الصفع التلقائي"
-  },
-  "notifications": {
-    "success": "نجاح!",
-    "discord_copy": "تم نسخ سيرفر ديسكورد"
+    "last": "أخير",
+    "notify": "الإشعارات",
+    "slap": "الصفع",
+    "options": "خيارات"
   },
   "input": {
-    "player_targeting": "استهداف لاعبين"
+    "player_targeting": "استهداف لاعبين",
+    "enter_username": "ادخل اسم المستخدم هنا"
+  },
+  "notifications": {
+    "success": "تم بنجاح!",
+    "discord_copy": "تم نسخ رابط ديسكورد"
   }
 }
