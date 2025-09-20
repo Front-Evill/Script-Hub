@@ -12,7 +12,7 @@
   "buttons": {
     "auto_win": "स्वचालित जीत",
     "new_colors": "नई ESP रंग (सभी नक्शे)",
-    "test_notification": "सूचना का परीक्षण",
+    "test_notification": "लक्ष्य जानकारी दें",
     "click_player": "खिलाड़ी चुनने के लिए क्लिक करें",
     "choose_player_tool": "खिलाड़ी उपकरण चुनें",
     "choose_player": "खिलाड़ी चुनें",
@@ -24,6 +24,7 @@
     "anti_seat": "एंटी सीट",
     "anti_slide": "एंटी-स्लाइड",
     "esp_players": "ESP खिलाड़ी",
+    "esp_slap_red": "ESP लाल थप्पड़",
     "detect_object": "ESP जीत",
     "notifications": "सूचनाएँ सक्षम करें",
     "sound": "ध्वनि",
@@ -52,6 +53,8 @@
   },
   "notifications": {
     "success": "हाँ!",
-    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया"
+    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया",
+    "Enter_user_name_to_targeting": "लक्ष्य साधने के लिए उपयोगकर्ता नाम दर्ज करें",
+    "Target_Leave_or_rejoin": "खिलाड़ी ने छोड़ा या फिर से जुड़ा"
   }
 }
