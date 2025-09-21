@@ -1,71 +1,81 @@
 {
-  "title": "मुख्य",
-  "subtitle": "द्वारा : FRONT EVILL",
+  "title": "मुख्य पृष्ठ",
+  "subtitle": "द्वारा बनाया गया : FRONT EVILL",
   "tabs": {
-    "main": "मुख्य",
-    "targeting": "लक्ष्य साधना",
-    "visuals": "दृश्य",
+    "main": "मुख्य पृष्ठ",
+    "targeting": "लक्ष्य निर्धारण",
+    "visuals": "ESP",
     "player": "खिलाड़ी",
+    "camera_tab": "कैमरा",
     "settings": "स्क्रिप्ट सेटिंग्स",
     "donate": "दान करें"
   },
   "buttons": {
     "auto_win": "स्वचालित जीत",
-    "new_colors": "नई ESP रंग (सभी नक्शे)",
-    "test_notification": "लक्ष्य जानकारी दें",
-    "click_player": "खिलाड़ी चुनने के लिए क्लिक करें",
-    "choose_player_tool": "खिलाड़ी उपकरण चुनें",
+    "new_colors": "नए ESP रंग (सभी नक्शे)",
+    "test_notification": "परीक्षण सूचना",
+    "click_player": "खिलाड़ी पर क्लिक करें",
+    "choose_player_tool": "खिलाड़ी का उपकरण चुनें",
     "choose_player": "खिलाड़ी चुनें",
-    "teleport_to_target": "लक्ष्य पर टेलीपोर्ट करें",
-    "info_targting": "लक्ष्य जानकारी"
+    "teleport_to_target": "टेलीपोर्ट",
+    "info_targting": "जानकारी",
+    "dash_walk": "GUI डैश"
   },
   "toggles": {
-    "overcoming": "कठिनाइयों पर काबू पाना",
+    "overcoming": "ऊपर उड़ें",
     "anti_afk": "एंटी AFK",
     "anti_seat": "एंटी सीट",
-    "anti_slide": "एंटी-स्लाइड",
-    "esp_players": "ESP खिलाड़ी",
+    "anti_slide": "एंटी स्लाइड",
+    "esp_players": "सभी दिखाएँ",
     "esp_slap_red": "ESP लाल थप्पड़",
-    "detect_object": "ESP जीत",
+    "detect_object": "जीत दिखाएँ",
     "notifications": "सूचनाएँ सक्षम करें",
-    "sound": "ध्वनि",
-    "loop_sound": "ध्वनि दोहराएँ",
-    "auto_slap": "सभी खिलाड़ियों को स्वचालित रूप से थप्पड़ मारें",
-    "slap_target": "लक्ष्य को लगातार थप्पड़ मारें",
-    "camera_follow": "कैमरा लक्ष्य का पालन करे",
-    "sticky_slap": "सभी खिलाड़ियों को तेज़ी से थप्पड़ मारें",
+    "sound": "आवाज़",
+    "loop_sound": "आवाज़ दोहराएँ",
+    "auto_slap": "सभी खिलाड़ियों को स्वचालित थप्पड़",
+    "slap_target": "लक्ष्य को लगातार थप्पड़",
+    "camera_follow": "कैमरा लक्ष्य का अनुसरण करे",
+    "sticky_slap": "सभी को थप्पड़",
     "enable_speed": "गति सक्षम करें",
-    "enable_jump": "जंप पावर सक्षम करें",
-    "inf_jump": "अनंत छलांग",
-    "noclip": "दीवार हैक"
+    "enable_jump": "कूद शक्ति सक्षम करें",
+    "inf_jump": "अनंत कूद",
+    "noclip": "दीवार पार करें",
+    "custom_fov": "FOV लागू करें",
+    "shader": "शेडर",
+    "shader_sky_planet": "बैंगनी ग्रह",
+    "shader_sky_space": "नेपच्यून ग्रह"
   },
   "sliders": {
     "duration": "अवधि",
-    "volume": "आवाज़"
+    "volume": "आवाज़ स्तर"
   },
   "sections": {
     "win_map": "जीत का नक्शा",
     "anti": "एंटी",
     "esp": "ESP",
     "last": "अंतिम",
-    "notify": "सूचना",
-    "slap": "सभी को थप्पड़",
+    "notify": "सूचनाएँ",
+    "slap": "थप्पड़",
     "options": "विकल्प",
-    "player_targeting": "खिलाड़ी लक्ष्य साधना",
+    "player_targeting": "खिलाड़ी लक्ष्य निर्धारण",
     "input_local_player": "स्थानीय खिलाड़ी इनपुट",
-    "enaple_value_input": "इनपुट मान सक्षम करें",
-    "last_local_player": "अंतिम"
+    "enaple_value_input": "कूद शक्ति सक्षम करें",
+    "last_local_player": "अंतिम",
+    "camera_fov": "कैमरा FOV",
+    "shader": "शेडर"
   },
   "input": {
-    "enter_username": "यहाँ उपयोगकर्ता नाम दर्ज करें",
+    "enter_username": "यहाँ नाम दर्ज करें",
     "target_player": "लक्ष्य खिलाड़ी",
     "speed": "स्थानीय खिलाड़ी गति",
-    "jump": "स्थानीय खिलाड़ी जंप पावर"
+    "jump": "स्थानीय खिलाड़ी कूद शक्ति",
+    "fov": "FOV स्तर",
+    "value_fov": "यहाँ FOV स्तर दर्ज करें"
   },
   "notifications": {
     "success": "सफल!",
-    "discord_copy": "डिस्कॉर्ड सर्वर कॉपी किया गया",
-    "Enter_user_name_to_targeting": "लक्ष्य के लिए उपयोगकर्ता नाम दर्ज करें",
-    "Target_Leave_or_rejoin": "खिलाड़ी ने छोड़ा या फिर से शामिल हुआ"
+    "discord_copy": "डिस्कॉर्ड लिंक कॉपी किया गया",
+    "Enter_user_name_to_targeting": "लक्ष्य निर्धारण के लिए उपयोगकर्ता नाम दर्ज करें",
+    "Target_Leave_or_rejoin": "खिलाड़ी छोड़ गया या फिर से जुड़ा"
   }
 }
