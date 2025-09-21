@@ -13,7 +13,7 @@
   "buttons": {
     "auto_win": "فوز تلقائي",
     "new_colors": "ألوان ESP جديدة (كل الخرائط)",
-    "test_notification": "إعطاء معلومات الاستهداف",
+    "test_notification": "شعار تجريبي",
     "click_player": "اضغط على شخص",
     "choose_player_tool": "اختر أداة اللاعب",
     "choose_player": "اختر اللاعب",
@@ -39,7 +39,11 @@
     "enable_speed": "تنفيذ سرعه",
     "enable_jump": "تنفيذ قوة القفز",
     "inf_jump": "قفز لا نهائي",
-    "noclip": "اختراق جدران"
+    "noclip": "اختراق جدران",
+    "custom_fov": "تطبيق العرض",
+    "shader": "شادر",
+    "shader_sky_planet": "كوكب بنفسجي",
+    "shader_sky_space": "كوكب نبتون"
   },
   "sliders": {
     "duration": "المدة",
@@ -49,20 +53,24 @@
     "win_map": "خريطة الفوز",
     "anti": "مضاد",
     "esp": "ESP",
-    "last": "أخير",
+    "last": "أخر",
     "notify": "الإشعارات",
     "slap": "الصفع",
     "options": "خيارات",
     "player_targeting": "استهداف لاعب",
     "input_local_player": "مدخل لاعب محلي",
     "enaple_value_input": "تنفيذ قوة القفز",
-    "last_local_player": "اخر"
-},
+    "last_local_player": "اخر",
+    "camera_fov": "عرض كامرة",
+    "shader": "شادر"
+  },
   "input": {
     "enter_username": "ادخل اسم هنا",
     "target_player": "استهدف لاعب",
     "speed": "سرعة لاعب محلي",
-    "jump": "قوة قفز لاعب  محلي"
+    "jump": "قوة قفز لاعب  محلي",
+    "fov": "مستوة العرض",
+    "value_fov": "مستوة العرض هنا"
   },
   "notifications": {
     "success": "تم بنجاح!",
