@@ -1,11 +1,12 @@
 {
   "title": "الرئيسية",
-  "subtitle": "بواسطة : FRONT EVILL",
+  "subtitle": "من صنع : FRONT EVILL",
   "tabs": {
     "main": "الرئيسية",
     "targeting": "الاستهداف",
-    "visuals": "المرئيات",
+    "visuals": "كشف",
     "player": "اللاعب",
+    "camera_tab":"كامرة",
     "settings": "إعدادات السكربت",
     "donate": "تبرع"
   },
@@ -13,18 +14,19 @@
     "auto_win": "فوز تلقائي",
     "new_colors": "ألوان ESP جديدة (كل الخرائط)",
     "test_notification": "إعطاء معلومات الاستهداف",
-    "click_player": "اضغط على اللاعب للتحديد",
+    "click_player": "اضغط على شخص",
     "choose_player_tool": "اختر أداة اللاعب",
     "choose_player": "اختر اللاعب",
-    "teleport_to_target": "انتقال إلى الهدف",
-    "info_targting": "معلومات المستهدف"
+    "teleport_to_target": "انتقال",
+    "info_targting": "معلومات",
+    "dash_walk": "gui داش"
   },
   "toggles": {
-    "overcoming": "تجاوز الصعوبات",
-    "anti_afk": "مضاد الخمول",
+    "overcoming": "طير لفوق",
+    "anti_afk": "مضاد AFK",
     "anti_seat": "مضاد الجلوس",
     "anti_slide": "مضاد التزحلق",
-    "esp_players": "إظهار اللاعبين",
+    "esp_players": "كشف الكل",
     "esp_slap_red": "صفع ESP أحمر",
     "detect_object": "إظهار الفوز",
     "notifications": "تفعيل الإشعارات",
@@ -33,7 +35,7 @@
     "auto_slap": "صفع تلقائي لكل اللاعبين",
     "slap_target": "صفع الهدف باستمرار",
     "camera_follow": "الكاميرا تتبع الهدف",
-    "sticky_slap": "صفع سريع لكل اللاعبين",
+    "sticky_slap": "صفع الكل",
     "enable_speed": "تنفيذ سرعه",
     "enable_jump": "تنفيذ قوة القفز",
     "inf_jump": "قفز لا نهائي",
@@ -51,13 +53,13 @@
     "notify": "الإشعارات",
     "slap": "الصفع",
     "options": "خيارات",
-    "player_targeting": "استهداف لاعبين",
+    "player_targeting": "استهداف لاعب",
     "input_local_player": "مدخل لاعب محلي",
-    "enaple_value_input": "تنفيض قيمة المدخل",
+    "enaple_value_input": "تنفيذ قوة القفز",
     "last_local_player": "اخر"
 },
   "input": {
-    "enter_username": "ادخل اسم المستخدم هنا",
+    "enter_username": "ادخل اسم هنا",
     "target_player": "استهدف لاعب",
     "speed": "سرعة لاعب محلي",
     "jump": "قوة قفز لاعب  محلي"
