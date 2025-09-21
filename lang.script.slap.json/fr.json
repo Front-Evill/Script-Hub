@@ -1,73 +1,73 @@
 {
-  "title": "मुख्य पृष्ठ",
-  "subtitle": "द्वारा बनाया गया: FRONT EVILL",
+  "title": "Accueil",
+  "subtitle": "Créé par : FRONT EVILL",
   "tabs": {
-    "main": "मुख्य पृष्ठ",
-    "targeting": "लक्ष्य निर्धारण",
+    "main": "Accueil",
+    "targeting": "Ciblage",
     "visuals": "ESP",
-    "player": "खिलाड़ी",
-    "camera_tab": "कैमरा",
-    "settings": "स्क्रिप्ट सेटिंग्स",
-    "donate": "दान करें"
+    "player": "Joueur",
+    "camera_tab": "Caméra",
+    "settings": "Paramètres du Script",
+    "donate": "Donner"
   },
   "buttons": {
-    "auto_win": "स्वचालित जीत",
-    "new_colors": "नए ESP रंग (सभी नक्शे)",
-    "test_notification": "लक्ष्य की जानकारी दिखाएँ",
-    "click_player": "खिलाड़ी पर क्लिक करें",
-    "choose_player_tool": "खिलाड़ी का उपकरण चुनें",
-    "choose_player": "खिलाड़ी चुनें",
-    "teleport_to_target": "टेलीपोर्ट",
-    "info_targting": "जानकारी",
-    "dash_walk": "GUI डैश"
+    "auto_win": "Victoire Automatique",
+    "new_colors": "Nouvelles Couleurs ESP (Toutes les cartes)",
+    "test_notification": "Afficher les infos de Ciblage",
+    "click_player": "Cliquez sur Joueur",
+    "choose_player_tool": "Choisir Outil du Joueur",
+    "choose_player": "Choisir Joueur",
+    "teleport_to_target": "Téléporter",
+    "info_targting": "Infos",
+    "dash_walk": "GUI Dash"
   },
   "toggles": {
-    "overcoming": "ऊपर उड़ें",
-    "anti_afk": "एंटी AFK",
-    "anti_seat": "एंटी सीट",
-    "anti_slide": "एंटी स्लाइड",
-    "esp_players": "सभी दिखाएँ",
-    "esp_slap_red": "ESP लाल थप्पड़",
-    "detect_object": "जीत दिखाएँ",
-    "notifications": "सूचनाएँ सक्षम करें",
-    "sound": "आवाज़",
-    "loop_sound": "आवाज़ दोहराएँ",
-    "auto_slap": "सभी खिलाड़ियों को स्वचालित थप्पड़",
-    "slap_target": "लक्ष्य को लगातार थप्पड़",
-    "camera_follow": "कैमरा लक्ष्य का अनुसरण करे",
-    "sticky_slap": "सभी को थप्पड़",
-    "enable_speed": "गति सक्षम करें",
-    "enable_jump": "कूद शक्ति सक्षम करें",
-    "inf_jump": "अनंत कूद",
-    "noclip": "दीवार पार करें"
+    "overcoming": "Voler en Haut",
+    "anti_afk": "Anti AFK",
+    "anti_seat": "Anti Siège",
+    "anti_slide": "Anti Glisse",
+    "esp_players": "Tout Afficher",
+    "esp_slap_red": "ESP Gifler Rouge",
+    "detect_object": "Afficher Victoire",
+    "notifications": "Activer Notifications",
+    "sound": "Son",
+    "loop_sound": "Boucle Sonore",
+    "auto_slap": "Gifler Automatiquement Tous les Joueurs",
+    "slap_target": "Gifler la Cible en Continu",
+    "camera_follow": "Caméra Suivre la Cible",
+    "sticky_slap": "Gifler Tout le Monde",
+    "enable_speed": "Activer Vitesse",
+    "enable_jump": "Activer Force de Saut",
+    "inf_jump": "Saut Infini",
+    "noclip": "Traverser Murs"
   },
   "sliders": {
-    "duration": "अवधि",
-    "volume": "आवाज़ स्तर"
+    "duration": "Durée",
+    "volume": "Volume"
   },
   "sections": {
-    "win_map": "जीत का नक्शा",
-    "anti": "एंटी",
+    "win_map": "Carte Victoire",
+    "anti": "Anti",
     "esp": "ESP",
-    "last": "अंतिम",
-    "notify": "सूचनाएँ",
-    "slap": "थप्पड़",
-    "options": "विकल्प",
-    "player_targeting": "खिलाड़ी लक्ष्य निर्धारण",
-    "input_local_player": "स्थानीय खिलाड़ी इनपुट",
-    "enaple_value_input": "कूद शक्ति सक्षम करें",
-    "last_local_player": "अंतिम"
+    "last": "Dernier",
+    "notify": "Notifications",
+    "slap": "Gifler",
+    "options": "Options",
+    "player_targeting": "Ciblage Joueur",
+    "input_local_player": "Entrée Joueur Local",
+    "enaple_value_input": "Activer Force de Saut",
+    "last_local_player": "Dernier"
   },
   "input": {
-    "enter_username": "यहाँ नाम दर्ज करें",
-    "target_player": "लक्ष्य खिलाड़ी",
-    "speed": "स्थानीय खिलाड़ी गति",
-    "jump": "स्थानीय खिलाड़ी कूद शक्ति"
+    "enter_username": "Entrez Nom d'utilisateur Ici",
+    "target_player": "Cibler Joueur",
+    "speed": "Vitesse Joueur Local",
+    "jump": "Force de Saut Joueur Local"
   },
   "notifications": {
-    "success": "सफल!",
-    "discord_copy": "डिस्कॉर्ड लिंक कॉपी किया गया",
-    "Enter_user_name_to_targeting": "लक्ष्य निर्धारण के लिए उपयोगकर्ता नाम दर्ज करें",
-    "Target_Leave_or_rejoin": "खिलाड़ी छोड़ गया या फिर से जुड़ा"
+    "success": "Réussi!",
+    "discord_copy": "Lien Discord Copié",
+    "Enter_user_name_to_targeting": "Entrez Nom d'utilisateur pour le Ciblage",
+    "Target_Leave_or_rejoin": "Le Joueur est Parti ou Revenu"
   }
 }
