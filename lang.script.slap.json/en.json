@@ -1,6 +1,6 @@
 {
   "title": "Home",
-  "subtitle": "Made by: FRONT EVILL",
+  "subtitle": "Made by : FRONT EVILL",
   "tabs": {
     "main": "Home",
     "targeting": "Targeting",
@@ -13,7 +13,7 @@
   "buttons": {
     "auto_win": "Auto Win",
     "new_colors": "New ESP Colors (All Maps)",
-    "test_notification": "Show Targeting Info",
+    "test_notification": "Test Notification",
     "click_player": "Click on Player",
     "choose_player_tool": "Choose Player Tool",
     "choose_player": "Choose Player",
@@ -39,7 +39,11 @@
     "enable_speed": "Enable Speed",
     "enable_jump": "Enable Jump Power",
     "inf_jump": "Infinite Jump",
-    "noclip": "Wall Hack"
+    "noclip": "Wall Hack",
+    "custom_fov": "Apply FOV",
+    "shader": "Shader",
+    "shader_sky_planet": "Purple Planet",
+    "shader_sky_space": "Neptune Planet"
   },
   "sliders": {
     "duration": "Duration",
@@ -56,18 +60,22 @@
     "player_targeting": "Player Targeting",
     "input_local_player": "Local Player Input",
     "enaple_value_input": "Enable Jump Power",
-    "last_local_player": "Last"
+    "last_local_player": "Last",
+    "camera_fov": "Camera FOV",
+    "shader": "Shader"
   },
   "input": {
-    "enter_username": "Enter Username Here",
+    "enter_username": "Enter name here",
     "target_player": "Target Player",
     "speed": "Local Player Speed",
-    "jump": "Local Player Jump Power"
+    "jump": "Local Player Jump Power",
+    "fov": "FOV Level",
+    "value_fov": "Enter FOV Level Here"
   },
   "notifications": {
     "success": "Success!",
     "discord_copy": "Discord Link Copied",
-    "Enter_user_name_to_targeting": "Enter Username for Targeting",
-    "Target_Leave_or_rejoin": "Player Left or Rejoined"
+    "Enter_user_name_to_targeting": "Enter username to target",
+    "Target_Leave_or_rejoin": "Player left or rejoined"
   }
 }
