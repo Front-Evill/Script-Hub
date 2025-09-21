@@ -1,39 +1,41 @@
 {
-  "title": "Main",
-  "subtitle": "By : FRONT EVILL",
+  "title": "Home",
+  "subtitle": "Made by: FRONT EVILL",
   "tabs": {
-    "main": "Main",
+    "main": "Home",
     "targeting": "Targeting",
-    "visuals": "Visuals",
+    "visuals": "ESP",
     "player": "Player",
+    "camera_tab": "Camera",
     "settings": "Script Settings",
     "donate": "Donate"
   },
   "buttons": {
     "auto_win": "Auto Win",
     "new_colors": "New ESP Colors (All Maps)",
-    "test_notification": "Give Targeting Info",
-    "click_player": "Click On Player to Select",
+    "test_notification": "Show Targeting Info",
+    "click_player": "Click on Player",
     "choose_player_tool": "Choose Player Tool",
     "choose_player": "Choose Player",
-    "teleport_to_target": "Teleport to Target",
-    "info_targting": "Target Info"
+    "teleport_to_target": "Teleport",
+    "info_targting": "Info",
+    "dash_walk": "GUI Dash"
   },
   "toggles": {
-    "overcoming": "Overcoming difficulties",
+    "overcoming": "Fly Up",
     "anti_afk": "Anti AFK",
     "anti_seat": "Anti Seat",
-    "anti_slide": "Anti-Slide",
-    "esp_players": "ESP Players",
-    "esp_slap_red": "ESP Slap Red",
-    "detect_object": "ESP Win",
+    "anti_slide": "Anti Slide",
+    "esp_players": "Show All",
+    "esp_slap_red": "ESP Red Slap",
+    "detect_object": "Show Win",
     "notifications": "Enable Notifications",
     "sound": "Sound",
     "loop_sound": "Loop Sound",
     "auto_slap": "Auto Slap All Players",
-    "slap_target": "Slap Target Continuously",
+    "slap_target": "Keep Slapping Target",
     "camera_follow": "Camera Follow Target",
-    "sticky_slap": "Sticky Fast Slap All Players",
+    "sticky_slap": "Slap Everyone",
     "enable_speed": "Enable Speed",
     "enable_jump": "Enable Jump Power",
     "inf_jump": "Infinite Jump",
@@ -48,12 +50,12 @@
     "anti": "Anti",
     "esp": "ESP",
     "last": "Last",
-    "notify": "Notify",
-    "slap": "Auto Slap",
+    "notify": "Notifications",
+    "slap": "Slap",
     "options": "Options",
     "player_targeting": "Player Targeting",
     "input_local_player": "Local Player Input",
-    "enaple_value_input": "Enable Input Value",
+    "enaple_value_input": "Enable Jump Power",
     "last_local_player": "Last"
   },
   "input": {
@@ -64,8 +66,8 @@
   },
   "notifications": {
     "success": "Success!",
-    "discord_copy": "Discord Server Copied",
-    "Enter_user_name_to_targeting": "Enter username to target",
-    "Target_Leave_or_rejoin": "Player left or rejoined"
+    "discord_copy": "Discord Link Copied",
+    "Enter_user_name_to_targeting": "Enter Username for Targeting",
+    "Target_Leave_or_rejoin": "Player Left or Rejoined"
   }
 }
