@@ -1,71 +1,73 @@
 {
-  "title": "Principal",
-  "subtitle": "Par : FRONT EVILL",
+  "title": "Accueil",
+  "subtitle": "Créé par : FRONT EVILL",
   "tabs": {
-    "main": "Principal",
+    "main": "Accueil",
     "targeting": "Ciblage",
-    "visuals": "Visuels",
+    "visuals": "ESP",
     "player": "Joueur",
-    "settings": "Paramètres du script",
-    "donate": "Faire un don"
+    "camera_tab": "Caméra",
+    "settings": "Paramètres du Script",
+    "donate": "Donner"
   },
   "buttons": {
-    "auto_win": "Victoire automatique",
-    "new_colors": "Nouvelles couleurs ESP (toutes cartes)",
-    "test_notification": "Donner infos ciblage",
-    "click_player": "Cliquez sur un joueur pour sélectionner",
-    "choose_player_tool": "Choisir outil du joueur",
-    "choose_player": "Choisir joueur",
-    "teleport_to_target": "Téléporter vers la cible",
-    "info_targting": "Infos cible"
+    "auto_win": "Victoire Automatique",
+    "new_colors": "Nouvelles Couleurs ESP (Toutes les cartes)",
+    "test_notification": "Afficher les infos de Ciblage",
+    "click_player": "Cliquez sur Joueur",
+    "choose_player_tool": "Choisir Outil du Joueur",
+    "choose_player": "Choisir Joueur",
+    "teleport_to_target": "Téléporter",
+    "info_targting": "Infos",
+    "dash_walk": "GUI Dash"
   },
   "toggles": {
-    "overcoming": "Surmonter les difficultés",
+    "overcoming": "Voler en Haut",
     "anti_afk": "Anti AFK",
     "anti_seat": "Anti Siège",
-    "anti_slide": "Anti-glissade",
-    "esp_players": "ESP Joueurs",
+    "anti_slide": "Anti Glisse",
+    "esp_players": "Tout Afficher",
     "esp_slap_red": "ESP Gifler Rouge",
-    "detect_object": "ESP Victoire",
-    "notifications": "Activer notifications",
+    "detect_object": "Afficher Victoire",
+    "notifications": "Activer Notifications",
     "sound": "Son",
-    "loop_sound": "Répéter le son",
-    "auto_slap": "Gifler automatiquement tous les joueurs",
-    "slap_target": "Gifler la cible en continu",
-    "camera_follow": "Caméra suit la cible",
-    "sticky_slap": "Gifler rapidement tous les joueurs",
-    "enable_speed": "Activer la vitesse",
-    "enable_jump": "Activer la puissance du saut",
-    "inf_jump": "Saut infini",
-    "noclip": "Passer à travers les murs"
+    "loop_sound": "Boucle Sonore",
+    "auto_slap": "Gifler Automatiquement Tous les Joueurs",
+    "slap_target": "Gifler la Cible en Continu",
+    "camera_follow": "Caméra Suivre la Cible",
+    "sticky_slap": "Gifler Tout le Monde",
+    "enable_speed": "Activer Vitesse",
+    "enable_jump": "Activer Force de Saut",
+    "inf_jump": "Saut Infini",
+    "noclip": "Traverser Murs"
   },
   "sliders": {
     "duration": "Durée",
     "volume": "Volume"
   },
   "sections": {
-    "win_map": "Carte de victoire",
+    "win_map": "Carte Victoire",
     "anti": "Anti",
     "esp": "ESP",
     "last": "Dernier",
-    "notify": "Notifier",
-    "slap": "Gifler tous",
+    "notify": "Notifications",
+    "slap": "Gifler",
     "options": "Options",
-    "player_targeting": "Ciblage des joueurs",
-    "input_local_player": "Entrée joueur local",
-    "enaple_value_input": "Activer valeur entrée",
+    "player_targeting": "Ciblage Joueur",
+    "input_local_player": "Entrée Joueur Local",
+    "enaple_value_input": "Activer Force de Saut",
     "last_local_player": "Dernier"
   },
   "input": {
-    "enter_username": "Entrez le nom d'utilisateur ici",
-    "target_player": "Joueur cible",
-    "speed": "Vitesse joueur local",
-    "jump": "Puissance saut joueur local"
+    "enter_username": "Entrez Nom d'utilisateur Ici",
+    "target_player": "Cibler Joueur",
+    "speed": "Vitesse Joueur Local",
+    "jump": "Force de Saut Joueur Local"
   },
   "notifications": {
-    "success": "Succès!",
-    "discord_copy": "Serveur Discord copié",
-    "Enter_user_name_to_targeting": "Entrez le nom d'utilisateur pour cibler",
-    "Target_Leave_or_rejoin": "Le joueur a quitté ou rejoint à nouveau"
+    "success": "Réussi!",
+    "discord_copy": "Lien Discord Copié",
+    "Enter_user_name_to_targeting": "Entrez Nom d'utilisateur pour le Ciblage",
+    "Target_Leave_or_rejoin": "Le Joueur est Parti ou Revenu"
   }
 }
